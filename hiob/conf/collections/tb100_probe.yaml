@@ -1,0 +1,23 @@
+description: >
+  Eleven sequences selected from the tb100 data set, to probe
+  possible tracker configurations without running the whole
+  data set on it.
+  
+  Selection has been done so that each of the attributes given 
+  by the creators of the data set is included at least thrice, 
+  and thought has been put into it, to get a wide variaty.
+  Most of the samples are relatively short, so that total 
+  processing time is reduced, but also two long samples have
+  been included, to keep long time performance in the process.
+samples:
+  - tb100/Ironman
+  - tb100/MotorRolling
+  - tb100/Suv
+  - tb100/Surfer
+  - tb100/Bird1
+  - tb100/Deer
+  - tb100/Trans
+  - tb100/Bolt2
+  - tb100/Freeman3
+  - tb100/Panda
+  - tb100/BlurCar3
