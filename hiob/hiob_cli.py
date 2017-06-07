@@ -1,4 +1,4 @@
-#!/usr/bin/env/python
+#!/data/3knoeppl/bsc_thesis/venvs/hiob/bin/python
 # export MPLBACKEND="agg"
 # PYTHONPATH=.. python hy1.py
 import logging

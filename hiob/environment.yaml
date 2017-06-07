@@ -8,10 +8,10 @@
 environment_name: default
 
 # directory to which execution logs are written:
-log_dir: /data/Peer/hiob_logs
+log_dir: /data/3knoeppl/hiob_logs
 
 # directory in which data samples are kept:
-data_dir: /data/Peer/data
+data_dir: /data/3knoeppl/data
 
 # directory in which net weight files are kept:
-net_dir: /data/Peer/net
+net_dir: /data/3knoeppl/net

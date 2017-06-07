@@ -13,17 +13,8 @@
 # adjusted for hiob by Peer Springstübe
 
 
-from numpy import *
-import os
 from pylab import *
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.cbook as cbook
 import time
-import matplotlib.image as mpimg
-from scipy.ndimage import filters
-import urllib
-from numpy import random
 import inspect
 import logging
 from collections import OrderedDict

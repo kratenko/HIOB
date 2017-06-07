@@ -5,7 +5,6 @@ Created on 2016-11-29
 """
 
 import logging
-
 import transitions
 
 logger = logging.getLogger(__name__)
