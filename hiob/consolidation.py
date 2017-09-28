@@ -9,13 +9,13 @@ from collections import OrderedDict
 import tensorflow as tf
 import numpy as np
 
-import hiob.base
-from hiob.netbuilder import BuiltNet
+import base
+from netbuilder import BuiltNet
 
 logger = logging.getLogger(__name__)
 
 
-class Consolidator(hiob.base.HiobModule):
+class Consolidator(base.HiobModule):
 
     def consolidate_features(self, state, frame):
         raise NotImplementedError()
@@ -78,7 +78,7 @@ class SingleNetConsolidator(Consolidator):
                     name="concat_placeholder_" + name,
                 )
                 placeholders[name] = ph
-            self.concatenated = tf.concat(3, list(placeholders.values()))
+            self.concatenated = tf.concat(axis=3, values=list(placeholders.values()))
             self.concatenation_placeholders = placeholders
             #
         # frames we keep in memory to use for update of net

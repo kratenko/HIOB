@@ -307,7 +307,7 @@ class BuiltNet(object):
 
     def initialize_variables(self):
         # TODO: optimizer is not initialized, yet!
-        self.session.run(tf.initialize_variables(self.variables))
+        self.session.run(tf.variables_initializer(self.variables))
 
     # methods to work with net:
 

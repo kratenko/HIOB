@@ -13,7 +13,7 @@ import io
 import yaml
 from PIL import Image
 
-from hiob.rect import Rect
+from rect import Rect
 
 logger = logging.getLogger(__name__)
 

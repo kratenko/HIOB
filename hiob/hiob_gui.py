@@ -6,6 +6,8 @@ import threading
 import argparse
 import collections
 from PIL.ImageDraw import Draw
+from tracker import Tracker
+from configuration import Configurator
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)
@@ -275,7 +277,6 @@ class App:
         return tracking
 
     def tracker_fun(self):
-        from hiob.tracker import Tracker
         tracker = Tracker(self.conf)
         tracker.setup_environment()
         try:
@@ -308,7 +309,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # create Configurator
-    from hiob.configuration import Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=args.environment,

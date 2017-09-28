@@ -32,14 +32,14 @@ class Vgg16(object):
             dtype=tf.float32, shape=self.input_shape, name='input_placeholder')
 
         # convert from rgb to bgr and apply mean
-        red, green, blue = tf.split(3, 3, self.input_placeholder)
+        red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=self.input_placeholder)
         assert red.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert green.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert blue.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
-        bgr = tf.concat(3, [
+        bgr = tf.concat(axis=3, values=[
             blue - self.VGG_MEAN[0],
             green - self.VGG_MEAN[1],
             red - self.VGG_MEAN[2],
@@ -64,14 +64,14 @@ class Vgg16(object):
         # rgb_scaled = rgb * 255.0
 
         # Convert RGB to BGR
-        red, green, blue = tf.split(3, 3, self.input_placeholder)
+        red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=self.input_placeholder)
         assert red.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert green.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert blue.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
-        bgr = tf.concat(3, [
+        bgr = tf.concat(axis=3, values=[
             blue - self.VGG_MEAN[0],
             green - self.VGG_MEAN[1],
             red - self.VGG_MEAN[2],

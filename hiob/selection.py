@@ -3,9 +3,9 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-import hiob.base
+import base
 from collections import OrderedDict
-from hiob.netbuilder import BuiltNet
+from netbuilder import BuiltNet
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def bias_variable(shape, name=None, value=None):
     return tf.Variable(initial, name)
 
 
-class FeatureSelector(hiob.base.HiobModule):
+class FeatureSelector(base.HiobModule):
 
     def reduce_features(self, tracking, frame):
         raise NotImplementedError()

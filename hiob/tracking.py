@@ -7,13 +7,12 @@ from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-from hiob.frame import Frame
-from hiob.rect import Rect
-from hiob.gauss import gen_gauss_mask
-from hiob.graph import figure_to_image
-import hiob.detector
+from frame import Frame
+from rect import Rect
+from gauss import gen_gauss_mask
+from graph import figure_to_image
 import numpy as np
-from hiob import evaluation
+import evaluation
 
 logger = logging.getLogger(__name__)
 

@@ -233,11 +233,11 @@ class AlexNet(object):
         if group == 1:
             conv = convolve(input, kernel)
         else:
-            input_groups = tf.split(3, group, input)
-            kernel_groups = tf.split(3, group, kernel)
+            input_groups = tf.split(axis=3, num_or_size_splits=group, value=input)
+            kernel_groups = tf.split(axis=3, num_or_size_splits=group, value=kernel)
             output_groups = [convolve(i, k)
                              for i, k in zip(input_groups, kernel_groups)]
-            conv = tf.concat(3, output_groups)
+            conv = tf.concat(axis=3, values=output_groups)
         return tf.reshape(tf.nn.bias_add(conv, biases), [-1] + conv.get_shape().as_list()[1:])
 
 

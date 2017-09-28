@@ -10,14 +10,14 @@ import random
 import numpy as np
 import tensorflow as tf
 
-import hiob.roi
-import hiob.extraction
-import hiob.selection
-import hiob.consolidation
-import hiob.pursuing
-from hiob.tracking import Tracking
-from hiob import evaluation
-from hiob.data_set import DataDirectory
+import roi
+import extraction
+import selection
+import consolidation
+import pursuing
+from tracking import Tracking
+import evaluation
+from data_set import DataDirectory
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +75,17 @@ class Tracker(object):
             self.samples = self.data_directory.evaluate_sample_list(
                 self.configuration['tracking'])
 
-        self.roi_calculator = hiob.roi.SimpleRoiCalculator()
+        self.roi_calculator = roi.SimpleRoiCalculator()
         self.modules.append(self.roi_calculator)
-        self.sroi_generator = hiob.roi.SimpleSroiGenerator()
+        self.sroi_generator = roi.SimpleSroiGenerator()
         self.modules.append(self.sroi_generator)
-        self.feature_extractor = hiob.extraction.CnnFeatureExtractor()
+        self.feature_extractor = extraction.CnnFeatureExtractor()
         self.modules.append(self.feature_extractor)
-        self.feature_selector = hiob.selection.NetSelector()
+        self.feature_selector = selection.NetSelector()
         self.modules.append(self.feature_selector)
-        self.consolidator = hiob.consolidation.SingleNetConsolidator()
+        self.consolidator = consolidation.SingleNetConsolidator()
         self.modules.append(self.consolidator)
-        self.pursuer = hiob.pursuing.SwarmPursuer()
+        self.pursuer = pursuing.SwarmPursuer()
         self.modules.append(self.pursuer)
 
         # configure modules

@@ -1,10 +1,8 @@
 import logging
 import transitions
 from PIL import ImageTk, ImageDraw
-import queue
-import threading
-from hiob.data_set import DataDirectory
-from hiob.rect import Rect
+from data_set import DataDirectory
+from rect import Rect
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)

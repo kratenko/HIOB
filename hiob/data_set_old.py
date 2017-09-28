@@ -8,7 +8,7 @@ import os
 import logging
 import re
 from PIL import Image
-from hiob.rect import Rect
+from rect import Rect
 import scipy.io
 
 logger = logging.getLogger(__name__)

@@ -9,16 +9,16 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-import hiob.base
-from hiob import vgg16
-from hiob import alexnet
+import base
+import vgg16
+import alexnet
 from collections import OrderedDict
 import os
 
 logger = logging.getLogger(__name__)
 
 
-class FeatureExtractor(hiob.base.HiobModule):
+class FeatureExtractor(base.HiobModule):
 
     def extract_features(self, tracking, frame):
         raise NotImplementedError()

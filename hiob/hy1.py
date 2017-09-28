@@ -5,7 +5,6 @@ Created on 2016-12-22
 """
 
 import os
-import hyperopt
 import logging
 import re
 import uuid

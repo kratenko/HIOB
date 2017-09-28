@@ -3,17 +3,19 @@
 # PYTHONPATH=.. python hy1.py
 import logging
 import transitions
+from configuration import Configurator
+from tracker import Tracker
 
+print("start")
 # Set up logging:
 logging.getLogger().setLevel(logging.INFO)
 transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
+print("got logger")
 
 def track(environment_path=None, tracker_path=None):
-    from hiob.configuration import Configurator
-    from hiob.tracker import Tracker
 
     # create Configurator
     logger.info("Creating configurator object")
@@ -38,7 +40,6 @@ def track(environment_path=None, tracker_path=None):
 
 def main():
     import argparse
-
     # parse arguments:
     logger.info("Parsing command line arguments")
     parser = argparse.ArgumentParser()

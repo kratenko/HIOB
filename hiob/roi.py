@@ -6,8 +6,8 @@ Created on 2016-11-17
 
 import math
 
-from hiob.base import HiobModule
-from hiob.rect import Rect
+from base import HiobModule
+from rect import Rect
 
 
 class RoiCalculator(HiobModule):

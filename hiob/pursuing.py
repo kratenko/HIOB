@@ -8,18 +8,17 @@ import logging
 
 import tensorflow as tf
 
-import hiob.base
+import base
 import scipy.ndimage
 import numpy as np
-from hiob.rect import Rect
-from hiob.gauss import gen_gauss_mask
-import PIL.Image
+from rect import Rect
+from gauss import gen_gauss_mask
 import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
 
-class Pursuer(hiob.base.HiobModule):
+class Pursuer(base.HiobModule):
 
     def pursue(self, state, frame):
         raise NotImplementedError()

@@ -1,12 +1,10 @@
 import logging
 import transitions
 from PIL import ImageTk, ImageDraw, Image, ImageFont
-import queue
-import threading
-from hiob.data_set import DataDirectory
+from data_set import DataDirectory
 import os
 import pickle
-from hiob.rect import Rect
+from rect import Rect
 import collections
 from PIL.ImageDraw import Draw
 
