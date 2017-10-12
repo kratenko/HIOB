@@ -100,7 +100,7 @@ tracking:
 #  - tb100/MotorRolling
 #  - tb100/Soccer
 #  - tb100/Freeman3
-#  - tb100/Deer
+  - tb100/Deer
   - tb100/Lemming
 #  - tb100/Tiger2
 #  - tb100/Jumping
@@ -110,7 +110,7 @@ tracking:
 #  - COLLECTION/tb100_probe
 #  - COLLECTION/tb100_paper50
 #  - princeton/zcup_move_1
-#  - princeton/cup_book
+  - princeton/cup_book
 #  - princeton/computerBar2
 #  - SET/princeton
 #  - princeton/book_turn
