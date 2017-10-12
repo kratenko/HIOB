@@ -1,8 +1,9 @@
-#!/data/3knoeppl/bsc_thesis/venvs/hiob/bin/python
+#!/data/3knoeppl/bsc_thesis/venvs/hiob_new/bin/python
 # export MPLBACKEND="agg"
 # PYTHONPATH=.. python hy1.py
 import logging
 import transitions
+import argparse
 from configuration import Configurator
 from tracker import Tracker
 
@@ -39,7 +40,6 @@ def track(environment_path=None, tracker_path=None):
 
 
 def main():
-    import argparse
     # parse arguments:
     logger.info("Parsing command line arguments")
     parser = argparse.ArgumentParser()

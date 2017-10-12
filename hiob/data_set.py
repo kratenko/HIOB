@@ -337,3 +337,9 @@ class Sample(object):
         if self.loaded:
             self.images = []
             self.loaded = False
+
+    def get_image(self, img_id):
+        return self.images[img_id]
+
+    def get_ground_thruth(self, gt_id):
+        return self.ground_truth[gt_id]

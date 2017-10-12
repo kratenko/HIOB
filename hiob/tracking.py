@@ -13,6 +13,7 @@ from gauss import gen_gauss_mask
 from graph import figure_to_image
 import numpy as np
 import evaluation
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -171,9 +172,10 @@ class Tracking(object):
     def _load_sample_frame(self, number):
         frame = Frame(tracking=self, number=number)
         frame.commence_capture()
-        frame.capture_image = self.sample.images[number - 1]
-        if self.sample.ground_truth:
-            frame.ground_truth = self.sample.ground_truth[number - 1]
+        # frame.capture_image = self.sample.images[number - 1]
+        frame.capture_image = self.sample.get_image(number - 1)
+        if len(self.sample.ground_truth) > 0:
+            frame.ground_truth = self.sample.get_ground_truth(number - 1)
         frame.complete_capture()
         return frame
 
@@ -191,10 +193,10 @@ class Tracking(object):
             self.initial_frame)
         return
         # load data into selector:
-        self.tracker.feature_selector.load_data_for_selection(
-            self.module_states.feature_selector, self.initial_frame)
-        self.selection_cost = self.tracker.feature_selector.cost(
-            self.module_states.feature_selector)
+        # self.tracker.feature_selector.load_data_for_selection(
+        #     self.module_states.feature_selector, self.initial_frame)
+        # self.selection_cost = self.tracker.feature_selector.cost(
+        #     self.module_states.feature_selector)
         # self.tracker.feature_selector.
 
     def feature_selection_step(self):
