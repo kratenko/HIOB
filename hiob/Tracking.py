@@ -7,8 +7,8 @@ from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-from frame import Frame
-from rect import Rect
+from Frame import Frame
+from Rect import Rect
 from gauss import gen_gauss_mask
 from graph import figure_to_image
 import numpy as np

@@ -10,156 +10,13 @@ import logging
 import re
 import io
 
-import yaml
 from PIL import Image
 
-from rect import Rect
+from Rect import Rect
+
+from .DataSetException import DataSetException
 
 logger = logging.getLogger(__name__)
-
-
-class DataSetException(Exception):
-    pass
-
-
-class DataDirectory(object):
-
-    def __init__(self, data_dir):
-        self.data_dir = data_dir
-        conf_dir = 'conf'
-        self.data_set_dir = os.path.join(conf_dir, 'data_sets')
-        self.data_collection_dir = os.path.join(conf_dir, 'collections')
-
-        self.data_sets = {}
-        self.data_collections = {}
-
-    def _load_data_set(self, name):
-        set_file = os.path.join(self.data_set_dir, name + '.yaml')
-        ds = DataSet(name, self.data_dir)
-        with open(set_file, "r") as f:
-            y = yaml.safe_load(f)
-            ds.load(y)
-        self.data_sets[name] = ds
-
-    def _load_data_collection(self, name):
-        col_file = os.path.join(self.data_collection_dir, name + '.yaml')
-        dc = DataCollection(self, name)
-        with open(col_file, "r") as f:
-            y = yaml.safe_load(f)
-            dc.load(y)
-        self.data_collections[name] = dc
-
-    def get_data_set(self, name):
-        if name not in self.data_sets:
-            self._load_data_set(name)
-        return self.data_sets[name]
-
-    def get_data_collection(self, name):
-        if name not in self.data_collections:
-            self._load_data_collection(name)
-        return self.data_collections[name]
-
-    def get_sample(self, set_name, sample_name):
-        ds = self.get_data_set(set_name)
-        sample = ds.samples_by_name[sample_name]
-        return sample
-
-    def evaluate_sample_list(self, sample_names):
-        samples = []
-        for sname in sample_names:
-            p1, p2 = sname.split('/', 1)
-            if p1 == 'SET':
-                # this is a full sample set:
-                set_name = p2
-                ds = self.get_data_set(set_name)
-                samples.extend(ds.samples)
-            elif p1 == 'COLLECTION':
-                # this is a collection of samples
-                collection_name = p2
-                dc = self.get_data_collection(collection_name)
-                dc.load_samples()
-                samples.extend(dc.samples)
-            else:
-                # this is a single sample:
-                set_name, sample_name = p1, p2
-                samples.append(self.get_sample(set_name, sample_name))
-        return samples
-
-
-class DataCollection(object):
-
-    def __init__(self, directory, name):
-        self.directory = directory
-        self.name = name
-        self.description = None
-        self.samples_full_names = []
-        self.samples_parsed = []
-        self.total_samples = 0
-        self.samples = []
-        self.loaded = False
-
-    def load(self, definition):
-        if 'description' in definition:
-            self.description = definition['description']
-        for snam in definition['samples']:
-            self.samples_full_names.append(snam)
-            self.samples_parsed.append(snam.split('/'))
-            self.total_samples += 1
-
-    def load_samples(self):
-        if self.loaded:
-            return
-        for p1, p2 in self.samples_parsed:
-            if p1 == 'SET':
-                # this is a full data set
-                ds = self.directory.get_data_set(p2)
-                self.samples.extend(ds.samples)
-            elif p2 == 'COLLECTION':
-                # this is a collection within a collection - not supported
-                raise NotImplementedError(
-                    "Collections within collections of samples are not supported.")
-            else:
-                set_name, sample_name = p1, p2
-                self.samples.append(
-                    self.directory.get_sample(set_name, sample_name))
-        self.loaded = True
-
-
-class DataSet(object):
-
-    def __init__(self, name, data_dir):
-        self.name = name
-        self.description = None
-        self.samples = []
-        self.samples_by_name = {}
-        self.total_samples = 0
-        self.format = None
-        self.path = os.path.join(data_dir, name)
-
-    def load(self, definition):
-        if 'description' in definition:
-            self.description = definition['description']
-        if 'format' in definition:
-            self.format = definition['format']
-        for sdef in definition['samples']:
-            s = Sample(self, sdef['name'])
-            if 'attributes' in sdef:
-                s.attributes = tuple(sdef['attributes'])
-            if 'first_frame' in sdef:
-                s.first_frame = int(sdef['first_frame'])
-            if 'last_frame' in sdef:
-                s.last_frame = int(sdef['last_frame'])
-            if 'actual_frames' in sdef:
-                s.actual_frames = int(sdef['actual_frames'])
-            else:
-                raise DataSetException(
-                    'No total_frames in sample {}/{}'.format(self.name, sdef['name']))
-            self.samples.append(s)
-            self.samples_by_name[s.name] = s
-        self.total_samples = len(self.samples)
-
-    def __repr__(self):
-        return "<DataSet {name}, {total_samples} samples>".format(name=self.name, total_samples=self.total_samples)
 
 
 class Sample(object):
@@ -341,5 +198,5 @@ class Sample(object):
     def get_image(self, img_id):
         return self.images[img_id]
 
-    def get_ground_thruth(self, gt_id):
+    def get_ground_truth(self, gt_id):
         return self.ground_truth[gt_id]

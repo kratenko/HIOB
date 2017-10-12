@@ -3,7 +3,7 @@ Created on 2016-12-14
 
 @author: Peer Springstübe
 """
-from rect import Rect
+from Rect import Rect
 import matplotlib
 
 RUN_DIR = "/data/Peer/FCNT-eval/run3"

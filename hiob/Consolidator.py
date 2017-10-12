@@ -9,13 +9,13 @@ from collections import OrderedDict
 import tensorflow as tf
 import numpy as np
 
-import base
-from netbuilder import BuiltNet
+import HiobModule
+from BuiltNet import BuiltNet
 
 logger = logging.getLogger(__name__)
 
 
-class Consolidator(base.HiobModule):
+class Consolidator(HiobModule.HiobModule):
 
     def consolidate_features(self, state, frame):
         raise NotImplementedError()

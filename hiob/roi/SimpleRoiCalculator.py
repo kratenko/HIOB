@@ -4,16 +4,11 @@ Created on 2016-11-17
 @author: Peer Springstübe
 """
 
+
 import math
 
-from base import HiobModule
-from rect import Rect
-
-
-class RoiCalculator(HiobModule):
-
-    def calculate_roi(self, frame):
-        raise NotImplementedError()
+from Rect import Rect
+from .RoiCalculator import RoiCalculator
 
 
 class SimpleRoiCalculator(RoiCalculator):
@@ -60,22 +55,3 @@ class SimpleRoiCalculator(RoiCalculator):
 
     def setup(self, session):
         pass
-
-
-class SroiGenerator(HiobModule):
-
-    def generate_sroi(self, frame):
-        raise NotImplementedError()
-
-
-class SimpleSroiGenerator(SroiGenerator):
-
-    def configure(self, configuration):
-        self.sroi_size = configuration['sroi_size']
-
-    def setup(self, session):
-        pass
-
-    def generate_sroi(self, frame):
-        frame.sroi_image = frame.capture_image.crop(
-            frame.roi.outer).resize(self.sroi_size)

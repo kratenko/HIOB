@@ -1,23 +1,23 @@
+import datetime
+import errno
 import logging
 import os
-import uuid
-import errno
-import datetime
-import socket
-import shutil
 import random
+import shutil
+import socket
+import uuid
 
 import numpy as np
 import tensorflow as tf
 
-import roi
-import extraction
-import selection
-import consolidation
-import pursuing
-from tracking import Tracking
+import Consolidator
 import evaluation
-from data_set import DataDirectory
+import extraction
+import pursuing
+import roi
+import selection
+from sample_provider import DataDirectory
+from Tracking import Tracking
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ class Tracker(object):
         self.modules.append(self.feature_extractor)
         self.feature_selector = selection.NetSelector()
         self.modules.append(self.feature_selector)
-        self.consolidator = consolidation.SingleNetConsolidator()
+        self.consolidator = Consolidator.SingleNetConsolidator()
         self.modules.append(self.consolidator)
         self.pursuer = pursuing.SwarmPursuer()
         self.modules.append(self.pursuer)

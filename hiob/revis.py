@@ -1,12 +1,15 @@
+import collections
 import logging
-import transitions
-from PIL import ImageTk, ImageDraw, Image, ImageFont
-from data_set import DataDirectory
 import os
 import pickle
-from rect import Rect
-import collections
+
+import transitions
+from PIL import ImageTk, ImageDraw, Image, ImageFont
 from PIL.ImageDraw import Draw
+
+from Rect import Rect
+from sample_provider import DataDirectory
+from .Configurator import Configurator
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)
@@ -18,7 +21,6 @@ transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
-from hiob.configuration import Configurator
 conf = Configurator()
 
 t_path = "/data/Peer/hiob_logs/hiob-execution-wtmpc27-2017-03-29-18.02.55.204522/tracking-0001-tb100-Deer"

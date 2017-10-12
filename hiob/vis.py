@@ -1,8 +1,10 @@
 import logging
+
 import transitions
 from PIL import ImageTk, ImageDraw
-from data_set import DataDirectory
-from rect import Rect
+
+from Rect import Rect
+from sample_provider import DataDirectory
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)
@@ -14,7 +16,7 @@ transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
-from hiob.configuration import Configurator
+from .Configurator import Configurator
 conf = Configurator()
 
 import tkinter as tk

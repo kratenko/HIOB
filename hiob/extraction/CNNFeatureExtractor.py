@@ -1,27 +1,15 @@
-"""
-Created on 2016-11-17
-
-@author: Peer Springstübe
-"""
-
-import logging
+import os
+from collections import OrderedDict
 
 import numpy as np
 import tensorflow as tf
 
-import base
-import vgg16
-import alexnet
-from collections import OrderedDict
-import os
+import AlexNet
+import Vgg16
+import logging
+from extraction.FeatureExtractor import FeatureExtractor
 
 logger = logging.getLogger(__name__)
-
-
-class FeatureExtractor(base.HiobModule):
-
-    def extract_features(self, tracking, frame):
-        raise NotImplementedError()
 
 
 class CnnFeatureExtractor(FeatureExtractor):
@@ -41,14 +29,14 @@ class CnnFeatureExtractor(FeatureExtractor):
         if self.net_name == 'vgg16':
             logger.info("creating pretrained vgg16 net as feature extractor")
             net_path = os.path.join(self.net_dir, 'vgg16.npy')
-            self.net = vgg16.Vgg16(
+            self.net = Vgg16.Vgg16(
                 input_size=self.sroi_size,
                 vgg16_npy_path=net_path,
             )
         elif self.net_name == 'alexnet':
             logger.info("creating pretrained alexnet as feature extractor")
             net_path = os.path.join(self.net_dir, 'alexnet.npy')
-            self.net = alexnet.AlexNet(
+            self.net = AlexNet.AlexNet(
                 input_size=self.sroi_size,
                 alexnet_npy_path=net_path,
             )

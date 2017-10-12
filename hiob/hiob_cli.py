@@ -4,8 +4,8 @@
 import logging
 import transitions
 import argparse
-from configuration import Configurator
-from tracker import Tracker
+from Configurator import Configurator
+from Tracker import Tracker
 
 print("start")
 # Set up logging:
