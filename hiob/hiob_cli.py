@@ -4,6 +4,7 @@
 import logging
 import transitions
 import argparse
+import asyncio
 from Configurator import Configurator
 from Tracker import Tracker
 
@@ -33,8 +34,10 @@ def track(environment_path=None, tracker_path=None):
 
     # create tensorflow session and do the tracking
     logger.info("Initiate tracking process")
+    loop = asyncio.get_event_loop()
     with tracker.setup_session():
-        tracker.execute_everything()
+        loop.run_until_complete(tracker.execute_everything())
+    loop.close()
 
     # return the evaluation results (an OrderedDict)
     return tracker.evaluation

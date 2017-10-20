@@ -174,11 +174,11 @@ class Tracker(object):
         self.setup(tf.Session())
         return self.session
 
-    def start_tracking_sample_by_name(self, set_name, sample_name):
+    async def start_tracking_sample_by_name(self, set_name, sample_name):
         sample = self.data_directory.get_sample(set_name, sample_name)
-        return self.start_tracking_sample(sample)
+        return await self.start_tracking_sample(sample)
 
-    def start_tracking_sample(self, sample):
+    async def start_tracking_sample(self, sample):
         tracking = Tracking(tracker=self)
 
         # setup tracking:
@@ -192,7 +192,7 @@ class Tracker(object):
         # self.session.run(tf.initialize_all_variables())
         self.session.run(tf.global_variables_initializer())
 
-        tracking.load_sample(sample)
+        await tracking.load_sample(sample)
         return tracking
 
     def evaluate_tracking(self, tracking):
@@ -211,19 +211,19 @@ class Tracker(object):
         self.total_overlap_scores = np.append(
             self.total_overlap_scores, overlap_scores)
 
-    def execute_tracking_on_sample(self, sample):
-        tracking = self.start_tracking_sample(sample)
-        tracking.execute_everything()
+    async def execute_tracking_on_sample(self, sample):
+        tracking = await self.start_tracking_sample(sample)
+        await tracking.execute_everything()
         self.evaluate_tracking(tracking)
 
-    def execute_tracking_on_all_samples(self):
+    async def execute_tracking_on_all_samples(self):
         for sample in self.samples:
             sample.load()
-            self.execute_tracking_on_sample(sample)
+            await self.execute_tracking_on_sample(sample)
             sample.unload()
 
-    def execute_everything(self):
-        self.execute_tracking_on_all_samples()
+    async def execute_everything(self):
+        await self.execute_tracking_on_all_samples()
         self.evaluate_tracker()
 
     def evaluate_tracker(self):

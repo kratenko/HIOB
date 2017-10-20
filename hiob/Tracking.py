@@ -17,6 +17,8 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
+loop = asyncio.get_event_loop()
+
 
 class TrackerModuleStates(object):
     """
@@ -142,13 +144,13 @@ class Tracking(object):
         self.module_states = TrackerModuleStates()
 
     # beginning:
-    def load_sample(self, sample):
+    async def load_sample(self, sample):
         self.commence_load_sample()
         # self.sample = hiob.data_set_old.load_sample(
         #    data_set, sample, config=self.tracker.configuration)
         self.sample = sample
         self.total_frames = len(self.sample.images)
-        self._load_initial_frame()
+        await self._load_initial_frame()
         self.capture_size = self.initial_frame.capture_image.size
         # update name:
         self.name = "tracking-%04d-%s-%s" % (self.serial,
@@ -157,9 +159,9 @@ class Tracking(object):
         self.ts_loaded = datetime.now()
         self.complete_load_sample()
 
-    def _load_initial_frame(self):
+    async def _load_initial_frame(self):
         self.current_frame_number = 1
-        self.initial_frame = self._get_next_sample_frame()
+        self.initial_frame = await self._get_next_sample_frame()
         # store initial position as position of previous frame:
         self.initial_frame.previous_position = self.sample.initial_position
         # we know the truth for this frame, use as prediction:
@@ -167,7 +169,7 @@ class Tracking(object):
         # for now, the initial frame is the current frame:
         self.current_frame = self.initial_frame
 
-    def _get_next_sample_frame(self):
+    async def _get_next_sample_frame(self):
         frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
@@ -311,10 +313,10 @@ class Tracking(object):
         }
         self.tracking_log.append(l)
 
-    def tracking_next_frame(self):
+    async def tracking_next_frame(self):
         self.commence_loading_next_frame()
         if self.frames_left():
-            self.load_next_frame()
+            await self.load_next_frame()
             self.complete_loading_next_frame()
         else:
             # out of frames:
@@ -360,8 +362,8 @@ class Tracking(object):
     def tracking_done(self):
         return not self.frames_left()
 
-    def tracking_step(self):
-        self.tracking_next_frame()
+    async def tracking_step(self):
+        await self.tracking_next_frame()
         self.tracking_track_frame()
         self.tracking_evaluate_frame()
         self.update_consolidator()
@@ -373,10 +375,10 @@ class Tracking(object):
         evaluation.do_tracking_evaluation(self)
         self.complete_evaluate_tracking()
 
-    def execute_tracking(self):
+    async def execute_tracking(self):
         self.start_tracking()
         while not self.tracking_done():
-            self.tracking_step()
+            await self.tracking_step()
         self.finish_tracking()
 
     # update consolidator:
@@ -437,10 +439,10 @@ class Tracking(object):
         # same frame number of last update
         self.module_states.consolidator['last_update_frame'] = frame.number
 
-    def execute_everything(self):
+    async def execute_everything(self):
         self.execute_feature_selection()
         self.execute_consolidator_training()
-        self.execute_tracking()
+        await self.execute_tracking()
 
     # frame processing:
 
@@ -543,9 +545,9 @@ class Tracking(object):
 
     # ==
 
-    def load_next_frame(self):
+    async def load_next_frame(self):
         previous_position = self.current_frame.predicted_position
-        frame = self._get_next_sample_frame()
+        frame = await self._get_next_sample_frame()
         frame.previous_position = previous_position
         self.current_frame = frame
 

@@ -5,6 +5,7 @@
 import logging
 import transitions
 import argparse
+import asyncio
 from Configurator import Configurator
 from Tracker import Tracker
 
@@ -31,7 +32,8 @@ def track(environment_path=None, tracker_path=None):
     logging.info("Initiate tracking process")
     session = tracker.setup_session()
 
-    tracker.execute_everything()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(tracker.execute_everything())
 
     session.close()
     return tracker.evaluation

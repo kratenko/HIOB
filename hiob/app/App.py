@@ -1,6 +1,7 @@
 import queue
 import threading
 import tkinter as tk
+import asyncio
 
 from .AppTerminatedException import AppTerminatedException
 from .ImageLabel import ImageLabel
@@ -129,8 +130,9 @@ class App:
         if self.dead:
             raise AppTerminatedException()
 
-    def tracker_one(self, tracker, sample):
-        tracking = tracker.start_tracking_sample(
+    async def tracker_one(self, tracker, sample):
+
+        tracking = await tracker.start_tracking_sample(
             sample)
 
         # feature selection:
@@ -170,7 +172,7 @@ class App:
         tracking.start_tracking()
         while tracking.frames_left():
             self.verify_running()
-            tracking.tracking_step()
+            await tracking.tracking_step()
 #            evs = tracking.get_evaluation_figures()
             sample = tracking.sample
             cf = tracking.current_frame_number
@@ -202,11 +204,13 @@ class App:
     def tracker_fun(self):
         tracker = Tracker(self.conf)
         tracker.setup_environment()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         try:
             with tracker.setup_session():
                 for sample in tracker.samples:
                     sample.load()
-                    tracking = self.tracker_one(tracker, sample)
+                    tracking = loop.run_until_complete(self.tracker_one(tracker, sample))
                     tracker.evaluate_tracking(tracking)
                     sample.unload()
                 tracker.evaluate_tracker()
@@ -214,6 +218,7 @@ class App:
             self.logger.info("App terminated, ending tracker thread early.")
             # tracking.execute_consolidator_training()
             # tracking.execute_tracking()
+        loop.close()
 
         self.logger.info("Leaving tracker thread")
 
