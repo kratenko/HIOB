@@ -1,2 +1,0 @@
-theano>=0.9.0dev2.dev-RELEASE
-lasagne>=0.2.dev1
