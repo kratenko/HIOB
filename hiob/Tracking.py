@@ -96,10 +96,8 @@ class Tracking(object):
 
         self.tracker = tracker
         self.configuration = tracker.configuration
-        self.current_frame_number = 0
         self.initial_frame = None
         self.current_frame = None
-        self.total_frames = None
         self.sample = None
         self.tracking_log = []
 
@@ -161,7 +159,7 @@ class Tracking(object):
 
     def _load_initial_frame(self):
         self.current_frame_number = 1
-        self.initial_frame = self._load_sample_frame(1)
+        self.initial_frame = self._get_next_sample_frame()
         # store initial position as position of previous frame:
         self.initial_frame.previous_position = self.sample.initial_position
         # we know the truth for this frame, use as prediction:
@@ -169,13 +167,11 @@ class Tracking(object):
         # for now, the initial frame is the current frame:
         self.current_frame = self.initial_frame
 
-    def _load_sample_frame(self, number):
-        frame = Frame(tracking=self, number=number)
+    def _get_next_sample_frame(self):
+        frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
-        frame.capture_image = self.sample.get_image(number - 1)
-        if len(self.sample.ground_truth) > 0:
-            frame.ground_truth = self.sample.get_ground_truth(number - 1)
+        frame.capture_image, frame.ground_truth = self.sample.get_next_frame_data()
         frame.complete_capture()
         return frame
 
@@ -549,16 +545,15 @@ class Tracking(object):
 
     def load_next_frame(self):
         previous_position = self.current_frame.predicted_position
-        self.current_frame_number += 1
-        frame = self._load_sample_frame(self.current_frame_number)
+        frame = self._get_next_sample_frame()
         frame.previous_position = previous_position
         self.current_frame = frame
 
     # information:
 
     def frames_left(self):
-        if self.total_frames:
-            return self.total_frames - self.current_frame_number
+        if self.sample.total_frames:
+            return self.sample.total_frames - self.sample.current_frame_id - 1
         else:
             return None
 

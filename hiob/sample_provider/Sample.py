@@ -35,6 +35,7 @@ class Sample(object):
         # data from actual data set sample:
         self.images = []
         self.ground_truth = []
+        self.current_frame_id = -1
 
     def __repr__(self):
         return '<Sample {name}/{set_name}>'.format(name=self.name, set_name=self.set_name)
@@ -184,6 +185,7 @@ class Sample(object):
         else:
             raise DataSetException("Unknown DataSet format:" + self.set.format)
         self.loaded = True
+        self.total_frames = self.actual_frames
 
     def unload(self):
         """
@@ -199,4 +201,13 @@ class Sample(object):
         return self.images[img_id]
 
     def get_ground_truth(self, gt_id):
-        return self.ground_truth[gt_id]
+        if len(self.ground_truth) > gt_id:
+            return self.ground_truth[gt_id]
+        else:
+            return None
+
+    def get_next_frame_data(self):
+        self.current_frame_id += 1
+        return [
+            self.get_image(self.current_frame_id),
+            self.get_ground_truth(self.current_frame_id)]

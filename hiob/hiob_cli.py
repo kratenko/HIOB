@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 print("got logger")
 
+
 def track(environment_path=None, tracker_path=None):
 
     # create Configurator
