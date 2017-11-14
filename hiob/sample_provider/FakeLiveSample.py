@@ -9,14 +9,16 @@ class FakeLiveSample(Sample):
         super().__init__(data_set, name)
         self.fps = fps
         self.start_time = None
+        self.current_frame_id = -1
+        self.frames_processed = 0
 
     def get_next_frame_data(self):
+        self.frames_processed += 1
         if self.current_frame_id == -1:
             self.start_time = datetime.now()
-        time_passed = (datetime.now() - self.start_time)
+        time_passed = datetime.now() - self.start_time
 
-        self.current_frame_id += time_passed.seconds * self.fps
-
+        self.current_frame_id = int(time_passed.total_seconds() * self.fps)
         return [
             self.get_image(self.current_frame_id),
             self.get_ground_truth(self.current_frame_id)]
@@ -34,3 +36,9 @@ class FakeLiveSample(Sample):
             else:
                 return self.ground_truth[-1]
         return None
+
+    def count_frames_processed(self):
+        return self.frames_processed
+
+    def count_frames_skipped(self):
+        return len(self.images) - self.frames_processed

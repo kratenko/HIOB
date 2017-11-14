@@ -100,6 +100,7 @@ class Tracking(object):
         self.configuration = tracker.configuration
         self.initial_frame = None
         self.current_frame = None
+        self.total_frames = 0
         self.sample = None
         self.tracking_log = []
 
@@ -142,6 +143,11 @@ class Tracking(object):
 
         # object holding module_states of tracker modules:
         self.module_states = TrackerModuleStates()
+
+    def get_total_frames(self):
+        if not self.sample:
+            return 0
+        return self.sample.count_frames_processed()
 
     # beginning:
     async def load_sample(self, sample):
@@ -357,6 +363,8 @@ class Tracking(object):
             'consolidation_images': self.get_frame_consolidation_images(frame, decorations=False),
             'roi': frame.roi,
         }
+        print("tracking log:")
+        print(str(l))
         self.tracking_log.append(l)
 
     def tracking_done(self):
@@ -554,10 +562,11 @@ class Tracking(object):
     # information:
 
     def frames_left(self):
-        if self.sample.total_frames:
+        return self.sample.frames_left()
+        """if self.sample.total_frames:
             return self.sample.total_frames - self.sample.current_frame_id - 1
         else:
-            return None
+            return None"""
 
     def __repr__(self):
         if self.sample:

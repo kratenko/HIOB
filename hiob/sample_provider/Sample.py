@@ -119,7 +119,7 @@ class Sample(object):
             dir_path = dir_v
         else:
             raise DataSetException(
-                'Could find princeton sample {} neither in EvaluationSet nor ValidationSet'.format(self.name))
+                'Could find princeton sample {} neither in EvaluationSet nor ValidationSet'.format(self.data_set.path + "/" + self.name))
         # read initial position (position in first frame):
         init_path = os.path.join(dir_path, 'init.txt')
         with open(init_path, "r") as f:
@@ -155,7 +155,7 @@ class Sample(object):
                 "Wrong number for actual_images in sample {}".format(self))
             self.actual_frames = len(images)
         # gt:
-        gt_path = init_path = os.path.join(dir_path, self.name + '.txt')
+        gt_path = os.path.join(dir_path, self.name + '.txt')
         if os.path.isfile(gt_path):
             # gt exists:
             gts = []
@@ -211,3 +211,12 @@ class Sample(object):
         return [
             self.get_image(self.current_frame_id),
             self.get_ground_truth(self.current_frame_id)]
+
+    def frames_left(self):
+        return max(0, len(self.images) - self.current_frame_id - 1)
+
+    def count_frames_processed(self):
+        return self.current_frame_id + 1
+
+    def get_frames_skipped(self):
+        return 0

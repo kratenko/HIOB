@@ -5,6 +5,7 @@ import transitions
 
 from Configurator import Configurator
 from app import App
+from argparser import parser
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)
@@ -15,16 +16,14 @@ logger = logging.getLogger(__name__)
 if __name__ == '__main__':
     # parse arguments:
     logger.info("Parsing command line arguments")
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--environment')
-    parser.add_argument('-t', '--tracker')
+    parser.prog = "hiob_gui"
     args = parser.parse_args()
 
     # create Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=args.environment,
-        tracker_path=args.tracker,
+        tracker_path=args.tracker
     )
 
     # execute app app and run tracking

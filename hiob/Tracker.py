@@ -73,7 +73,7 @@ class Tracker(object):
         self.samples = []
         if 'tracking' in self.configuration:
             self.samples = self.data_directory.evaluate_sample_list(
-                self.configuration['tracking'])
+                self.configuration['tracking'], self.configuration['tracking_conf'])
 
         self.roi_calculator = roi.SimpleRoiCalculator()
         self.modules.append(self.roi_calculator)
@@ -198,7 +198,7 @@ class Tracker(object):
     def evaluate_tracking(self, tracking):
         self.tracking_evaluations.append(tracking.evaluation)
 
-        sample_frames = tracking.total_frames
+        sample_frames = tracking.get_total_frames()
         assert len(tracking.tracking_log) == sample_frames
         center_distances = np.empty(sample_frames)
         overlap_scores = np.empty(sample_frames)

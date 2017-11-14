@@ -86,8 +86,8 @@ class Frame(object):
         self.did_reduction = False
 
     def number_string(self):
-        if self.tracking and self.tracking.total_frames:
-            l = len(str(self.tracking.total_frames))
+        if self.tracking and self.tracking.get_total_frames():
+            l = len(str(self.tracking.get_total_frames()))
             fmt = "%0" + str(l) + "d/" + str(self.tracking.total_frames)
             return fmt % self.number
         else:

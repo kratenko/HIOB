@@ -7,6 +7,7 @@ import argparse
 import asyncio
 from Configurator import Configurator
 from Tracker import Tracker
+from argparser import parser
 
 print("start")
 # Set up logging:
@@ -46,10 +47,7 @@ def track(environment_path=None, tracker_path=None):
 def main():
     # parse arguments:
     logger.info("Parsing command line arguments")
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--environment')
-    parser.add_argument('-t', '--tracker')
-    parser.add_argument('-E', '--evaluation')
+    parser.prog = "hiob_cli"
     args = parser.parse_args()
 
     ev = track(environment_path=args.environment, tracker_path=args.tracker)

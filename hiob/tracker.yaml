@@ -84,6 +84,9 @@ pursuer:
   target_punish_low: 0.0
   target_punish_outside: 0.0
 
+tracking_conf:
+  fake_fps: 10
+
 # = tracking = 
 # which samples shall be tracked? Accepts samples, data sets, and data collections
 # examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
@@ -97,9 +100,9 @@ tracking:
 #  - tb100/Liquor
 #  - tb100/Coke
 #  - tb100/Matrix
-#  - tb100/MotorRolling
+  - tb100/MotorRolling
 #  - tb100/Soccer
-#  - tb100/Freeman3
+  - tb100/Freeman3
   - tb100/Deer
   - tb100/Lemming
 #  - tb100/Tiger2
@@ -110,7 +113,7 @@ tracking:
 #  - COLLECTION/tb100_probe
 #  - COLLECTION/tb100_paper50
 #  - princeton/zcup_move_1
-  - princeton/cup_book
+#  - princeton/cup_book
 #  - princeton/computerBar2
 #  - SET/princeton
 #  - princeton/book_turn

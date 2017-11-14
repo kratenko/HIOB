@@ -7,6 +7,7 @@ Created on 2016-12-08
 import os
 import logging
 from .Sample import Sample
+from .FakeLiveSample import FakeLiveSample
 from .DataSetException import DataSetException
 
 logger = logging.getLogger(__name__)
@@ -23,13 +24,16 @@ class DataSet(object):
         self.format = None
         self.path = os.path.join(data_dir, name)
 
-    def load(self, definition):
+    def load(self, definition, fake_fps):
         if 'description' in definition:
             self.description = definition['description']
         if 'format' in definition:
             self.format = definition['format']
         for sdef in definition['samples']:
-            s = Sample(self, sdef['name'])
+            if fake_fps > 0:
+                s = FakeLiveSample(self, sdef['name'], fake_fps)
+            else:
+                s = Sample(self, sdef['name'])
             if 'attributes' in sdef:
                 s.attributes = tuple(sdef['attributes'])
             if 'first_frame' in sdef:

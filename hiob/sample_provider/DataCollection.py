@@ -29,13 +29,13 @@ class DataCollection(object):
             self.samples_parsed.append(snam.split('/'))
             self.total_samples += 1
 
-    def load_samples(self):
+    def load_samples(self, fake_fps=0):
         if self.loaded:
             return
         for p1, p2 in self.samples_parsed:
             if p1 == 'SET':
                 # this is a full data set
-                ds = self.directory.get_data_set(p2)
+                ds = self.directory.get_data_set(p2, fake_fps)
                 self.samples.extend(ds.samples)
             elif p2 == 'COLLECTION':
                 # this is a collection within a collection - not supported
@@ -44,6 +44,6 @@ class DataCollection(object):
             else:
                 set_name, sample_name = p1, p2
                 self.samples.append(
-                    self.directory.get_sample(set_name, sample_name))
+                    self.directory.get_sample(set_name, sample_name, fake_fps))
         self.loaded = True
 
