@@ -5,9 +5,9 @@ import logging
 
 import transitions
 
-from Configurator import Configurator
-from app import App
-from argparser import parser
+from .Configurator import Configurator
+from .app import App
+from .argparser import parser
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)
