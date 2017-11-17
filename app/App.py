@@ -71,7 +71,7 @@ class App:
         self.lost_figure = ImageLabel(self.figure_frame)
         self.lost_figure.pack(side=tk.RIGHT)
         self.images['lost_figure'] = self.lost_figure
-#
+
         self.confidence_plotter = SGraph(length=100)
         self.confidence_plot = ImageLabel(self.figure_frame)
         self.confidence_plot.pack()

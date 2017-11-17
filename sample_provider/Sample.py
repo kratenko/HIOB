@@ -218,5 +218,5 @@ class Sample(object):
     def count_frames_processed(self):
         return self.current_frame_id + 1
 
-    def get_frames_skipped(self):
+    def count_frames_skipped(self):
         return 0

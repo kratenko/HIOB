@@ -91,6 +91,7 @@ tracking_conf:
 # which samples shall be tracked? Accepts samples, data sets, and data collections
 # examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
 tracking:
+  - ros/nico/vision/videoStream
 #  - tb100/BlurCar1
 #  - tb100/David
 #  - tb100/Panda
@@ -100,11 +101,11 @@ tracking:
 #  - tb100/Liquor
 #  - tb100/Coke
 #  - tb100/Matrix
-  - tb100/MotorRolling
+#  - tb100/MotorRolling
 #  - tb100/Soccer
-  - tb100/Freeman3
-  - tb100/Deer
-  - tb100/Lemming
+#  - tb100/Freeman3
+#  - tb100/Deer
+#  - tb100/Lemming
 #  - tb100/Tiger2
 #  - tb100/Jumping
 #  - tb100/Ironman

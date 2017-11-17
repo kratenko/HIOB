@@ -11,6 +11,7 @@ import yaml
 
 from .DataSet import DataSet
 from .DataCollection import DataCollection
+from .LiveSample import LiveSample
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,9 @@ class DataDirectory(object):
         sample = ds.samples_by_name[sample_name]
         return sample
 
+    def get_ros_sample(self, node_id):
+        return LiveSample(node_id)
+
     def evaluate_sample_list(self, sample_names, tracking_conf):
         fake_fps = 0
         if 'fake_fps' in tracking_conf:
@@ -77,6 +81,9 @@ class DataDirectory(object):
                 samples.extend(dc.samples)
             else:
                 # this is a single sample:
-                set_name, sample_name = p1, p2
-                samples.append(self.get_sample(set_name, sample_name, fake_fps))
+                if p1 == 'ros':
+                    samples.append(self.get_ros_sample(p2))
+                else:
+                    set_name, sample_name = p1, p2
+                    samples.append(self.get_sample(set_name, sample_name, fake_fps))
         return samples

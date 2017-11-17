@@ -8,6 +8,7 @@ import os
 import logging
 from .Sample import Sample
 from .FakeLiveSample import FakeLiveSample
+from .LiveSample import LiveSample
 from .DataSetException import DataSetException
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ class DataSet(object):
         self.path = os.path.join(data_dir, name)
 
     def load(self, definition, fake_fps):
+        if self.name == 'ros':
+            s = LiveSample(self, sdef['name'])
         if 'description' in definition:
             self.description = definition['description']
         if 'format' in definition:

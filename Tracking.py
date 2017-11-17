@@ -180,7 +180,7 @@ class Tracking(object):
         frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
-        frame.capture_image, frame.ground_truth = self.sample.get_next_frame_data()
+        frame.capture_image, frame.ground_truth = await self.sample.get_next_frame_data()
         frame.complete_capture()
         return frame
 
