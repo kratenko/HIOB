@@ -16,6 +16,7 @@ class LiveSample:
         self.node_id = node_id
         self._buffer = []
         self.images = []
+        self.attributes = []
         self.ground_truth = []
         self.current_frame_id = 0
         self.frames_skipped = 0
@@ -90,3 +91,6 @@ class LiveSample:
 
     def count_frames_skipped(self):
         return self.frames_skipped
+
+    def get_actual_frames(self):
+        return len(self.images)

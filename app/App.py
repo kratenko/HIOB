@@ -10,6 +10,8 @@ from .ImageLabel import ImageLabel
 from .SGraph import SGraph
 from hiob.Configurator import Configurator
 from hiob.Tracker import Tracker
+from .TerminatableThread import TerminatableThread
+import rospy
 
 
 class App:
@@ -126,7 +128,8 @@ class App:
         self.queue.put(entry)
 
     def start_tracker(self):
-        self.tracker_thread = threading.Thread(target=self.tracker_fun)
+        self.tracker_thread = TerminatableThread(target=self.tracker_fun)
+        rospy.on_shutdown(self.tracker_thread.stop)
         self.tracker_thread.start()
 
     def verify_running(self):
@@ -146,16 +149,16 @@ class App:
              'capture_image': tracking.get_frame_capture_image(),
              'sample_text': "Sample %s/%s, Attributes: %s" % (
                 sample.set_name, sample.name, ', '.join(sample.attributes)),
-             'video_text': "Frame #%04d/%04d" % (1, sample.actual_frames),
+             'video_text': "Frame #%04d/%04d" % (1, sample.get_actual_frames()),
              })
-        while not tracking.feature_selection_done():
+        while not tracking.feature_selection_done() and not threading.current_thread().terminating:
             self.verify_running()
             tracking.feature_selection_step()
         tracking.finish_feature_selection()
 
         # consolidator training:
         tracking.start_consolidator_training()
-        while not tracking.consolidator_training_done():
+        while not tracking.consolidator_training_done() and not threading.current_thread().terminating:
             self.verify_running()
             tracking.consolidator_training_step()
             self.logger.info("COST: %f", tracking.consolidator_training_cost())
@@ -173,7 +176,7 @@ class App:
 
         # tracking:
         tracking.start_tracking()
-        while tracking.frames_left():
+        while tracking.frames_left() and not threading.current_thread().terminating:
             self.verify_running()
             await tracking.tracking_step()
 #            evs = tracking.get_evaluation_figures()
@@ -190,7 +193,7 @@ class App:
                 'sroi_image': tracking.get_frame_sroi_image(),
                 'sample_text': "Sample %s/%s, Attributes: %s" % (
                     sample.set_name, sample.name, ', '.join(sample.attributes)),
-                'video_text': "Frame #%04d/%04d" % (cf, sample.actual_frames),
+                'video_text': "Frame #%04d/%04d" % (cf, sample.get_actual_frames()),
                 'consolidation_image': tracking.get_frame_consolidation_images()['single'],
                 #                'center_distance_figure': evs['center_distance'],
                 #                'overlap_score_figure': evs['overlap_score'],

@@ -220,3 +220,6 @@ class Sample(object):
 
     def count_frames_skipped(self):
         return 0
+
+    def get_actual_frames(self):
+        return self.actual_frames
