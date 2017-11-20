@@ -8,14 +8,13 @@ from .Configurator import Configurator
 from .Tracker import Tracker
 from .argparser import parser
 
-print("start")
 # Set up logging:
-logging.getLogger().setLevel(logging.INFO)
+#logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
-print("got logger")
 
 def track(environment_path=None, tracker_path=None):
 

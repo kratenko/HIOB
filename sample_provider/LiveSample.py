@@ -3,9 +3,11 @@ from PIL import Image
 import rospy
 import sensor_msgs.msg
 import threading
-#import cv2
-#from cv_bridge import CvBridge
+import tempfile
+import os.path
+import subprocess
 from hiob.Rect import Rect
+import nico_dummy_vision.msg
 
 
 class LiveSample:
@@ -14,15 +16,17 @@ class LiveSample:
         self.node_id = node_id
         self._buffer = []
         self.images = []
+        self.ground_truth = []
         self.current_frame_id = 0
         self.frames_skipped = 0
         self.subscriber = None
         self.loaded = True
         self.full_name = 'ros/' + node_id
         self.ros_event = threading.Event()
-        self.initial_position = Rect(0, 0, 50, 50)
-        self.set_name = 'ros'
+        self.initial_position = None
+        self.set_name = ':ros:'
         self.name = self.node_id
+        self._img_path = os.path.join(tempfile.gettempdir(), 'hiob.received.png')
         #self._bridge = CvBridge()
         rospy.on_shutdown(self.unload)
 
@@ -30,8 +34,7 @@ class LiveSample:
         return '<ROS::{node}>'.format(node=self.node_id)
 
     def load(self):
-        rospy.init_node("hiob_subscriber", anonymous=True)
-        self.subscriber = rospy.Subscriber(self.node_id, sensor_msgs.msg.CompressedImage, self.receive_frame)
+        self.subscriber = rospy.Subscriber(self.node_id, nico_dummy_vision.msg.FrameWithGroundTruth, self.receive_frame)
 
     def unload(self):
         if self.loaded:
@@ -46,12 +49,17 @@ class LiveSample:
         #cv_img = self._bridge.imgmsg_to_cv2(msg)
         #img = Image.open(io.BytesIO(bytearray(msg)))
         #img = Image.fromarray(cv_img)
-        img = Image.open(io.BytesIO(bytearray(msg.data)))
+        img = Image.open(io.BytesIO(bytearray(msg.frame.data)))
         if img.mode != "RGB":
             # convert s/w to colour:
             img = img.convert("RGB")
-        img.show()
-        self._buffer.append(img)
+
+        #img.show()
+        gt = msg.groundTruth
+        if gt:
+            self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
+        else:
+            self._buffer.append((img, None))
         self.ros_event.set()
 
     async def get_next_frame_data(self):
@@ -61,13 +69,18 @@ class LiveSample:
             print("callback fired!")
             self.ros_event.clear()
         else:
+            if not self.loaded:
+                return [None, None]
             self.frames_skipped += len(self._buffer) - 1
-            self.images.append(self._buffer[-1])
+            self.images.append(self._buffer[-1][0])
+            self.ground_truth.append(self._buffer[-1][1])
             self._buffer = []
+        if self.initial_position is None and self.ground_truth[-1] is not None:
+            self.initial_position = self.ground_truth[-1]
 
         return [
             self.images[-1],
-            None]
+            self.ground_truth[-1]]
 
     def frames_left(self):
         return 1 if self.loaded else 0

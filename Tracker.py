@@ -22,8 +22,7 @@ from .sample_provider import DataDirectory
 logger = logging.getLogger(__name__)
 
 
-class Tracker(object):
-
+class Tracker:
     def _find_out_git_revision(self):
         import git
         repo = git.Repo(search_parent_directories=False)
@@ -31,6 +30,7 @@ class Tracker(object):
         self.git_dirty = repo.is_dirty()
 
     def __init__(self, configuration):
+        logger.warning("CREATING NEW TRACKER")
         self.configuration = configuration
 
         # prepare random seeds:
@@ -41,7 +41,7 @@ class Tracker(object):
             logger.info("No random seed given, creating one from random")
             self.py_seed = random.randint(0, 0xffffffff)
         logger.info(
-            "Master Random Seed is %d = 0x%h", self.py_seed, self.py_seed)
+            "Master Random Seed is {0} = 0x{1}".format(self.py_seed, self.py_seed))
         self.py_random = random.Random(self.py_seed)
         self.np_seed = self.py_random.randint(0, 0xffffffff)
         self.np_random = np.random.RandomState(self.np_seed)
@@ -51,7 +51,7 @@ class Tracker(object):
         tf.set_random_seed(self.tf_seed)
 
         # find out exact version:
-        #self._find_out_git_revision()
+        # self._find_out_git_revision()
 
         self.ts_created = datetime.datetime.now()
         self.ts_done = None
@@ -74,6 +74,20 @@ class Tracker(object):
         if 'tracking' in self.configuration:
             self.samples = self.data_directory.evaluate_sample_list(
                 self.configuration['tracking'], self.configuration['tracking_conf'])
+
+        self.configuration.set_override("ros_mode", False)
+        for sample in self.samples:
+            if sample.set_name == ":ros:":
+                print("Found live sample; enabling ros mode.")
+                self.configuration.set_override("ros_mode", True)
+                if len(self.samples) > 1:
+                    print("Only a single Sample can be tracked if a ROS sample was given!"
+                                   "Ignoring all samples except for the first ROS sample.""")
+                    self.samples = [sample]
+                    break
+        print("-----------------------------------------------------------------------------")
+        print("ros mode is {0}.".format("TRUE" if self.configuration["ros_mode"] else "FALSE"))
+        print("-----------------------------------------------------------------------------")
 
         self.roi_calculator = roi.SimpleRoiCalculator()
         self.modules.append(self.roi_calculator)

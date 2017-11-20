@@ -15,6 +15,7 @@ from .Frame import Frame
 from .Rect import Rect
 from .gauss import gen_gauss_mask
 from .graph import figure_to_image
+from .RosPositionPublisher import RosPositionPublisher
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +145,8 @@ class Tracking(object):
 
         # object holding module_states of tracker modules:
         self.module_states = TrackerModuleStates()
+
+        self.publisher = RosPositionPublisher()
 
     def get_total_frames(self):
         if not self.sample:
@@ -339,7 +342,7 @@ class Tracking(object):
         self.reduce_frame_features(frame)
         self.consolidate_frame_features(frame, advance=True)
         # pursue - find the best prediction in frame
-        self.pursue_fame(frame)
+        self.pursue_frame(frame)
 
         # lost? TODO: make it modular and nice!
 #        if frame.prediction_quality <= 0.0:
@@ -368,6 +371,10 @@ class Tracking(object):
         print(str(l))
         self.tracking_log.append(l)
 
+    def tracking_publish_position(self):
+        frame = self.current_frame
+        self.publisher.publish(frame.result)
+
     def tracking_done(self):
         return not self.frames_left()
 
@@ -377,6 +384,8 @@ class Tracking(object):
         self.tracking_evaluate_frame()
         self.update_consolidator()
         self.tracking_log_frame()
+        if self.configuration['ros_mode']:
+            self.tracking_publish_position()
 
     def finish_tracking(self):
         self.commence_evaluate_tracking()
@@ -511,7 +520,7 @@ class Tracking(object):
         if advance:
             frame.complete_consolidation()
 
-    def pursue_fame(self, frame=None):
+    def pursue_frame(self, frame=None):
         if frame is None:
             frame = self.current_frame
         frame.commence_pursuing()

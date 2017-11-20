@@ -86,6 +86,7 @@ pursuer:
 
 tracking_conf:
   fake_fps: 10
+  ros_mode: True
 
 # = tracking = 
 # which samples shall be tracked? Accepts samples, data sets, and data collections
