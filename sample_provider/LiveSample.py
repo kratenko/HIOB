@@ -58,7 +58,10 @@ class LiveSample:
         #img.show()
         gt = msg.groundTruth
         if gt:
-            self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
+            if gt.x == gt.y == gt.w == gt.h == 0:
+                self.unload()
+            else:
+                self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
         else:
             self._buffer.append((img, None))
         self.ros_event.set()
@@ -71,7 +74,7 @@ class LiveSample:
             self.ros_event.clear()
         else:
             if not self.loaded:
-                return [None, None]
+                return [self.images[-1], None]
             self.frames_skipped += len(self._buffer) - 1
             self.images.append(self._buffer[-1][0])
             self.ground_truth.append(self._buffer[-1][1])
