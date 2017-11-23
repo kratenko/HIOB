@@ -51,7 +51,7 @@ class Tracker:
         tf.set_random_seed(self.tf_seed)
 
         # find out exact version:
-        # self._find_out_git_revision()
+        self._find_out_git_revision()
 
         self.ts_created = datetime.datetime.now()
         self.ts_done = None
@@ -77,7 +77,7 @@ class Tracker:
 
         self.configuration.set_override("ros_mode", False)
         for sample in self.samples:
-            if sample.set_name == ":ros:":
+            if sample.set_name == "__ros__":
                 print("Found live sample; enabling ros mode.")
                 self.configuration.set_override("ros_mode", True)
                 if len(self.samples) > 1:

@@ -14,6 +14,9 @@ from .DataSetException import DataSetException
 logger = logging.getLogger(__name__)
 
 
+class InvalidSetNameError(BaseException):
+    pass
+
 class DataSet(object):
 
     def __init__(self, name, data_dir):
@@ -26,8 +29,8 @@ class DataSet(object):
         self.path = os.path.join(data_dir, name)
 
     def load(self, definition, fake_fps):
-        if self.name == 'ros':
-            s = LiveSample(self, sdef['name'])
+        if self.name == '__ros__':
+            raise InvalidSetNameError("'__ros__' is a reserved keyword. It is not allowed for sample names!")
         if 'description' in definition:
             self.description = definition['description']
         if 'format' in definition:

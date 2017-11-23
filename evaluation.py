@@ -104,7 +104,7 @@ def do_tracking_evaluation(tracking):
         tracking.updates_confidence
 
     princeton_filename = os.path.join(
-        tracking_dir, tracking.sample.name + '.txt')
+        tracking_dir, tracking.sample.name.replace("/", "_") + '.txt')
     with open(princeton_filename, 'a') as f:
         f.write("\n".join(princeton_lines))
     csv_filename = os.path.join(tracking_dir, "tracking_log" + '.txt')

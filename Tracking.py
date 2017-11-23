@@ -16,6 +16,7 @@ from .Rect import Rect
 from .gauss import gen_gauss_mask
 from .graph import figure_to_image
 from .RosPositionPublisher import RosPositionPublisher
+import rospy
 
 logger = logging.getLogger(__name__)
 
@@ -390,6 +391,7 @@ class Tracking(object):
     def finish_tracking(self):
         self.commence_evaluate_tracking()
         self.ts_tracking_completed = datetime.now()
+        #rospy.signal_shutdown("Tracking terminated.")
         evaluation.do_tracking_evaluation(self)
         self.complete_evaluate_tracking()
 

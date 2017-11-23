@@ -25,7 +25,7 @@ class LiveSample:
         self.full_name = 'ros/' + node_id
         self.ros_event = threading.Event()
         self.initial_position = None
-        self.set_name = ':ros:'
+        self.set_name = '__ros__'
         self.name = self.node_id
         self._img_path = os.path.join(tempfile.gettempdir(), 'hiob.received.png')
         #self._bridge = CvBridge()
@@ -36,13 +36,14 @@ class LiveSample:
 
     def load(self):
         self.subscriber = rospy.Subscriber(self.node_id, nico_dummy_vision.msg.FrameWithGroundTruth, self.receive_frame)
+        self.images = []
 
     def unload(self):
         if self.loaded:
             self.ros_event.set()
             if self.subscriber:
                 self.subscriber.unregister()
-            self.images = []
+            #self.images = []
             self.loaded = False
 
     def receive_frame(self, msg):
@@ -50,6 +51,8 @@ class LiveSample:
         #cv_img = self._bridge.imgmsg_to_cv2(msg)
         #img = Image.open(io.BytesIO(bytearray(msg)))
         #img = Image.fromarray(cv_img)
+        if msg.lastImage:
+            self.unload()
         img = Image.open(io.BytesIO(bytearray(msg.frame.data)))
         if img.mode != "RGB":
             # convert s/w to colour:
@@ -58,10 +61,7 @@ class LiveSample:
         #img.show()
         gt = msg.groundTruth
         if gt:
-            if gt.x == gt.y == gt.w == gt.h == 0:
-                self.unload()
-            else:
-                self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
+            self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
         else:
             self._buffer.append((img, None))
         self.ros_event.set()
@@ -73,8 +73,8 @@ class LiveSample:
             print("callback fired!")
             self.ros_event.clear()
         else:
-            if not self.loaded:
-                return [self.images[-1], None]
+            #if not self.loaded:
+            #    raise BaseException("not loaded!")
             self.frames_skipped += len(self._buffer) - 1
             self.images.append(self._buffer[-1][0])
             self.ground_truth.append(self._buffer[-1][1])
