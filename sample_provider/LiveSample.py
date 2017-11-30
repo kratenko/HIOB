@@ -61,9 +61,14 @@ class LiveSample:
         #img.show()
         gt = msg.groundTruth
         if gt:
-            self._buffer.append((img, Rect(gt.x, gt.y, gt.w, gt.h)))
+            rect = Rect(gt.x, gt.y, gt.w, gt.h)
+            self._buffer.append((img, rect))
+            if self.initial_position is None:
+                print("Updating initial position... (" + str(rect) + "/" + str(gt) + ")")
+                self.initial_position = rect
         else:
             self._buffer.append((img, None))
+        print("buffer length: " + str(len(self._buffer)))
         self.ros_event.set()
 
     async def get_next_frame_data(self):
@@ -79,8 +84,8 @@ class LiveSample:
             self.images.append(self._buffer[-1][0])
             self.ground_truth.append(self._buffer[-1][1])
             self._buffer = []
-        if self.initial_position is None and self.ground_truth[-1] is not None:
-            self.initial_position = self.ground_truth[-1]
+        # if self.initial_position is None and self.ground_truth[-1] is not None:
+            # self.initial_position = self.ground_truth[-1]
 
         return [
             self.images[-1],

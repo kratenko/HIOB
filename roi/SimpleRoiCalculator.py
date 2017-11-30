@@ -18,6 +18,7 @@ class SimpleRoiCalculator(RoiCalculator):
 
     def calculate_scale(self, position):
         # magic number taken from init_tracker.m, pf_param.roi_scale
+        print("POSITION: " + str(position))
         w = position.width
         h = position.height
         # fcnt only uses initial frame's size for this
