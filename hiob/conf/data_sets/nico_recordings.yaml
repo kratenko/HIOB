@@ -1,0 +1,7 @@
+description: Recordings from the Nico camera
+format: tb100zip
+name: nico_recordings
+samples:
+    - name: tomato
+      attributes: []
+      actual_frames: 505
