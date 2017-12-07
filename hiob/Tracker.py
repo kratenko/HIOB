@@ -71,7 +71,9 @@ class Tracker(object):
 
         #
         self.total_center_distances = np.empty(0)
+        self.total_relative_center_distances = np.empty(0)
         self.total_overlap_scores = np.empty(0)
+        self.total_adjusted_overlap_scores = np.empty(0)
         self.tracking_evaluations = []
 
         # samples to track
@@ -207,15 +209,23 @@ class Tracker(object):
         sample_frames = tracking.get_total_frames()
         assert len(tracking.tracking_log) == sample_frames
         center_distances = np.empty(sample_frames)
+        relative_center_distances = np.empty(sample_frames)
         overlap_scores = np.empty(sample_frames)
+        adjusted_overlap_scores = np.empty(sample_frames)
         for n, l in enumerate(tracking.tracking_log):
             center_distances[n] = l['result']['center_distance']
+            relative_center_distances[n] = l['result']['relative_center_distance']
             overlap_scores[n] = l['result']['overlap_score']
+            adjusted_overlap_scores[n] = l['result']['adjusted_overlap_score']
         # store for total
         self.total_center_distances = np.append(
             self.total_center_distances, center_distances)
+        self.total_relative_center_distances = np.append(
+            self.total_relative_center_distances, relative_center_distances)
         self.total_overlap_scores = np.append(
             self.total_overlap_scores, overlap_scores)
+        self.total_adjusted_overlap_scores = np.append(
+            self.total_adjusted_overlap_scores, adjusted_overlap_scores)
 
     async def execute_tracking_on_sample(self, sample):
         tracking = await self.start_tracking_sample(sample)

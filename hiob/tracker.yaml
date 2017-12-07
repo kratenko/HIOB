@@ -7,7 +7,7 @@ sroi_size: [496, 496]
 mask_size: null
 extractor_net: alexnet
 features:
-#  - [conv4, 256]
+  - [conv4, 256]
   - [conv5, 128]
 #extractor_net: vgg16
 #features:
@@ -51,7 +51,7 @@ consolidator:
   update_max_frames: null
   # update_min_frames: number of frames that must have passed since the last update of consolidator (hard limit). Use null or (0 or 1) for no limit
   update_min_frames: null
-  update_keep_initial_frame: false
+  update_keep_initial_frame: true
   update_initial_factor: 1.0
   update_use_quality: False
   update_current_factor: 1.0
@@ -92,7 +92,12 @@ tracking_conf:
 # examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
 tracking:
 #  - ros/nico/vision/videoStream
+#  - nico_recordings/banana
+#  - nico_recordings/cube
+#  - nico_recordings/grapes
   - nico_recordings/tomato
+#  - nico_recordings/tomato_and_carrot.1
+#  - nico_recordings/tomato_and_carrot.2
 #  - tb100/BlurCar1
 #  - tb100/David
 #  - tb100/Panda

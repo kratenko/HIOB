@@ -545,9 +545,13 @@ class Tracking(object):
             p = frame.predicted_position
             result['overlap_score'] = gt.overlap_score(p)
             result['center_distance'] = gt.center_distance(p)
+            result['relative_center_distance'] = gt.relative_center_distance(p)
+            result['adjusted_overlap_score'] = gt.adjusted_overlap_score(p)
         else:
             result['overlap_score'] = None
             result['center_distance'] = None
+            result['relative_center_distance'] = None
+            result['adjusted_overlap_score'] = None
         frame.result = result
         frame.complete_evaluation()
 
@@ -563,10 +567,6 @@ class Tracking(object):
 
     def frames_left(self):
         return self.sample.frames_left()
-        """if self.sample.total_frames:
-            return self.sample.total_frames - self.sample.current_frame_id - 1
-        else:
-            return None"""
 
     def __repr__(self):
         if self.sample:
