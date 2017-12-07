@@ -171,6 +171,15 @@ class Rect(object):
         other_center = np.array(other.center)
         return np.linalg.norm(self_center - other_center)
 
+    def relative_center_distance(self, other):
+        """
+        Return distance from center to other rect's center relative to own size.
+        :param other: another Rect object
+        :return: relative distance in %
+        """
+        self_size = (self.width + self.height) / 2
+        return self_size / self.center_distance(other)
+
     def pixel_count(self):
         """
         Return number of pixels inside rect.
@@ -204,3 +213,15 @@ class Rect(object):
         inter_size = intersect.pixel_count()
         union_size = self.pixel_count() + other.pixel_count() - inter_size
         return inter_size / union_size
+
+    def adjusted_overlap_score(self, other):
+        """
+        Return overlap score relative to smaller rectangle.
+        :param other: the other Rect object
+        :return: calculated adjusted overlap score
+        """
+        intersect = self.intersect(other)
+        if intersect is None:
+            return 0.0
+        inter_size = intersect.pixel_count()
+        return inter_size / min(self.pixel_count(), other.pixel_count())

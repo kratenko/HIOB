@@ -61,9 +61,17 @@ class App:
         self.center_distance_figure.pack(side=tk.LEFT)
         self.images['center_distance_figure'] = self.center_distance_figure
 
+        self.relative_center_distance_figure = ImageLabel(self.figure_frame)
+        self.relative_center_distance_figure.pack(side=tk.LEFT)
+        self.images['relative_center_distance_figure'] = self.relative_center_distance_figure
+
         self.overlap_score_figure = ImageLabel(self.figure_frame)
         self.overlap_score_figure.pack(side=tk.RIGHT)
         self.images['overlap_score_figure'] = self.overlap_score_figure
+
+        self.adjusted_overlap_score_figure = ImageLabel(self.figure_frame)
+        self.adjusted_overlap_score_figure.pack(side=tk.RIGHT)
+        self.images['adjusted_overlap_score_figure'] = self.adjusted_overlap_score_figure
 
         self.lost_figure = ImageLabel(self.figure_frame)
         self.lost_figure.pack(side=tk.RIGHT)
@@ -89,12 +97,27 @@ class App:
         self.distance_plot.pack(side=tk.LEFT)
         self.images['distance_plot'] = self.distance_plot
 
+        self.relative_distance_plotter = SGraph(
+            min_y=0, max_y=100, length=100, height=100)
+        self.relative_distance_plotter.ylines = [20]
+        self.relative_distance_plot = ImageLabel(
+            self.figure_frame, text="Rel. Distance", compound=tk.BOTTOM,)
+        self.relative_distance_plot.pack(side=tk.LEFT)
+        self.images['relative_distance_plot'] = self.relative_distance_plot
+
         self.overlap_plotter = SGraph(
             min_y=0, max_y=1.0, length=100, height=100)
         self.overlap_plot = ImageLabel(
             self.figure_frame, text="Overlap", compound=tk.BOTTOM,)
         self.overlap_plot.pack(side=tk.LEFT)
         self.images['overlap_plot'] = self.overlap_plot
+
+        self.adjusted_overlap_plotter = SGraph(
+            min_y=0, max_y=1.0, length=100, height=100)
+        self.adjusted_overlap_plot = ImageLabel(
+            self.figure_frame, text="Adjusted Overlap", compound=tk.BOTTOM,)
+        self.adjusted_overlap_plot.pack(side=tk.LEFT)
+        self.images['adjusted_overlap_plot'] = self.adjusted_overlap_plot
 
         self.lost_plotter = SGraph(
             min_y=0.0, max_y=3.0, length=100, height=100)
@@ -143,7 +166,7 @@ class App:
              'capture_image': tracking.get_frame_capture_image(),
              'sample_text': "Sample %s/%s, Attributes: %s" % (
                 sample.set_name, sample.name, ', '.join(sample.attributes)),
-             'video_text': "Frame #%04d/%04d" % (1, sample.actual_frames),
+             'video_text': "Frame #%04d/%04d" % (sample.current_frame_id, sample.actual_frames),
              })
         while not tracking.feature_selection_done():
             self.verify_running()
@@ -180,7 +203,9 @@ class App:
             self.confidence_plotter.append(
                 tracking.current_frame.prediction_quality)
             self.distance_plotter.append(fr['center_distance'])
+            self.relative_distance_plotter.append(fr['relative_center_distance'])
             self.overlap_plotter.append(fr['overlap_score'])
+            self.adjusted_overlap_plotter.append(fr['adjusted_overlap_score'])
             self.lost_plotter.append(fr['lost'])
             entry = {
                 'capture_image': tracking.get_frame_capture_image(),
@@ -193,7 +218,9 @@ class App:
                 #                'overlap_score_figure': evs['overlap_score'],
                 'confidence_plot': self.confidence_plotter.get_image(),
                 'distance_plot': self.distance_plotter.get_image(),
+                'relative_distance_plot': self.relative_distance_plotter.get_image(),
                 'overlap_plot': self.overlap_plotter.get_image(),
+                'adjusted_overlap_plot': self.adjusted_overlap_plotter.get_image(),
                 'lost_plot': self.lost_plotter.get_image(),
             }
             self.feed_queue(entry)

@@ -36,6 +36,8 @@ class Sample(object):
         self.images = []
         self.ground_truth = []
         self.current_frame_id = -1
+        self.initial_position = None
+        self.frame_offset = None
 
     def __repr__(self):
         return '<Sample {name}/{set_name}>'.format(name=self.name, set_name=self.set_name)

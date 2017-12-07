@@ -78,13 +78,15 @@ def do_tracking_evaluation(tracking):
                 pos.left, pos.top, pos.right, pos.bottom)
         princeton_lines.append(line)
         # my own log line:
-        line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(
+        line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(
             n + 1,
             pos.left, pos.top, pos.width, pos.height,
             r['prediction_quality'],
             roi.left, roi.top, roi.width, roi.height,
             r['center_distance'],
+            r['relative_center_distance'],
             r['overlap_score'],
+            r['adjusted_overlap_score'],
             r['lost'],
             r['updated']
         )
@@ -116,7 +118,9 @@ def do_tracking_evaluation(tracking):
 
     # figures:
     cd = np.empty(len(log))
+    rcd = np.empty(len(log))
     ov = np.empty(len(log))
+    aov = np.empty(len(log))
     cf = np.empty(len(log))
     in20 = 0
     for n, l in enumerate(log):
@@ -124,7 +128,9 @@ def do_tracking_evaluation(tracking):
         if (r['center_distance'] is not None) and (r['center_distance'] <= 20):
             in20 += 1
         cd[n] = r['center_distance']
+        rcd[n] = r['relative_center_distance']
         ov[n] = r['overlap_score']
+        aov[n] = r['adjusted_overlap_score']
         cf[n] = r['prediction_quality']
 
     dim = np.arange(1, len(cd) + 1)
@@ -141,20 +147,45 @@ def do_tracking_evaluation(tracking):
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
 
+    # distances:
+    figure_file2 = os.path.join(tracking_dir, 'relative_center_distance.svg')
+    figure_file3 = os.path.join(tracking_dir, 'relative_center_distance.pdf')
+    f = plt.figure()
+    plt.xlabel("frame")
+    plt.ylabel("rel. center distance")
+    plt.axhline(y=1, color='r', linestyle='--')
+    plt.plot(dim, rcd, 'k', dim, rcd, 'bo')
+    plt.xlim(1, len(rcd))
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+
     figure_file2 = os.path.join(tracking_dir, 'overlap_score.svg')
     figure_file3 = os.path.join(tracking_dir, 'overlap_score.pdf')
     f = plt.figure()
     plt.xlabel("frame")
     plt.ylabel("overlap score")
     plt.plot(dim, ov, 'k', dim, ov, 'bo')
-    plt.xlim(1, len(cd))
+    plt.xlim(1, len(ov))
+    plt.ylim(ymin=0.0, ymax=1.0)
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+
+    figure_file2 = os.path.join(tracking_dir, 'adjusted_overlap_score.svg')
+    figure_file3 = os.path.join(tracking_dir, 'adjusted_overlap_score.pdf')
+    f = plt.figure()
+    plt.xlabel("frame")
+    plt.ylabel("overlap score")
+    plt.plot(dim, aov, 'k', dim, aov, 'bo')
+    plt.xlim(1, len(aov))
     plt.ylim(ymin=0.0, ymax=1.0)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
 
     # eval from paper:
     dfun = build_dist_fun(cd)
+    rdfun = build_dist_fun(rcd)
     ofun = build_over_fun(ov)
+    aofun = build_over_fun(aov)
 
     figure_file2 = os.path.join(tracking_dir, 'precision_plot.svg')
     figure_file3 = os.path.join(tracking_dir, 'precision_plot.pdf')
@@ -174,6 +205,24 @@ def do_tracking_evaluation(tracking):
     # saving values:
     evaluation['precision_rating'] = at20
 
+    figure_file2 = os.path.join(tracking_dir, 'relative_precision_plot.svg')
+    figure_file3 = os.path.join(tracking_dir, 'relative_precision_plot.pdf')
+    f = plt.figure()
+    x = np.arange(0., 50.1, .1)
+    y = [rdfun(a) for a in x]
+    at20_1 = rdfun(1)
+    tx = "prec(20) = %0.4f" % at20_1
+    plt.text(5.05, 0.05, tx)
+    plt.xlabel("rel. center distance")
+    plt.ylabel("occurrence")
+    plt.xlim(xmin=0, xmax=50)
+    plt.ylim(ymin=0.0, ymax=1.0)
+    plt.plot(x, y)
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+    # saving values:
+    evaluation['relative_precision_rating'] = at20_1
+
     figure_file2 = os.path.join(tracking_dir, 'success_plot.svg')
     figure_file3 = os.path.join(tracking_dir, 'success_plot.pdf')
     f = plt.figure()
@@ -191,6 +240,24 @@ def do_tracking_evaluation(tracking):
     plt.savefig(figure_file3)
     # saving values:
     evaluation['success_rating'] = auc
+
+    figure_file2 = os.path.join(tracking_dir, 'adjusted_success_plot.svg')
+    figure_file3 = os.path.join(tracking_dir, 'adjusted_success_plot.pdf')
+    f = plt.figure()
+    x = np.arange(0., 1.001, 0.001)
+    y = [aofun(a) for a in x]
+    auc_1 = np.trapz(y, x)
+    tx = "AUC = %0.4f" % auc_1
+    plt.text(0.05, 0.05, tx)
+    plt.xlabel("adjusted overlap score")
+    plt.ylabel("occurrence")
+    plt.xlim(xmin=0.0, xmax=1.0)
+    plt.ylim(ymin=0.0, ymax=1.0)
+    plt.plot(x, y)
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+    # saving values:
+    evaluation['adjusted_success_rating'] = auc
 
     # plot confidence
     figure_file2 = os.path.join(tracking_dir, 'confidence_plot.svg')
@@ -218,7 +285,9 @@ def do_tracker_evaluation(tracker):
     tracking_sum = 0.0
     preparing_sum = 0.0
     precision_sum = 0.0
+    relative_precision_sum = 0.0
     success_sum = 0.0
+    adjusted_success_sum = 0.0
     lost1 = 0
     lost2 = 0
     lost3 = 0
@@ -226,17 +295,19 @@ def do_tracker_evaluation(tracker):
     updates_confidence = 0
     updates_total = 0
     with open(trackings_file, 'w') as f:
-        line = "#n,set_name,sample_name,sample_frames,precision_rating,success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
+        line = "#n,set_name,sample_name,sample_frames,precision_rating,relative_precision_rating,success_rating,adjusted_success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
         f.write(line)
         for n, e in enumerate(tracker.tracking_evaluations):
-            line = "{n},{set_name},{sample_name},{sample_frames},{precision_rating},{success_rating},{loaded},{features_selected},{consolidator_trained},{tracking_completed},{total_seconds},{preparing_seconds},{tracking_seconds},{frame_rate},{lost1},{lost2},{lost3},{updates_max_frames},{updates_confidence},{updates_total}\n".format(
+            line = "{n},{set_name},{sample_name},{sample_frames},{precision_rating},{relative_precision_rating},{success_rating},{adjusted_success_rating},{loaded},{features_selected},{consolidator_trained},{tracking_completed},{total_seconds},{preparing_seconds},{tracking_seconds},{frame_rate},{lost1},{lost2},{lost3},{updates_max_frames},{updates_confidence},{updates_total}\n".format(
                 n=n + 1,
                 **e)
             f.write(line)
             preparing_sum += e['preparing_seconds']
             tracking_sum += e['tracking_seconds']
             precision_sum += e['precision_rating']
+            relative_precision_sum += e['relative_precision_rating']
             success_sum += e['success_rating']
+            adjusted_success_sum += e['adjusted_success_rating']
             lost1 += e['lost1']
             lost2 += e['lost2']
             lost3 += e['lost3']
@@ -246,11 +317,13 @@ def do_tracker_evaluation(tracker):
 
     # eval from paper:
     dfun = build_dist_fun(tracker.total_center_distances)
+    rdfun = build_dist_fun(tracker.total_relative_center_distances)
     ofun = build_over_fun(tracker.total_overlap_scores)
+    aofun = build_over_fun(tracker.total_adjusted_overlap_scores)
 
     figure_file2 = os.path.join(execution_dir, 'precision_plot.svg')
     figure_file3 = os.path.join(execution_dir, 'precision_plot.pdf')
-    f = plt.figure()
+    plt.figure()
     x = np.arange(0., 50.1, .1)
     y = [dfun(a) for a in x]
     at20 = dfun(20)
@@ -264,13 +337,45 @@ def do_tracker_evaluation(tracker):
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
 
+    figure_file2 = os.path.join(execution_dir, 'relative_precision_plot.svg')
+    figure_file3 = os.path.join(execution_dir, 'relative_precision_plot.pdf')
+    plt.figure()
+    x = np.arange(0., 50.1, .1)
+    y = [rdfun(a) for a in x]
+    at1 = rdfun(1)
+    tx = "prec(20) = %0.4f" % at1
+    plt.text(5.05, 0.05, tx)
+    plt.xlabel("rel. center distance")
+    plt.ylabel("occurrence")
+    plt.xlim(xmin=0, xmax=50)
+    plt.ylim(ymin=0.0, ymax=1.0)
+    plt.plot(x, y)
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+
     figure_file2 = os.path.join(execution_dir, 'success_plot.svg')
     figure_file3 = os.path.join(execution_dir, 'success_plot.pdf')
-    f = plt.figure()
+    plt.figure()
     x = np.arange(0., 1.001, 0.001)
     y = [ofun(a) for a in x]
     auc = np.trapz(y, x)
     tx = "AUC = %0.4f" % auc
+    plt.text(0.05, 0.05, tx)
+    plt.xlabel("overlap score")
+    plt.ylabel("occurrence")
+    plt.xlim(xmin=0.0, xmax=1.0)
+    plt.ylim(ymin=0.0, ymax=1.0)
+    plt.plot(x, y)
+    plt.savefig(figure_file2)
+    plt.savefig(figure_file3)
+
+    figure_file2 = os.path.join(execution_dir, 'adjusted_success_plot.svg')
+    figure_file3 = os.path.join(execution_dir, 'adjusted_success_plot.pdf')
+    plt.figure()
+    x = np.arange(0., 1.001, 0.001)
+    y = [aofun(a) for a in x]
+    auc_1 = np.trapz(y, x)
+    tx = "AUC = %0.4f" % auc_1
     plt.text(0.05, 0.05, tx)
     plt.xlabel("overlap score")
     plt.ylabel("occurrence")
@@ -306,8 +411,11 @@ def do_tracker_evaluation(tracker):
     ev['average_success_rating'] = asr
     ev['average_score'] = (apr + asr) / 2.0
     ev['total_precision_rating'] = at20
+    ev['total_relative_precision_rating'] = at1
     ev['total_success_rating'] = auc
+    ev['total_adjusted_success_rating'] = auc_1
     ev['total_score'] = (at20 + auc) / 2.0
+    ev['total_adjusted_score'] = (at1 + auc_1) / 2.0
     ev['probe_score'] = (apr + asr + at20 + auc) / 4.0
     ev['lost1'] = lost1
     ev['lost2'] = lost2
