@@ -15,6 +15,7 @@ from Rect import Rect
 from concurrent import futures
 from functools import partial
 import time
+import multiprocessing
 
 
 import logging
@@ -30,7 +31,8 @@ class SwarmPursuer(Pursuer):
 
     def __init__(self):
         self.dtype = tf.float32
-        self.thread_executor = futures.ThreadPoolExecutor(max_workers=8)
+        workers = multiprocessing.cpu_count()
+        self.thread_executor = futures.ThreadPoolExecutor(max_workers=workers)
 
     def configure(self, configuration):
         self.configuration = configuration
