@@ -13,8 +13,8 @@ from .util import loc2xgeo, xgeo2loc
 from .Pursuer import Pursuer
 from Rect import Rect
 from concurrent import futures
-import itertools
 from functools import partial
+import time
 
 
 import logging
@@ -22,8 +22,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def position_quality_helper(img_mask, roi, total_max, location):
-    return SwarmPursuer.position_quality(img_mask, Rect(location), roi) / total_max
+def position_quality_helper(img_mask, roi, total_max, mask_sum, location):
+    return SwarmPursuer.position_quality(img_mask, Rect(location), roi, mask_sum) / total_max
 
 
 class SwarmPursuer(Pursuer):
@@ -107,7 +107,7 @@ class SwarmPursuer(Pursuer):
         return img_mask
 
     @staticmethod
-    def position_quality(image_mask, pos, roi):
+    def position_quality(image_mask, pos, roi, image_mask_sum):
         #logger.info("QUALI: %s, %s", image_mask.shape, pos)
         # too small?
         if pos.width < 8 or pos.height < 8:
@@ -115,57 +115,33 @@ class SwarmPursuer(Pursuer):
         # outside roi?
         if pos.left < roi.left or pos.top < roi.top or pos.right > roi.right or pos.bottom > roi.bottom:
             return -1e12
+        #p1 = time.time()
         inner = (image_mask[
             int(pos.top):int(pos.bottom - 1),
             int(pos.left):int(pos.right - 1)]).sum()
+        #p2 = time.time()
         inner_fill = inner / pos.pixel_count()
         # return inner_fill * inner_part
-        outer = (image_mask).sum() - inner
+        #p3 = time.time()
+        outer = image_mask_sum - inner
+        #p4 = time.time()
         outer_fill = outer / max(roi.pixel_count() - pos.pixel_count(), 1)
+        #p5 = time.time()
+
+        """total = p5 - p1
+        t1 = p2 - p1
+        t2 = p3 - p2
+        t3 = p4 - p3
+        t4 = p5 - p4
+
+        print("image_mask dim: {}".format(str(image_mask.shape)))
+        print("inner dim: {}".format(str(image_mask[
+                                         int(pos.top):int(pos.bottom - 1),
+                                         int(pos.left):int(pos.right - 1)].shape)))
+        print("part1: {} ({}%); part2: {} ({}%); part3: {} ({}%); part4: {} ({}%)".format(t1, t1 / total, t2,
+                                                                                          t2 / total, t3, t3 / total,
+                                                                                          t4, t4 / total))"""
         return max(inner_fill - outer_fill, 0.0)
-
-    def get_perfect_precition_quality(self, image_size, position, roi):
-        return 1
-        img_pix = image_size[0] * image_size[1]
-        roi_pix = roi.pixel_count()
-        pos_pix = position.pixel_count()
-        inner = 1.0 * pos_pix
-        outer = (img_pix - roi_pix) * self.target_punish_outside + \
-            (roi_pix - pos_pix) * self.target_punish_low
-        # print(img_pix, roi_pix, pos_pix, inner, outer, inner - outer)
-#        exit()
-        return 0.7 * (inner - outer)
-        #
-        img_mask = np.full(image_size, self.target_punish_outside)
-        rl, rt, rb, rr = roi.outer
-        img_mask[rt:rb, rl:rr] = self.target_punish_low
-        tl, tt, tb, tr = position.outer
-        img_mask[tt:tb, tl:tr] = 1.0
-        print(image_size, roi.outer, position.outer)
-        plt.imshow(img_mask, cmap='hot', interpolation='nearest')
-        plt.show()
-        exit()
-        return self.position_quality(img_mask.T, position, roi)
-        # scale prediction mask up to size of roi (not of sroi!):
-        relation = roi.width / self.mask_size[0], \
-            roi.height / self.mask_size[1]
-        mask = gen_gauss_mask(self.mask_size, position).T
-
-        roi_mask = scipy.ndimage.zoom(mask.reshape(self.mask_size), relation)
-        # crop low values
-        roi_mask[roi_mask < self.target_lower_limit] = self.target_punish_low
-        # put mask in capture image mask:
-        img_mask = np.full(image_size, self.target_punish_outside)
-        img_mask[int(roi.top): int(roi.bottom),
-                 int(roi.left): int(roi.right)] = roi_mask
-        return img_mask
-        # generate "perfect" image mask:
-        perfect_mask = gen_gauss_mask(image_size, position).T
-        #plt.imshow(perfect_mask.T, cmap='hot', interpolation='nearest')
-        # plt.show()
-        #im = PIL.Image.fromarray(perfect_mask.T, "1")
-        # im.show()
-        return self.position_quality(perfect_mask, position, roi)
 
     def pursue(self, state, frame, lost=0):
         logger.info("Predicting position for frame %s, Lost: %d", frame, lost)
@@ -187,8 +163,10 @@ class SwarmPursuer(Pursuer):
         #total = np.sum(img_mask)
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
+
+        img_mask_sum = img_mask.sum()
         total_max = 1
-        func = partial(position_quality_helper, img_mask, frame.roi, total_max)
+        func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
         quals = list(self.thread_executor.map(func, locs))
         #quals = []
         # for n, l in enumerate(locs):
@@ -200,10 +178,7 @@ class SwarmPursuer(Pursuer):
         frame.predicted_position = Rect(locs[best_arg])
         # quality of prediction needs to be absolute, so we normalise it with
         # the "perfect" value this prediction would have:
-        perfect_quality = self.get_perfect_precition_quality(
-            frame.capture_image.size,
-            frame.predicted_position,
-            frame.roi)
+        perfect_quality = 1
         #print(quals[best_arg], perfect_quality)
         frame.prediction_quality = max(
             0.0, min(1.0, quals[best_arg] / perfect_quality))
