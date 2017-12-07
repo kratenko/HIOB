@@ -12,6 +12,9 @@ from gauss import gen_gauss_mask
 from .util import loc2xgeo, xgeo2loc
 from .Pursuer import Pursuer
 from Rect import Rect
+from concurrent import futures
+import itertools
+from functools import partial
 
 
 import logging
@@ -19,10 +22,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def position_quality_helper(img_mask, roi, total_max, location):
+    return SwarmPursuer.position_quality(img_mask, Rect(location), roi) / total_max
+
+
 class SwarmPursuer(Pursuer):
 
     def __init__(self):
         self.dtype = tf.float32
+        self.thread_executor = futures.ThreadPoolExecutor(max_workers=8)
 
     def configure(self, configuration):
         self.configuration = configuration
@@ -98,7 +106,8 @@ class SwarmPursuer(Pursuer):
                  int(roi.left): int(roi.right)] = roi_mask
         return img_mask
 
-    def position_quality(self, image_mask, pos, roi):
+    @staticmethod
+    def position_quality(image_mask, pos, roi):
         #logger.info("QUALI: %s, %s", image_mask.shape, pos)
         # too small?
         if pos.width < 8 or pos.height < 8:
@@ -110,24 +119,10 @@ class SwarmPursuer(Pursuer):
             int(pos.top):int(pos.bottom - 1),
             int(pos.left):int(pos.right - 1)]).sum()
         inner_fill = inner / pos.pixel_count()
-        # return inner_fill
-        inner_part = inner / image_mask.sum()
         # return inner_fill * inner_part
         outer = (image_mask).sum() - inner
         outer_fill = outer / max(roi.pixel_count() - pos.pixel_count(), 1)
         return max(inner_fill - outer_fill, 0.0)
-        ret = inner_fill * (inner - outer)
-        if ret < -1e10:
-            ret = -1e10
-        return ret
-
-        dur = (roi.pixel_count() - pos.pixel_count()) * \
-            (-1 * self.target_punish_low) + pos.pixel_count()
-        return (inner - outer) / dur
-        #print("XY", inner, outer)
-        inner_fill = inner / pos.pixel_count()
-        outer_fill = outer / (roi.pixel_count() - pos.pixel_count())
-        return inner_fill - outer_fill
 
     def get_perfect_precition_quality(self, image_size, position, roi):
         return 1
@@ -193,8 +188,8 @@ class SwarmPursuer(Pursuer):
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
         total_max = 1
-        quals = [self.position_quality(
-            img_mask, Rect(l), frame.roi) / total_max for l in locs]
+        func = partial(position_quality_helper, img_mask, frame.roi, total_max)
+        quals = list(self.thread_executor.map(func, locs))
         #quals = []
         # for n, l in enumerate(locs):
         #    r = Rect(l)
