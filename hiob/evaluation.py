@@ -202,6 +202,7 @@ def do_tracking_evaluation(tracking):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
     # saving values:
     evaluation['precision_rating'] = at20
 
@@ -220,6 +221,7 @@ def do_tracking_evaluation(tracking):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
     # saving values:
     evaluation['relative_precision_rating'] = at20_1
 
@@ -238,6 +240,7 @@ def do_tracking_evaluation(tracking):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
     # saving values:
     evaluation['success_rating'] = auc
 
@@ -256,6 +259,7 @@ def do_tracking_evaluation(tracking):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
     # saving values:
     evaluation['adjusted_success_rating'] = auc
 
@@ -271,6 +275,7 @@ def do_tracking_evaluation(tracking):
     plt.ylim(ymin=0.0, ymax=1.0)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
 
     tracking.evaluation = evaluation
     evaluation_file = os.path.join(tracking_dir, 'evaluation.txt')
@@ -336,6 +341,7 @@ def do_tracker_evaluation(tracker):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
 
     figure_file2 = os.path.join(execution_dir, 'relative_precision_plot.svg')
     figure_file3 = os.path.join(execution_dir, 'relative_precision_plot.pdf')
@@ -352,6 +358,7 @@ def do_tracker_evaluation(tracker):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
 
     figure_file2 = os.path.join(execution_dir, 'success_plot.svg')
     figure_file3 = os.path.join(execution_dir, 'success_plot.pdf')
@@ -368,6 +375,7 @@ def do_tracker_evaluation(tracker):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
 
     figure_file2 = os.path.join(execution_dir, 'adjusted_success_plot.svg')
     figure_file3 = os.path.join(execution_dir, 'adjusted_success_plot.pdf')
@@ -384,6 +392,7 @@ def do_tracker_evaluation(tracker):
     plt.plot(x, y)
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
+    plt.close()
 
     ev = OrderedDict()
     ev['execution_name'] = tracker.execution_name

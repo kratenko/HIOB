@@ -76,11 +76,6 @@ class App:
         self.lost_figure = ImageLabel(self.figure_frame)
         self.lost_figure.pack(side=tk.RIGHT)
         self.images['lost_figure'] = self.lost_figure
-#
-        self.confidence_plotter = SGraph(length=100)
-        self.confidence_plot = ImageLabel(self.figure_frame)
-        self.confidence_plot.pack()
-        self.images['confidence_plot'] = self.confidence_plot
 
         self.confidence_plotter = SGraph(
             min_y=0, max_y=1.0, length=100, height=100)
@@ -98,8 +93,8 @@ class App:
         self.images['distance_plot'] = self.distance_plot
 
         self.relative_distance_plotter = SGraph(
-            min_y=0, max_y=100, length=100, height=100)
-        self.relative_distance_plotter.ylines = [20]
+            min_y=0, max_y=10.0, length=100, height=100)
+        #self.relative_distance_plotter.ylines = [20]
         self.relative_distance_plot = ImageLabel(
             self.figure_frame, text="Rel. Distance", compound=tk.BOTTOM,)
         self.relative_distance_plot.pack(side=tk.LEFT)

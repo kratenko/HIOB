@@ -178,7 +178,7 @@ class Rect(object):
         :return: relative distance in %
         """
         self_size = (self.width + self.height) / 2
-        return self_size / self.center_distance(other)
+        return self.center_distance(other) / max(1, self_size)
 
     def pixel_count(self):
         """
