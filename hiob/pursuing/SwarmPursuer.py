@@ -22,9 +22,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-def position_quality_helper(img_mask, roi, total_max, mask_sum, location):
-    return SwarmPursuer.position_quality(img_mask, Rect(location), roi, mask_sum) / total_max
+avgs = []
 
 
 class SwarmPursuer(Pursuer):
@@ -33,6 +31,7 @@ class SwarmPursuer(Pursuer):
         self.dtype = tf.float32
         workers = multiprocessing.cpu_count()
         self.thread_executor = futures.ThreadPoolExecutor(max_workers=workers)
+        #self.thread_executor = futures.ProcessPoolExecutor(max_workers=workers)
 
     def configure(self, configuration):
         self.configuration = configuration
@@ -109,43 +108,41 @@ class SwarmPursuer(Pursuer):
         return img_mask
 
     @staticmethod
-    def position_quality(image_mask, pos, roi, image_mask_sum):
+    def position_quality(pos, roi, image_mask_sum, inner_sum):
         #logger.info("QUALI: %s, %s", image_mask.shape, pos)
         # too small?
+        # p1 = time.time()
         if pos.width < 8 or pos.height < 8:
             return -1e12
         # outside roi?
         if pos.left < roi.left or pos.top < roi.top or pos.right > roi.right or pos.bottom > roi.bottom:
             return -1e12
-        #p1 = time.time()
-        inner = (image_mask[
-            int(pos.top):int(pos.bottom - 1),
-            int(pos.left):int(pos.right - 1)]).sum()
-        #p2 = time.time()
-        inner_fill = inner / pos.pixel_count()
-        # return inner_fill * inner_part
-        #p3 = time.time()
-        outer = image_mask_sum - inner
-        #p4 = time.time()
-        outer_fill = outer / max(roi.pixel_count() - pos.pixel_count(), 1)
-        #p5 = time.time()
+        # p2 = time.time()
+        """inner = img_mask[
+                int(pos.top):int(pos.bottom - 1),
+                int(pos.left):int(pos.right - 1)].sum()"""
+        inner = inner_sum
 
-        """total = p5 - p1
+        # p3 = time.time()
+        inner_fill = inner / pos.pixel_count()
+        outer = image_mask_sum - inner
+
+        outer_fill = outer / max(roi.pixel_count() - pos.pixel_count(), 1)
+        # p4 = time.time()
+        # p5 = time.time()
+
+        """total = p4 - p1
         t1 = p2 - p1
         t2 = p3 - p2
         t3 = p4 - p3
-        t4 = p5 - p4
+        # t4 = p5 - p4
 
-        print("image_mask dim: {}".format(str(image_mask.shape)))
-        print("inner dim: {}".format(str(image_mask[
-                                         int(pos.top):int(pos.bottom - 1),
-                                         int(pos.left):int(pos.right - 1)].shape)))
-        print("part1: {} ({}%); part2: {} ({}%); part3: {} ({}%); part4: {} ({}%)".format(t1, t1 / total, t2,
-                                                                                          t2 / total, t3, t3 / total,
-                                                                                          t4, t4 / total))"""
+        print("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2});".format(t1, t1 / total, t2,
+                                                                                         t2 / total, t3, t3 / total))"""
         return max(inner_fill - outer_fill, 0.0)
 
     def pursue(self, state, frame, lost=0):
+        # p1 = time.time()
         logger.info("Predicting position for frame %s, Lost: %d", frame, lost)
         # TODO: not here...
         self.mask_size = self.configuration['mask_size']
@@ -166,16 +163,26 @@ class SwarmPursuer(Pursuer):
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
 
+        # p2 = time.time()
         img_mask_sum = img_mask.sum()
+        # p3 = time.time()
         total_max = 1
-        func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
-        quals = list(self.thread_executor.map(func, locs))
-        #quals = []
-        # for n, l in enumerate(locs):
-        #    r = Rect(l)
-        #    q = self.position_quality(img_mask, r)
-        #    logger.info("%d, %r: %f", n, r, q)
-        #    quals.append(q)
+        """func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
+        p4 = time.time()
+        quals = list(self.thread_executor.map(func, locs))"""
+
+        rects = [Rect(loc) for loc in locs]
+
+        sums = list(self.thread_executor.map(np.sum, [img_mask[
+                int(pos.top):int(pos.bottom - 1),
+                int(pos.left):int(pos.right - 1)] for pos in rects]))
+        # p4 = time.time()
+
+        quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum) / total_max
+                 for pos, inner_sum in zip(rects, sums)]
+
+        # p5 = time.time()
+
         best_arg = np.argmax(quals)
         frame.predicted_position = Rect(locs[best_arg])
         # quality of prediction needs to be absolute, so we normalise it with
@@ -186,4 +193,19 @@ class SwarmPursuer(Pursuer):
             0.0, min(1.0, quals[best_arg] / perfect_quality))
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
+        # p6 = time.time()
+
+        """total = p6 - p1
+        t1 = p2 - p1
+        t2 = p3 - p2
+        t3 = p4 - p3
+        t4 = p5 - p4
+        t5 = p6 - p5
+        avgs.append(total)
+
+        print(("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2}); part4: {:.2} ({:.2}); "
+               "part5: {:.2} ({:.2}); total: {:.4}; avg: {:.4}").format(t1, t1 / total, t2, t2 / total,
+                                                                        t3, t3 / total, t4, t4 / total,
+                                                                        t5, t5 / total, total, sum(avgs) / len(avgs)))"""
+
         return frame.predicted_position
