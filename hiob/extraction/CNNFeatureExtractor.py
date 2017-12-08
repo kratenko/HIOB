@@ -14,6 +14,19 @@ logger = logging.getLogger(__name__)
 
 class CnnFeatureExtractor(FeatureExtractor):
 
+    def __init__(self):
+        self.requested_features = OrderedDict()
+        self.configuration = None
+        self.sroi_size = None
+        self.input_shape = None
+        self.net_dir = None
+        self.net_name = None
+        self.requested_feature_names = None
+        self.output_size = None
+        self.session = None
+        self.output_features = None
+        self.net = None
+
     def configure(self, configuration):
         self.configuration = configuration
         self.sroi_size = configuration['sroi_size']
@@ -44,7 +57,6 @@ class CnnFeatureExtractor(FeatureExtractor):
             raise ValueError(
                 "Can only use vgg16 and alexnet, yet, not %s" % self.net_name)
 
-        self.requested_features = OrderedDict()
         for n in self.requested_feature_names:
             self.requested_features[n] = self.net.features[n]
 

@@ -7,18 +7,22 @@ class FakeLiveSample(Sample):
 
     def __init__(self, data_set, name, fps):
         super().__init__(data_set, name)
-        self.fps = fps
+        self.fps = float(fps)
         self.start_time = None
         self.current_frame_id = -1
         self.frames_processed = 0
+        self.timer_started = -1
 
     def get_next_frame_data(self):
         self.frames_processed += 1
-        if self.current_frame_id == -1:
+        if self.timer_started < 1:
             self.start_time = datetime.now()
+            print("FakeLiveSample::init")
+            self.timer_started += 1
         time_passed = datetime.now() - self.start_time
 
         self.current_frame_id = int(time_passed.total_seconds() * self.fps)
+        print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         return [
             self.get_image(self.current_frame_id),
             self.get_ground_truth(self.current_frame_id)]
