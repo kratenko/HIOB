@@ -69,7 +69,7 @@ class SwarmPursuer(Pursuer):
         f = np.tile([10, 10, 0, 0], (num_particles, 1)).T
         rn = np.multiply(r, f)
 
-        geos += rn
+        # geos += rn
         #
         if False:
             geos[2, geos[2, :] < 0.05] = 0.05
