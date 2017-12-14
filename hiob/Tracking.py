@@ -137,6 +137,9 @@ class Tracking(object):
         self.ts_consolidator_trained = None
         self.ts_tracking_completed = None
 
+        self.pursuing_total_seconds = 0.0
+        self.feature_extraction_total_seconds = 0.0
+
         # updates
         self.updates_max_frames = 0
         self.updates_confidence = 0
@@ -334,11 +337,15 @@ class Tracking(object):
         # process frame:
         self.calculate_frame_roi(frame)
         self.generate_frame_sroi(frame)
+        ts_fe_started = datetime.now()
         self.extract_frame_features(frame)
+        self.feature_extraction_total_seconds += (datetime.now() - ts_fe_started).total_seconds()
         self.reduce_frame_features(frame)
         self.consolidate_frame_features(frame, advance=True)
         # pursue - find the best prediction in frame
+        ts_pursuing_started = datetime.now()
         self.pursue_fame(frame)
+        self.pursuing_total_seconds += (datetime.now() - ts_pursuing_started).total_seconds()
 
         # lost? TODO: make it modular and nice!
 #        if frame.prediction_quality <= 0.0:

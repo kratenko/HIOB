@@ -50,6 +50,8 @@ def do_tracking_evaluation(tracking):
     evaluation['sample_frames'] = tracking.total_frames
     evaluation['frame_rate'] = tracking.total_frames / \
         evaluation['total_seconds']
+    evaluation['pursuing_frame_rate'] = tracking.total_frames / tracking.pursuing_total_seconds
+    evaluation['feature_extraction_frame_rate'] = tracking.total_frames / tracking.feature_extraction_total_seconds
 
     tracking_dir = os.path.join(tracker.execution_dir, tracking.name)
     try:
@@ -288,6 +290,8 @@ def do_tracker_evaluation(tracker):
     execution_dir = tracker.execution_dir
     trackings_file = os.path.join(execution_dir, 'trackings.txt')
     tracking_sum = 0.0
+    pursuing_sum = 0.0
+    feature_extraction_sum = 0.0
     preparing_sum = 0.0
     precision_sum = 0.0
     relative_precision_sum = 0.0
@@ -300,15 +304,17 @@ def do_tracker_evaluation(tracker):
     updates_confidence = 0
     updates_total = 0
     with open(trackings_file, 'w') as f:
-        line = "#n,set_name,sample_name,sample_frames,precision_rating,relative_precision_rating,success_rating,adjusted_success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
+        line = "#n,set_name,sample_name,sample_frames,precision_rating,relative_precision_rating,success_rating,adjusted_success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,pusuing_frame_rate,feature_extraction_frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
         f.write(line)
         for n, e in enumerate(tracker.tracking_evaluations):
-            line = "{n},{set_name},{sample_name},{sample_frames},{precision_rating},{relative_precision_rating},{success_rating},{adjusted_success_rating},{loaded},{features_selected},{consolidator_trained},{tracking_completed},{total_seconds},{preparing_seconds},{tracking_seconds},{frame_rate},{lost1},{lost2},{lost3},{updates_max_frames},{updates_confidence},{updates_total}\n".format(
+            line = "{n},{set_name},{sample_name},{sample_frames},{precision_rating},{relative_precision_rating},{success_rating},{adjusted_success_rating},{loaded},{features_selected},{consolidator_trained},{tracking_completed},{total_seconds},{preparing_seconds},{tracking_seconds},{frame_rate},{pursuing_frame_rate},{feature_extraction_frame_rate},{lost1},{lost2},{lost3},{updates_max_frames},{updates_confidence},{updates_total}\n".format(
                 n=n + 1,
                 **e)
             f.write(line)
             preparing_sum += e['preparing_seconds']
             tracking_sum += e['tracking_seconds']
+            pursuing_sum += e['pursuing_frame_rate']
+            feature_extraction_sum += e['feature_extraction_frame_rate']
             precision_sum += e['precision_rating']
             relative_precision_sum += e['relative_precision_rating']
             success_sum += e['success_rating']
@@ -319,6 +325,8 @@ def do_tracker_evaluation(tracker):
             updates_max_frames += e['updates_max_frames']
             updates_confidence += e['updates_confidence']
             updates_total += e['updates_total']
+        feature_extraction_frame_rate = feature_extraction_sum / len(tracker.tracking_evaluations)
+        pursuing__frame_rate = pursuing_sum / len(tracker.tracking_evaluations)
 
     # eval from paper:
     dfun = build_dist_fun(tracker.total_center_distances)
@@ -409,11 +417,14 @@ def do_tracker_evaluation(tracker):
     ev['total_frames'] = len(tracker.total_center_distances)
     ev['total_seconds'] = (
         tracker.ts_done - tracker.ts_created).total_seconds()
+    ev['tracking_seconds'] = tracking_sum
     ev['average_seconds_per_sample'] = ev[
         'total_seconds'] / ev['total_samples']
     ev['frame_rate'] = ev['total_frames'] / ev['total_seconds']
+    ev['tracking_frame_rate'] = ev['total_frames'] / ev['tracking_seconds']
+    ev['pursuing_frame_rate'] = pursuing__frame_rate
+    ev['feature_extraction_frame_rate'] = feature_extraction_frame_rate
     ev['preparing_seconds'] = preparing_sum
-    ev['tracking_seconds'] = tracking_sum
     apr = precision_sum / ev['total_samples']
     ev['average_precision_rating'] = apr
     asr = success_sum / ev['total_samples']
