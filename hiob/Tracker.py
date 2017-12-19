@@ -58,10 +58,10 @@ class Tracker(object):
         self.ts_done = None
 
         self.log_dir = configuration['log_dir']
-        self.data_dir = re.sub(r"[/\\]", re.escape(os.path.sep), configuration['data_dir'])
+        self.data_dir = re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), configuration['data_dir'])
         print(configuration["data_dir"], "->", self.data_dir)
         tracking_tmp = configuration["tracking"][0]
-        self.configuration.set_override("tracking", [re.sub(r"[/\\]", re.escape(os.path.sep), name)
+        self.configuration.set_override("tracking", [re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), name)
                                                      for name in self.configuration["tracking"]])
         print(tracking_tmp, "->", configuration["tracking"][0])
         self.sroi_size = configuration['sroi_size']
