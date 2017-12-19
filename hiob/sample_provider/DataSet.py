@@ -6,12 +6,14 @@ Created on 2016-12-08
 
 import os
 import logging
+import re
 from .Sample import Sample
 from .FakeLiveSample import FakeLiveSample
 from .DataSetException import DataSetException
 
 logger = logging.getLogger(__name__)
 
+path_sep_pattern = re.compile('/')
 
 class DataSet(object):
 
@@ -23,6 +25,7 @@ class DataSet(object):
         self.total_samples = 0
         self.format = None
         self.path = os.path.join(data_dir, name)
+        print(self.path)
 
     def load(self, definition, fake_fps):
         if 'description' in definition:

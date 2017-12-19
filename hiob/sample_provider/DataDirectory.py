@@ -6,6 +6,7 @@ Created on 2016-12-08
 
 import os
 import logging
+import re
 
 import yaml
 
@@ -63,7 +64,7 @@ class DataDirectory(object):
             fake_fps = tracking_conf['fake_fps']
         samples = []
         for sname in sample_names:
-            p1, p2 = sname.split('/', 1)
+            p1, p2 = sname.split(os.path.sep, 1)
             if p1 == 'SET':
                 # this is a full sample set:
                 set_name = p2

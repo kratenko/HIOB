@@ -49,7 +49,6 @@ class Sample(object):
             gt_name = name + '/groundtruth_rect.{}.txt'.format(number)
         else:
             name = self.name
-            number = None
             gt_name = name + '/groundtruth_rect.txt'
 
         path = os.path.join(self.data_set.path, name + '.zip')
