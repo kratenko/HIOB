@@ -202,13 +202,14 @@ class App:
             self.overlap_plotter.append(fr['overlap_score'])
             self.adjusted_overlap_plotter.append(fr['adjusted_overlap_score'])
             self.lost_plotter.append(fr['lost'])
+            consolidation_image = tracking.get_frame_consolidation_images()['single']
             entry = {
                 'capture_image': tracking.get_frame_capture_image(),
                 'sroi_image': tracking.get_frame_sroi_image(),
                 'sample_text': "Sample %s/%s, Attributes: %s" % (
                     sample.set_name, sample.name, ', '.join(sample.attributes)),
                 'video_text': "Frame #%04d/%04d" % (cf, sample.actual_frames),
-                'consolidation_image': tracking.get_frame_consolidation_images()['single'],
+                'consolidation_image': consolidation_image.resize((128, 128)),
                 #                'center_distance_figure': evs['center_distance'],
                 #                'overlap_score_figure': evs['overlap_score'],
                 'confidence_plot': self.confidence_plotter.get_image(),

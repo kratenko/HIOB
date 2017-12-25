@@ -54,6 +54,7 @@ class SingleNetConsolidator(Consolidator):
     def setup(self, session):
         self.session = session
 
+
     def setup_tracking(self, state, output_features):
         # calculate input shape:
         mask_size = self.configuration['mask_size']

@@ -11,17 +11,20 @@ class FakeLiveSample(Sample):
         self.start_time = None
         self.current_frame_id = -1
         self.frames_processed = 0
-        self.timer_started = -1
+        self.prestream_count = 100
 
     def get_next_frame_data(self):
-        self.frames_processed += 1
-        if self.timer_started < 1:
+        if self.start_time is None:
             self.start_time = datetime.now()
             print("FakeLiveSample::init")
-            self.timer_started += 1
+        self.frames_processed += 1
         time_passed = datetime.now() - self.start_time
 
-        self.current_frame_id = int(time_passed.total_seconds() * self.fps)
+        curr_frame = time_passed.total_seconds() * self.fps
+        if self.prestream_count > curr_frame:
+            self.current_frame_id = 0
+        else:
+            self.current_frame_id = int(curr_frame) - self.prestream_count
         print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         return [
             self.get_image(self.current_frame_id),

@@ -349,7 +349,7 @@ class Tracking(object):
 
         # lost? TODO: make it modular and nice!
 #        if frame.prediction_quality <= 0.0:
-#            logger.info("Lost object!")
+#            logger.info("LOST OBJECT!!!")
 #            hiob.detector.detect(self, frame)
 #            exit()
 
