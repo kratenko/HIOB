@@ -2,11 +2,15 @@ import queue
 import threading
 import tkinter as tk
 import asyncio
+import logging
+import argparse
 
 from .AppTerminatedException import AppTerminatedException
 from .ImageLabel import ImageLabel
 from .SGraph import SGraph
-from Tracker import Tracker
+from hiob.Configurator import Configurator
+from hiob.Tracker import Tracker
+from .TerminatableThread import TerminatableThread
 
 
 class App:
@@ -77,6 +81,11 @@ class App:
         self.lost_figure.pack(side=tk.RIGHT)
         self.images['lost_figure'] = self.lost_figure
 
+        self.confidence_plotter = SGraph(length=100)
+        self.confidence_plot = ImageLabel(self.figure_frame)
+        self.confidence_plot.pack()
+        self.images['confidence_plot'] = self.confidence_plot
+
         self.confidence_plotter = SGraph(
             min_y=0, max_y=1.0, length=100, height=100)
         self.confidence_plot = ImageLabel(
@@ -141,7 +150,7 @@ class App:
         self.queue.put(entry)
 
     def start_tracker(self):
-        self.tracker_thread = threading.Thread(target=self.tracker_fun)
+        self.tracker_thread = TerminatableThread(target=self.tracker_fun)
         self.tracker_thread.start()
 
     def verify_running(self):
@@ -149,7 +158,6 @@ class App:
             raise AppTerminatedException()
 
     async def tracker_one(self, tracker, sample):
-
         tracking = await tracker.start_tracking_sample(
             sample)
 
@@ -161,16 +169,16 @@ class App:
              'capture_image': tracking.get_frame_capture_image(),
              'sample_text': "Sample %s/%s, Attributes: %s" % (
                 sample.set_name, sample.name, ', '.join(sample.attributes)),
-             'video_text': "Frame #%04d/%04d" % (sample.current_frame_id, sample.actual_frames),
+             'video_text': "Frame #%04d/%04d" % (sample.current_frame_id, sample.get_actual_frames()),
              })
-        while not tracking.feature_selection_done():
+        while not tracking.feature_selection_done() and not threading.current_thread().terminating:
             self.verify_running()
             tracking.feature_selection_step()
         tracking.finish_feature_selection()
 
         # consolidator training:
         tracking.start_consolidator_training()
-        while not tracking.consolidator_training_done():
+        while not tracking.consolidator_training_done() and not threading.current_thread().terminating:
             self.verify_running()
             tracking.consolidator_training_step()
             self.logger.info("COST: %f", tracking.consolidator_training_cost())
@@ -188,7 +196,7 @@ class App:
 
         # tracking:
         tracking.start_tracking()
-        while tracking.frames_left():
+        while tracking.frames_left() and not threading.current_thread().terminating:
             self.verify_running()
             await tracking.tracking_step()
 #            evs = tracking.get_evaluation_figures()
@@ -208,7 +216,7 @@ class App:
                 'sroi_image': tracking.get_frame_sroi_image(),
                 'sample_text': "Sample %s/%s, Attributes: %s" % (
                     sample.set_name, sample.name, ', '.join(sample.attributes)),
-                'video_text': "Frame #%04d/%04d" % (cf, sample.actual_frames),
+                'video_text': "Frame #%04d/%04d" % (cf, sample.get_actual_frames()),
                 'consolidation_image': consolidation_image.resize((128, 128)),
                 #                'center_distance_figure': evs['center_distance'],
                 #                'overlap_score_figure': evs['overlap_score'],
@@ -226,6 +234,9 @@ class App:
 
     def tracker_fun(self):
         tracker = Tracker(self.conf)
+        if self.conf['ros_mode']:
+            import rospy
+            rospy.on_shutdown(self.tracker_thread.stop)
         tracker.setup_environment()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -246,7 +257,32 @@ class App:
         self.logger.info("Leaving tracker thread")
 
     def run(self):
+        print("run")
         self.root.mainloop()
+        print("mainloop done")
         self.dead = True
         if self.tracker_thread:
             self.tracker_thread.join()
+        print("tracker_thread joined")
+
+
+if __name__ == '__main__':
+    # parse arguments:
+    logger = logging.getLogger(__name__)
+    logger.info("Parsing command line arguments")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-e', '--environment')
+    parser.add_argument('-t', '--tracker')
+    args = parser.parse_args()
+
+    # create Configurator
+    logger.info("Creating configurator object")
+    conf = Configurator(
+        environment_path=args.environment,
+        tracker_path=args.tracker,
+    )
+
+    # execute gui app and run tracking
+    logger.info("Initiate tracking process in gui app")
+    app = App(conf)
+    app.run()

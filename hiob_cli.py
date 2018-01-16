@@ -5,18 +5,17 @@ import logging
 import transitions
 import argparse
 import asyncio
-from Configurator import Configurator
-from Tracker import Tracker
-from argparser import parser
+from .Configurator import Configurator
+from .Tracker import Tracker
+from .argparser import parser
 
-print("start")
 # Set up logging:
-logging.getLogger().setLevel(logging.INFO)
+#logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
-print("got logger")
 
 
 def track(environment_path=None, tracker_path=None):
@@ -27,6 +26,7 @@ def track(environment_path=None, tracker_path=None):
         environment_path=environment_path,
         tracker_path=tracker_path,
     )
+
 
     # create the tracker instance
     logger.info("Creating tracker object")

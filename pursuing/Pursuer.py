@@ -3,7 +3,7 @@ Created on 2016-11-29
 
 @author: Peer Springstübe
 """
-import HiobModule
+from hiob import HiobModule
 
 
 class Pursuer(HiobModule.HiobModule):

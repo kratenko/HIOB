@@ -1,19 +1,21 @@
+import asyncio
 import logging
 from collections import OrderedDict
-
-import transitions
-import matplotlib.cm
-from PIL import Image, ImageDraw
-import matplotlib.pyplot as plt
 from datetime import datetime
 
-from Frame import Frame
-from Rect import Rect
-from gauss import gen_gauss_mask
-from graph import figure_to_image
+import matplotlib.cm
+import matplotlib.pyplot as plt
+
 import numpy as np
-import evaluation
-import asyncio
+import transitions
+from PIL import Image, ImageDraw
+
+from .Frame import Frame
+from .Rect import Rect
+from .gauss import gen_gauss_mask
+from .graph import figure_to_image
+from . import evaluation
+
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +91,7 @@ class Tracking(object):
             'evaluating_tracking', 'tracking_evaluated'],
     ]
 
-    def __init__(self, tracker):
+    def __init__(self, tracker, rosmode=False):
         Tracking._LAST_SERIAL += 1
         self.serial = Tracking._LAST_SERIAL
         logger.info("Creating new Tracking#%d", self.serial)
@@ -147,6 +149,10 @@ class Tracking(object):
         # object holding module_states of tracker modules:
         self.module_states = TrackerModuleStates()
 
+        if rosmode:
+            from .RosPositionPublisher import RosPositionPublisher
+            self.publisher = RosPositionPublisher()
+
     def get_total_frames(self):
         if not self.sample:
             return 0
@@ -182,7 +188,7 @@ class Tracking(object):
         frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
-        frame.capture_image, frame.ground_truth = self.sample.get_next_frame_data()
+        frame.capture_image, frame.ground_truth = await self.sample.get_next_frame_data()
         frame.complete_capture()
         return frame
 
@@ -344,7 +350,7 @@ class Tracking(object):
         self.consolidate_frame_features(frame, advance=True)
         # pursue - find the best prediction in frame
         ts_pursuing_started = datetime.now()
-        self.pursue_fame(frame)
+        self.pursue_frame(frame)
         self.pursuing_total_seconds += (datetime.now() - ts_pursuing_started).total_seconds()
 
         # lost? TODO: make it modular and nice!
@@ -374,6 +380,11 @@ class Tracking(object):
         print(str(l))
         self.tracking_log.append(l)
 
+    def tracking_publish_position(self):
+        frame = self.current_frame
+        if self.publisher is not None:
+            self.publisher.publish(frame.result)
+
     def tracking_done(self):
         return not self.frames_left()
 
@@ -383,10 +394,13 @@ class Tracking(object):
         self.tracking_evaluate_frame()
         self.update_consolidator()
         self.tracking_log_frame()
+        if self.configuration['ros_mode']:
+            self.tracking_publish_position()
 
     def finish_tracking(self):
         self.commence_evaluate_tracking()
         self.ts_tracking_completed = datetime.now()
+        #rospy.signal_shutdown("Tracking terminated.")
         evaluation.do_tracking_evaluation(self)
         self.complete_evaluate_tracking()
 
@@ -517,7 +531,7 @@ class Tracking(object):
         if advance:
             frame.complete_consolidation()
 
-    def pursue_fame(self, frame=None):
+    def pursue_frame(self, frame=None):
         if frame is None:
             frame = self.current_frame
         frame.commence_pursuing()

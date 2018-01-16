@@ -12,7 +12,7 @@ import io
 
 from PIL import Image
 
-from Rect import Rect
+from ..Rect import Rect
 
 from .DataSetException import DataSetException
 
@@ -207,7 +207,7 @@ class Sample(object):
         else:
             return None
 
-    def get_next_frame_data(self):
+    async def get_next_frame_data(self):
         self.current_frame_id += 1
         return [
             self.get_image(self.current_frame_id),
@@ -219,5 +219,8 @@ class Sample(object):
     def count_frames_processed(self):
         return self.current_frame_id + 1
 
-    def get_frames_skipped(self):
+    def count_frames_skipped(self):
         return 0
+
+    def get_actual_frames(self):
+        return self.actual_frames

@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 path_sep_pattern = re.compile('/')
 
+class InvalidSetNameError(BaseException):
+    pass
+
 class DataSet(object):
 
     def __init__(self, name, data_dir):
@@ -28,6 +31,8 @@ class DataSet(object):
         print(self.path)
 
     def load(self, definition, fake_fps):
+        if self.name == '__ros__':
+            raise InvalidSetNameError("'__ros__' is a reserved keyword. It is not allowed for sample names!")
         if 'description' in definition:
             self.description = definition['description']
         if 'format' in definition:

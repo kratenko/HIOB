@@ -5,7 +5,7 @@ Created on 2016-11-17
 """
 
 
-from HiobModule import HiobModule
+from ..HiobModule import HiobModule
 
 
 class RoiCalculator(HiobModule):

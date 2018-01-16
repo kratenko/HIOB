@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 import logging
 
-from BuiltNet import BuiltNet
+from ..BuiltNet import BuiltNet
 from .FeatureSelector import FeatureSelector
 
 logger = logging.getLogger(__name__)

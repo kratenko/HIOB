@@ -1,13 +1,13 @@
+import logging
 import os
 from collections import OrderedDict
 
 import numpy as np
 import tensorflow as tf
 
-import AlexNet
-import Vgg16
-import logging
-from extraction.FeatureExtractor import FeatureExtractor
+from .. import AlexNet
+from .. import Vgg16
+from .FeatureExtractor import FeatureExtractor
 
 logger = logging.getLogger(__name__)
 

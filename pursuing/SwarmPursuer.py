@@ -8,21 +8,18 @@ import scipy.ndimage
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-from gauss import gen_gauss_mask
 from .util import loc2xgeo, xgeo2loc
 from .Pursuer import Pursuer
-from Rect import Rect
+from ..Rect import Rect
 from concurrent import futures
-from functools import partial
 import time
 import multiprocessing
 
+avgs = []
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-avgs = []
 
 
 class SwarmPursuer(Pursuer):
@@ -193,19 +190,4 @@ class SwarmPursuer(Pursuer):
             0.0, min(1.0, quals[best_arg] / perfect_quality))
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
-        # p6 = time.time()
-
-        """total = p6 - p1
-        t1 = p2 - p1
-        t2 = p3 - p2
-        t3 = p4 - p3
-        t4 = p5 - p4
-        t5 = p6 - p5
-        avgs.append(total)
-
-        print(("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2}); part4: {:.2} ({:.2}); "
-               "part5: {:.2} ({:.2}); total: {:.4}; avg: {:.4}").format(t1, t1 / total, t2, t2 / total,
-                                                                        t3, t3 / total, t4, t4 / total,
-                                                                        t5, t5 / total, total, sum(avgs) / len(avgs)))"""
-
         return frame.predicted_position

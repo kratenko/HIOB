@@ -6,11 +6,11 @@ Created on 2016-11-29
 import logging
 from collections import OrderedDict
 
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 
-import HiobModule
-from BuiltNet import BuiltNet
+from . import HiobModule
+from .BuiltNet import BuiltNet
 
 logger = logging.getLogger(__name__)
 

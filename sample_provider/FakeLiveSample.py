@@ -13,7 +13,7 @@ class FakeLiveSample(Sample):
         self.frames_processed = 0
         self.prestream_count = 100
 
-    def get_next_frame_data(self):
+    async def get_next_frame_data(self):
         if self.start_time is None:
             self.start_time = datetime.now()
             print("FakeLiveSample::init")

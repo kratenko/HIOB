@@ -4,7 +4,7 @@ Created on 2016-11-17
 @author: Peer Springstübe
 """
 
-import HiobModule
+from hiob import HiobModule
 
 
 

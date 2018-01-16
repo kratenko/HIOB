@@ -1,7 +1,7 @@
-import HiobModule
+from ..HiobModule import HiobModule
 
 
-class FeatureSelector(HiobModule.HiobModule):
+class FeatureSelector(HiobModule):
 
     def reduce_features(self, tracking, frame):
         raise NotImplementedError()

@@ -4,10 +4,9 @@ Created on 2016-11-17
 @author: Peer Springstübe
 """
 
-
 import math
 
-from Rect import Rect
+from ..Rect import Rect
 from .RoiCalculator import RoiCalculator
 
 
@@ -19,6 +18,7 @@ class SimpleRoiCalculator(RoiCalculator):
 
     def calculate_scale(self, position):
         # magic number taken from init_tracker.m, pf_param.roi_scale
+        print("POSITION: " + str(position))
         w = position.width
         h = position.height
         # fcnt only uses initial frame's size for this

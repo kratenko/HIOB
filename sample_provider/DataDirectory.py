@@ -4,11 +4,10 @@ Created on 2016-12-08
 @author: Peer Springstübe
 """
 
-import os
-import logging
 import re
-
 import yaml
+import logging
+import os.path
 
 from .DataSet import DataSet
 from .DataCollection import DataCollection
@@ -58,6 +57,13 @@ class DataDirectory(object):
         sample = ds.samples_by_name[sample_name]
         return sample
 
+    def get_ros_sample(self, node_id):
+        try:
+            from .LiveSample import LiveSample
+            return LiveSample(node_id)
+        except:
+            raise Exception("rospy could not by loaded!")
+
     def evaluate_sample_list(self, sample_names, tracking_conf):
         fake_fps = 0
         if 'fake_fps' in tracking_conf:
@@ -78,6 +84,9 @@ class DataDirectory(object):
                 samples.extend(dc.samples)
             else:
                 # this is a single sample:
-                set_name, sample_name = p1, p2
-                samples.append(self.get_sample(set_name, sample_name, fake_fps))
+                if p1 == 'ros':
+                    samples.append(self.get_ros_sample(p2))
+                else:
+                    set_name, sample_name = p1, p2
+                    samples.append(self.get_sample(set_name, sample_name, fake_fps))
         return samples
