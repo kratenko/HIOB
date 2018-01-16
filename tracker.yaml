@@ -6,13 +6,13 @@
 #lsroi_size: [496, 496]
 sroi_size: [256, 256]
 mask_size: null
-extractor_net: alexnet
-features:
-  - [conv4, 256]
-  - [conv5, 128]
-#extractor_net: vgg16
+#extractor_net: alexnet
 #features:
-#  - [conv4_3, 384]
+#  - [conv4, 256]
+#  - [conv5, 128]
+extractor_net: vgg16
+features:
+  - [conv4_3, 384]
 #  - [conv5_3, 384]
 #  - [conv4_3, 60]
 #  - [conv5_3, 120]
