@@ -1,4 +1,6 @@
 __pycache__/
+hiob_logs/
+data/
 *.pyc
 argparse
 asyncio

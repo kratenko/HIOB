@@ -1,15 +1,14 @@
-#/data/3knoeppl/bsc_thesis/venvs/hiob_new/bin/python
-
 import logging
 
 import transitions
 import sys, os
 
-sys.path.append( os.path.join( os.path.dirname(__file__), os.path.pardir ) )
+sys.path.append( os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__))
 
-from hiob.Configurator import Configurator
-from hiob.app import App
-from hiob.argparser import parser
+from .core.Configurator import Configurator
+from .core.app import App
+from .core.argparser import parser
 
 # Set up logging
 logging.getLogger().setLevel(logging.INFO)

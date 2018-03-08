@@ -1,17 +1,20 @@
-#!/data/3knoeppl/bsc_thesis/venvs/hiob_new/bin/python
 # export MPLBACKEND="agg"
-# PYTHONPATH=.. python hy1.py
 import logging
 import transitions
-import argparse
 import asyncio
-from .Configurator import Configurator
-from .Tracker import Tracker
-from .argparser import parser
+import os, sys
+
+
+sys.path.append( os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__))
+
+from .core.Configurator import Configurator
+from .core.Tracker import Tracker
+from .core.argparser import parser
 
 # Set up logging:
-#logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
+#logging.getLogger().setLevel(logging.DEBUG)
 transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)

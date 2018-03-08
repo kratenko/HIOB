@@ -1,2 +1,0 @@
-from .CNNFeatureExtractor import CnnFeatureExtractor
-from .FeatureExtractor import FeatureExtractor

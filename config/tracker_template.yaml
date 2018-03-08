@@ -1,0 +1,107 @@
+# tracker.yaml
+# defines how the tracker is set up and what samples will be tracked
+# Can be fed to program via command line argument --tracker [path]
+
+sroi_size: [368, 368]
+#sroi_size: [496, 496]
+mask_size: null
+extractor_net: vgg16
+features:
+  - [conv4_3, 150]
+  - [conv5_3, 300]
+  #- [pool3, 64]
+random_seed: null
+selector:
+  max_iterations: 50
+  min_cost: 0.01
+  net:
+    name: selector_net
+    cost: mean_square
+    optimizer: [adam, {learning_rate: 0.000001}]
+    layers:
+      - type: dropout
+        name: dropout
+        keep_prob: 0.7
+      - type: conv
+        name: conv1
+        #weight_initial: [truncated_normal, {stddev: 0.1}]
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: zeros 
+        kernel_size: 3
+        channels: 1
+      
+consolidator:
+  max_iterations: ${cons_max_iterations}
+  min_cost: ${cons_min_cost}
+  sigma_train: 0.6
+  sigma_update: 0.6
+  update_threshold: 0.2
+  update_initial_factor: 1.0
+  update_use_quality: True
+  update_current_factor: 1.0
+  net:
+    name: consolidator_net
+    cost: mean_square
+    optimizer: [adam, {learning_rate: ${cons_learning_rate}}]
+    layers:
+      - type: conv
+        name: conv1
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: 0.1
+        kernel_size: ${cons_conv1_kernel_size}
+        channels: ${cons_conv1_channels}
+      - type: conv
+        name: conv2
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: 0
+        kernel_size: ${cons_conv2_kernel_size}
+        channels: 1
+
+pursuer:
+  particle_count: 800
+  target_lower_limit: 0.1
+  target_punish_low: -0.1
+  target_punish_outside: 0.0
+
+# = tracking = 
+# which samples shall be tracked? Accepts samples, data sets, and data collections
+# examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
+tracking:
+#  - tb100/Basketball
+  - tb100/Deer
+#  - tb100/Liquor
+  - tb100/MotorRolling
+  - tb100/Suv
+#  - tb100/Freeman3
+#  - COLLECTION/tb100_probe
+
+xtracking:
+#  - tb100/SHORT
+#  - tb100/SHORT
+#  - tb100/SHORT
+  - tb100/Basketball
+  - tb100/Biker
+  - tb100/Bird1
+  - tb100/Bird2
+  - tb100/BlurBody
+  - tb100/BlurCar1
+  - tb100/BlurCar2
+  - tb100/BlurCar3
+  - tb100/BlurCar4
+  - tb100/BlurFace
+  - tb100/BlurOwl
+  - tb100/Board
+  - tb100/Bolt
+  - tb100/Bolt2
+  - tb100/Box
+  - SET/tb100
+  - tb50_paper
+  - tb100/Boy
+  - tb100/Car1
+  - tb100/Car2
+  - tb100/Car4
+  - tb100/Car24
+  - tb100/Dancer
+  - tb100/MotorRolling
+  - tb100/Deer
+  

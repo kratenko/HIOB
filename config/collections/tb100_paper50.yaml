@@ -1,0 +1,56 @@
+description: >
+  The 50 sequences originaly introduced in the paper
+  'Online Object Tracking: A Benchmark' by Wu et al. 2013
+  in the order they are listed in the paper.
+samples:
+  - tb100/Ironman
+  - tb100/Matrix
+  - tb100/MotorRolling
+  - tb100/Soccer
+  - tb100/Skiing
+  - tb100/Freeman4
+  - tb100/Freeman1
+  - tb100/Skating1
+  - tb100/Tiger2
+  - tb100/Liquor
+  - tb100/Coke
+  - tb100/Football
+  - tb100/FleetFace
+  - tb100/Couple
+  - tb100/Tiger1
+  - tb100/Woman
+  - tb100/Bolt
+  - tb100/Freeman3
+  - tb100/Basketball
+  - tb100/Lemming
+  - tb100/Singer2
+  - tb100/Subway
+  - tb100/CarScale
+  - tb100/David3
+  - tb100/Shaking
+  - tb100/Sylvester
+  - tb100/Girl
+  - tb100/Jumping
+  - tb100/Trellis
+  - tb100/David
+  - tb100/Boy
+  - tb100/Deer
+  - tb100/FaceOcc2
+  - tb100/Dudek
+  - tb100/Football1
+  - tb100/Suv
+  - tb100/Jogging.1
+  - tb100/Jogging.2
+  - tb100/MountainBike
+  - tb100/Crossing
+  - tb100/Singer1
+  - tb100/Dog1
+  - tb100/Walking
+  - tb100/Walking2
+  - tb100/Doll
+  - tb100/Car4
+  - tb100/David2
+  - tb100/CarDark
+  - tb100/Mhyang
+  - tb100/FaceOcc1
+  - tb100/Fish

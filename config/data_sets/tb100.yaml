@@ -1,0 +1,316 @@
+description: >
+  Visual Tracker Benchmark as introduced by Wu et al. in
+  'Online Object Tracking: A Benchmark' 2013 updated version
+  that has been extended to 100 samples.
+  
+  Tacken from http://www.vidual-tracking.net/ in Oct 2016
+format: tb100zip
+samples:
+    - name: Basketball
+      attributes: [BC, DEF, IV, OCC, OPR]
+      actual_frames: 725
+    - name: Biker
+      attributes: [FM, LR, MB, OCC, OPR, OV, SV]
+      actual_frames: 142
+    - name: Bird1
+      attributes: [DEF, FM, OV]
+      actual_frames: 408
+    - name: Bird2
+      attributes: [DEF, FM, IPR, OCC, OPR]
+      actual_frames: 99
+    - name: BlurBody
+      attributes: [DEF, FM, IPR, MB, SV]
+      actual_frames: 334
+    - name: BlurCar1
+      attributes: [FM, MB]
+      actual_frames: 742
+    - name: BlurCar2
+      attributes: [FM, MB, SV]
+      actual_frames: 585
+    - name: BlurCar3
+      attributes: [FM, MB]
+      actual_frames: 357
+    - name: BlurCar4
+      attributes: [FM, MB]
+      actual_frames: 380
+    - name: BlurFace
+      attributes: [FM, IPR, MB]
+      actual_frames: 493
+    - name: BlurOwl
+      attributes: [FM, IPR, MB, SV]
+      actual_frames: 631
+    - name: Board
+      attributes: [BC, FM, MB, OPR, OV, SV]
+      actual_frames: 698
+    - name: Bolt
+      attributes: [DEF, IPR, OCC, OPR]
+      actual_frames: 350
+    - name: Bolt2
+      attributes: [BC, DEF]
+      actual_frames: 293
+    - name: Box
+      attributes: [BC, IPR, IV, MB, OCC, OPR, OV, SV]
+      actual_frames: 1161
+    - name: Boy
+      attributes: [FM, IPR, MB, OPR, SV]
+      actual_frames: 602
+    - name: Car1
+      attributes: [BC, IV, LR, SV]
+      actual_frames: 1020
+    - name: Car2
+      attributes: [BC, IV]
+      actual_frames: 913
+    - name: Car24
+      attributes: [BC, IV, SV]
+      actual_frames: 3059
+    - name: Car4
+      attributes: [IV, SV]
+      actual_frames: 659
+    - name: CarDark
+      attributes: [BC, IV]
+      actual_frames: 393
+    - name: CarScale
+      attributes: [FM, IPR, OCC, OPR, SV]
+      actual_frames: 252
+    - name: ClifBar
+      attributes: [BC, FM, IPR, MB, OCC, OV, SV]
+      actual_frames: 472
+    - name: Coke
+      attributes: [FM, IPR, IV, OCC, OPR]
+      actual_frames: 291
+    - name: Couple
+      attributes: [BC, DEF, FM, OPR, SV]
+      actual_frames: 140
+    - name: Coupon
+      attributes: [BC, OCC]
+      actual_frames: 327
+    - name: Crossing
+      attributes: [BC, DEF, SV]
+      actual_frames: 120
+    - name: Crowds
+      attributes: [BC, DEF, IV]
+      actual_frames: 347
+    - name: Dancer
+      attributes: [DEF, IPR, OPR, SV]
+      actual_frames: 225
+    - name: Dancer2
+      attributes: [DEF]
+      actual_frames: 150
+    - name: David
+      attributes: [DEF, IPR, IV, MB, OCC, OPR, SV]
+      actual_frames: 471
+      first_frame: 300
+      last_frame: 770
+    - name: David2
+      attributes: [IPR, OPR]
+      actual_frames: 537
+    - name: David3
+      attributes: [BC, DEF, OCC, OPR]
+      actual_frames: 252
+    - name: Deer
+      attributes: [BC, FM, IPR, MB]
+      actual_frames: 71
+    - name: Diving
+      attributes: [DEF, IPR, SV]
+      actual_frames: 215
+    - name: Dog
+      attributes: [DEF, OPR, SV]
+      actual_frames: 127
+    - name: Dog1
+      attributes: [IPR, OPR, SV]
+      actual_frames: 1350
+    - name: Doll
+      attributes: [IPR, IV, OCC, OPR, SV]
+      actual_frames: 3872
+    - name: DragonBaby
+      attributes: [FM, IPR, MB, OCC, OPR, OV, SV]
+      actual_frames: 113
+    - name: Dudek
+      attributes: [BC, DEF, FM, IPR, OCC, OPR, OV, SV]
+      actual_frames: 1145
+    - name: FaceOcc1
+      attributes: [OCC]
+      actual_frames: 892
+    - name: FaceOcc2
+      attributes: [IPR, IV, OCC, OPR]
+      actual_frames: 812
+    - name: Fish
+      attributes: [IV]
+      actual_frames: 476
+    - name: FleetFace
+      attributes: [DEF, FM, IPR, MB, OPR, SV]
+      actual_frames: 707
+    - name: Football
+      attributes: [BC, IPR, OCC, OPR]
+      actual_frames: 362
+    - name: Football1
+      attributes: [BC, IPR, OPR]
+      actual_frames: 74
+      first_frame: 1
+      last_frame: 74
+    - name: Freeman1
+      attributes: [IPR, OPR, SV]
+      actual_frames: 326
+    - name: Freeman3
+      attributes: [IPR, LR, OPR, SV]
+      actual_frames: 460
+      first_frame: 1
+      last_frame: 460
+    - name: Freeman4
+      attributes: [IPR, LR, OCC, OPR, SV]
+      actual_frames: 283
+      first_frame: 1
+      last_frame: 283
+    - name: Girl
+      attributes: [IPR, OCC, OPR, SV]
+      actual_frames: 500
+    - name: Girl2
+      attributes: [DEF, MB, OCC, OPR, SV]
+      actual_frames: 1500
+    - name: Gym
+      attributes: [DEF, IPR, OPR, SV]
+      actual_frames: 767
+    - name: Human2
+      attributes: [IV, MB, OPR, SV]
+      actual_frames: 1128
+    - name: Human3
+      attributes: [BC, DEF, OCC, OPR, SV]
+      actual_frames: 1698
+    - name: Human4.2
+      attributes: [DEF, IV, OCC, SV]
+      actual_frames: 667
+    - name: Human5
+      attributes: [DEF, OCC, SV]
+      actual_frames: 713
+    - name: Human6
+      attributes: [DEF, FM, OCC, OPR, OV, SV]
+      actual_frames: 792
+    - name: Human7
+      attributes: [DEF, FM, IV, MB, OCC, SV]
+      actual_frames: 250
+    - name: Human8
+      attributes: [DEF, IV, SV]
+      actual_frames: 128
+    - name: Human9
+      attributes: [DEF, FM, IV, MB, SV]
+      actual_frames: 305
+    - name: Ironman
+      attributes: [BC, FM, IPR, IV, MB, OCC, OPR, OV, SV]
+      actual_frames: 166
+    - name: Jogging.1
+      attributes: [DEF, OCC, OPR]
+      actual_frames: 307
+    - name: Jogging.2
+      attributes: [DEF, OCC, OPR]
+      actual_frames: 307
+    - name: Jump
+      attributes: [DEF, IPR, MB, OCC, OPR, SV]
+      actual_frames: 122
+    - name: Jumping
+      attributes: [FM, MB]
+      actual_frames: 313
+    - name: KiteSurf
+      attributes: [IPR, IV, OCC, OPR]
+      actual_frames: 84
+    - name: Lemming
+      attributes: [FM, IV, OCC, OPR, OV, SV]
+      actual_frames: 1336
+    - name: Liquor
+      attributes: [BC, FM, IV, MB, OCC, OPR, OV, SV]
+      actual_frames: 1741
+    - name: Man
+      attributes: [IV]
+      actual_frames: 134
+    - name: Matrix
+      attributes: [BC, FM, IPR, IV, OCC, OPR, SV]
+      actual_frames: 100
+    - name: Mhyang
+      attributes: [BC, DEF, IV, OPR]
+      actual_frames: 1490
+    - name: MotorRolling
+      attributes: [BC, FM, IPR, IV, MB, SV]
+      actual_frames: 164
+    - name: MountainBike
+      attributes: [BC, IPR, OPR]
+      actual_frames: 228
+    - name: Panda
+      attributes: [DEF, IPR, LR, OCC, OPR, OV, SV]
+      actual_frames: 1000
+    - name: RedTeam
+      attributes: [IPR, LR, OCC, OPR, SV]
+      actual_frames: 1918
+    - name: Rubik
+      attributes: [IPR, OCC, OPR, SV]
+      actual_frames: 1997
+    - name: Shaking
+      attributes: [BC, IPR, IV, OPR, SV]
+      actual_frames: 365
+    - name: Singer1
+      attributes: [IV, OCC, OPR, SV]
+      actual_frames: 351
+    - name: Singer2
+      attributes: [BC, DEF, IPR, IV, OPR]
+      actual_frames: 366
+    - name: Skater
+      attributes: [DEF, IPR, OPR, SV]
+      actual_frames: 160
+    - name: Skater2
+      attributes: [DEF, FM, IPR, OPR, SV]
+      actual_frames: 435
+    - name: Skating1
+      attributes: [BC, DEF, IV, OCC, OPR, SV]
+      actual_frames: 400
+    - name: Skating2.1
+      attributes: [DEF, FM, OCC, OPR, SV]
+      actual_frames: 473
+    - name: Skating2.2
+      attributes: [DEF, FM, OCC, OPR, SV]
+      actual_frames: 473
+    - name: Skiing
+      attributes: [DEF, IPR, IV, LR, OPR, SV]
+      actual_frames: 81
+    - name: Soccer
+      attributes: [BC, FM, IPR, IV, MB, OCC, OPR, SV]
+      actual_frames: 392
+    - name: Subway
+      attributes: [BC, DEF, OCC]
+      actual_frames: 175
+    - name: Surfer
+      attributes: [FM, IPR, LR, OPR, SV]
+      actual_frames: 376
+    - name: Suv
+      attributes: [IPR, OCC, OV]
+      actual_frames: 945
+    - name: Sylvester
+      attributes: [IPR, IV, OPR]
+      actual_frames: 1345
+    - name: Tiger1
+      attributes: [DEF, FM, IPR, IV, MB, OCC, OPR]
+      actual_frames: 354
+    - name: Tiger2
+      attributes: [DEF, FM, IPR, IV, MB, OCC, OPR, OV]
+      actual_frames: 365
+    - name: Toy
+      attributes: [FM, IPR, OPR, SV]
+      actual_frames: 271
+    - name: Trans
+      attributes: [DEF, IV, OCC, SV]
+      actual_frames: 124
+    - name: Trellis
+      attributes: [BC, IPR, IV, OPR, SV]
+      actual_frames: 569
+    - name: Twinnings
+      attributes: [OPR, SV]
+      actual_frames: 472
+    - name: Vase
+      attributes: [FM, IPR, SV]
+      actual_frames: 271
+    - name: Walking
+      attributes: [DEF, LR, OCC, SV]
+      actual_frames: 412
+    - name: Walking2
+      attributes: [OCC, SV]
+      actual_frames: 500
+    - name: Woman
+      attributes: [DEF, FM, IV, MB, OCC, OPR, SV]
+      actual_frames: 597

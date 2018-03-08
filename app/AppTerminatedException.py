@@ -1,2 +1,0 @@
-class AppTerminatedException(Exception):
-    pass

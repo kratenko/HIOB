@@ -1,0 +1,17 @@
+# environment.yaml
+# configuration of the environment in which the program is executed
+# typically there should be one of this for every computer the 
+# program is executed on (or one for each GPU it is executed on)
+# Can be fed to program via command line argument --environment [path]
+
+# name describing this environment (for log purposes):
+environment_name: default
+
+# directory to which execution logs are written:
+log_dir: ./hiob_logs
+
+# directory in which data samples are kept:
+data_dir: ./data
+
+# directory in which net weight files are kept:
+net_dir: ./net
