@@ -93,9 +93,9 @@ tracking_conf:
 # which samples shall be tracked? Accepts samples, data sets, and data collections
 # examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
 tracking:
-#  - ros/nico/vision/videoStream
+  - ros/nico/vision/videoStream
 #  - nico_recordings/banana
-  - nico_recordings/cube
+#  - nico_recordings/cube
 #  - nico_recordings/grapes
 #  - nico_recordings/tomato
 #  - nico_recordings/tomato_and_carrot.1

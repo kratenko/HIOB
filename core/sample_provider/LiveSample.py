@@ -6,7 +6,7 @@ import threading
 import tempfile
 import os.path
 import subprocess
-from hiob.Rect import Rect
+from ..Rect import Rect
 import nico_dummy_vision.msg
 
 

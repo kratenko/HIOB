@@ -91,7 +91,7 @@ class Tracking(object):
             'evaluating_tracking', 'tracking_evaluated'],
     ]
 
-    def __init__(self, tracker, rosmode=False):
+    def __init__(self, tracker):
         Tracking._LAST_SERIAL += 1
         self.serial = Tracking._LAST_SERIAL
         logger.info("Creating new Tracking#%d", self.serial)
@@ -149,9 +149,11 @@ class Tracking(object):
         # object holding module_states of tracker modules:
         self.module_states = TrackerModuleStates()
 
-        if rosmode:
+        if tracker.configuration['ros_mode']:
             from .RosPositionPublisher import RosPositionPublisher
             self.publisher = RosPositionPublisher()
+        else:
+            self.publisher = None
 
     def get_total_frames(self):
         if not self.sample:
