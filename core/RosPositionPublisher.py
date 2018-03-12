@@ -1,6 +1,6 @@
 import rospy
 import logging
-import hiob_ros.msg
+import hiob_msgs.msg
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ class RosPositionPublisher:
         self._started = False
         logger.info('-- Init Hiob:RosPositionPublisher --')
         logger.debug('init ROS publisher')
-        self._publisher = rospy.Publisher('/hiob/objects/0', hiob_ros.msg.TrackingResult, queue_size=1)
+        self._publisher = rospy.Publisher('/hiob/objects/0', hiob_msgs.msg.TrackingResult, queue_size=1)
         rospy.on_shutdown(self.stop)
         logger.info('-- Done --')
 
@@ -35,7 +35,7 @@ class RosPositionPublisher:
         #    raise PublisherTerminatedError
         logger.info(str(tracking_result))
         pos = tracking_result['predicted_position']
-        pos_msg = hiob_ros.msg.Rect(pos.x, pos.y, pos.w, pos.h)
+        pos_msg = hiob_msgs.msg.Rect(pos.x, pos.y, pos.w, pos.h)
         self._publisher.publish(
             pos_msg,
             tracking_result['prediction_quality'],

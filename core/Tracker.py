@@ -26,9 +26,13 @@ logger = logging.getLogger(__name__)
 class Tracker:
     def _find_out_git_revision(self):
         import git
-        repo = git.Repo(search_parent_directories=False)
-        self.git_revision = repo.head.object.hexsha
-        self.git_dirty = repo.is_dirty()
+        try:
+            repo = git.Repo(search_parent_directories=False)
+            self.git_revision = repo.head.object.hexsha
+            self.git_dirty = repo.is_dirty()
+        except git.exc.InvalidGitRepositoryError:
+            self.git_revision = "--INVALID--"
+            self.git_dirty = True
 
     def __init__(self, configuration):
         logger.warning("CREATING NEW TRACKER")
@@ -82,20 +86,6 @@ class Tracker:
         if 'tracking' in self.configuration:
             self.samples = self.data_directory.evaluate_sample_list(
                 self.configuration['tracking'], self.configuration['tracking_conf'])
-
-        self.configuration.set_override("ros_mode", False)
-        for sample in self.samples:
-            if sample.set_name == "__ros__":
-                print("Found live sample; enabling ros mode.")
-                self.configuration.set_override("ros_mode", True)
-                if len(self.samples) > 1:
-                    print("Only a single Sample can be tracked if a ROS sample was given!"
-                                   "Ignoring all samples except for the first ROS sample.""")
-                    self.samples = [sample]
-                    break
-        print("-----------------------------------------------------------------------------")
-        print("ros mode is {0}.".format("TRUE" if self.configuration["ros_mode"] else "FALSE"))
-        print("-----------------------------------------------------------------------------")
 
         self.roi_calculator = roi.SimpleRoiCalculator()
         self.modules.append(self.roi_calculator)

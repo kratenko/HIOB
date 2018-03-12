@@ -47,6 +47,27 @@ class Configurator(object):
             print(msg, file=sys.stderr)
             exit(1)
 
+        self.set_override("ros_mode", False)
+        for sname in self['tracking']:
+            p1, p2 = sname.split(os.path.sep, 1)
+            if p1 == "ros":
+                print("Found live sample; enabling ros mode.")
+                self.set_override("ros_mode", True)
+
+        if self['ros_mode'] and len(self['tracking']) > 1:
+            print("Ros mode is enabled, but multiple samples have been defined. Disabling all but the first ros sample.")
+            self.set_override('tracking', [list(filter(lambda x: len(x) >= 3 and x[:4] == 'ros/', self['tracking']))[0]])
+
+        print("-----------------------------------------------------------------------------")
+        print("ros mode is {0}.".format("TRUE" if self["ros_mode"] else "FALSE"))
+        print("-----------------------------------------------------------------------------")
+
+        if self['ros_mode']:
+            import rospkg
+            rp = rospkg.RosPack()
+            for key in self.environment:
+                self.environment[key] = self.environment[key].replace("\\share\\", rp.get_path('hiob_ros'))
+
     def __getitem__(self, key):
         if key in self.overrides:
             return self.overrides[key]
