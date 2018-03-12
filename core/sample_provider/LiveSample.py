@@ -7,7 +7,7 @@ import tempfile
 import os.path
 import subprocess
 from ..Rect import Rect
-import nico_dummy_vision.msg
+import hiob_msgs.msg
 
 
 class LiveSample:
@@ -35,7 +35,7 @@ class LiveSample:
         return '<ROS::{node}>'.format(node=self.node_id)
 
     def load(self):
-        self.subscriber = rospy.Subscriber(self.node_id, nico_dummy_vision.msg.FrameWithGroundTruth, self.receive_frame)
+        self.subscriber = rospy.Subscriber(self.node_id, hiob_msgs.msg.FrameWithGroundTruth, self.receive_frame)
         self.images = []
 
     def unload(self):
