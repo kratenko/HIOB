@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Configurator(object):
 
-    def __init__(self, environment_path=None, tracker_path=None, ros_node=None):
+    def __init__(self, environment_path=None, tracker_path=None, ros_config=None):
         logger.info("Building Configurator")
         if environment_path is None:
             self.environment_path = os.path.join('.', 'config', 'environment.yaml')
@@ -25,8 +25,11 @@ class Configurator(object):
             self.tracker_path = tracker_path
 
         self.overrides = {}
-        if ros_node is not None:
-            self.overrides['tracking'] = ['ros/' + ros_node.rstrip('/')]
+        if ros_config is not None and (ros_config['subscribe'] is None or ros_config['publish'] is None):
+            raise Exception("Invalid ros parameters detected! Exiting...")
+        else:
+            self.overrides['tracking'] = ['ros/' + ros_config['subscribe'].rstrip('/')]
+            self.overrides['ros_node'] = ros_config['publish']
         self.load_files()
 
     def load_files(self):
@@ -50,12 +53,16 @@ class Configurator(object):
             print(msg, file=sys.stderr)
             exit(1)
 
-        self.set_override("ros_mode", False)
+        if 'ros_node' not in self:
+            self.set_override("ros_node", None)
         for sname in self['tracking']:
             p1, p2 = sname.split(os.path.sep, 1)
             if p1 == "ros":
                 print("Found live sample; enabling ros mode.")
-                self.set_override("ros_mode", True)
+                if self['ros_node'] is None:
+                    self.set_override("ros_node", '/hiob/objects/0')
+
+        self.set_override("ros_mode", self['ros_node'] is not None)
 
         if self['ros_mode'] and len(self['tracking']) > 1:
             print("Ros mode is enabled, but multiple samples have been defined. Disabling all but the first ros sample.")

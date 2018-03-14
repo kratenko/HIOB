@@ -149,9 +149,9 @@ class Tracking(object):
         # object holding module_states of tracker modules:
         self.module_states = TrackerModuleStates()
 
-        if tracker.configuration['ros_mode']:
+        if tracker.configuration['ros_node']:
             from .RosPositionPublisher import RosPositionPublisher
-            self.publisher = RosPositionPublisher()
+            self.publisher = RosPositionPublisher(tracker.configuration['ros_node'])
         else:
             self.publisher = None
 

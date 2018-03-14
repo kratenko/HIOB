@@ -20,14 +20,14 @@ transitions.logger.setLevel(logging.WARN)
 logger = logging.getLogger(__name__)
 
 
-def track(environment_path=None, tracker_path=None, ros_node=None):
+def track(environment_path=None, tracker_path=None, ros_config=None):
 
     # create Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=environment_path,
         tracker_path=tracker_path,
-        ros_node=ros_node
+        ros_config=ros_config
     )
 
 
@@ -53,7 +53,8 @@ def main():
     parser.prog = "hiob_cli"
     args = parser.parse_args()
 
-    ev = track(environment_path=args.environment, tracker_path=args.tracker, ros_node=args.ros_subscribe)
+    ev = track(environment_path=args.environment, tracker_path=args.tracker,
+               ros_config={'subscribe': args.ros_subscribe, 'publish': args.ros_publish})
     logger.info("Tracking finished!")
     ev_lines = "\n  - ".join(["{}={}".format(k, v) for k, v in ev.items()])
     logger.info("Evaluation:\n  - %s", ev_lines)

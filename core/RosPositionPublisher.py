@@ -8,11 +8,11 @@ logger = logging.getLogger(__name__)
 
 class RosPositionPublisher:
 
-    def __init__(self):
+    def __init__(self, node_name):
         self._started = False
         logger.info('-- Init Hiob:RosPositionPublisher --')
         logger.debug('init ROS publisher')
-        self._publisher = rospy.Publisher('/hiob/objects/0', hiob_msgs.msg.TrackingResult, queue_size=1)
+        self._publisher = rospy.Publisher(node_name, hiob_msgs.msg.TrackingResult, queue_size=1)
         rospy.on_shutdown(self.stop)
         logger.info('-- Done --')
 

@@ -16,6 +16,7 @@ transitions.logger.setLevel(logging.WARN)
 
 logger = logging.getLogger(__name__)
 
+
 def main():
     # parse arguments:
     logger.info("Parsing command line arguments")
@@ -27,7 +28,7 @@ def main():
     conf = Configurator(
         environment_path=args.environment,
         tracker_path=args.tracker,
-        ros_node=args.ros_subscribe
+        ros_config={'subscribe': args.ros_subscribe, 'publish': args.ros_publish}
     )
 
     # execute app app and run tracking
