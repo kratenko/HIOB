@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Configurator(object):
 
-    def __init__(self, environment_path=None, tracker_path=None):
+    def __init__(self, environment_path=None, tracker_path=None, ros_node=None):
         logger.info("Building Configurator")
         if environment_path is None:
             self.environment_path = os.path.join('.', 'config', 'environment.yaml')
@@ -23,7 +23,10 @@ class Configurator(object):
             self.tracker_path = os.path.join('.', 'config', 'tracker.yaml')
         else:
             self.tracker_path = tracker_path
+
         self.overrides = {}
+        if ros_node is not None:
+            self.overrides['tracking'] = ['ros/' + ros_node.rstrip('/')]
         self.load_files()
 
     def load_files(self):
@@ -33,7 +36,7 @@ class Configurator(object):
             with open(self.environment_path, 'r') as f:
                 self.environment = yaml.safe_load(f)
         except IOError as e:
-            msg = "Could not open environment configuration file: %s", e
+            msg = "Could not open environment configuration file: {} - {}".format(self.environment_path, e)
             logger.error(msg)
             print(msg, file=sys.stderr)
             exit(1)
@@ -42,7 +45,7 @@ class Configurator(object):
             with open(self.tracker_path, 'r') as f:
                 self.tracker = yaml.safe_load(f)
         except IOError as e:
-            msg = "Could not open tracker configuration file: %s", e
+            msg = "Could not open tracker configuration file: {} - {}".format(self.tracker_path, e)
             logger.error(msg)
             print(msg, file=sys.stderr)
             exit(1)

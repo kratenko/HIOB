@@ -1,11 +1,9 @@
 import io
 from PIL import Image
 import rospy
-import sensor_msgs.msg
 import threading
 import tempfile
 import os.path
-import subprocess
 from ..Rect import Rect
 import hiob_msgs.msg
 

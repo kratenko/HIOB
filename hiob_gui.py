@@ -26,7 +26,8 @@ def main():
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=args.environment,
-        tracker_path=args.tracker
+        tracker_path=args.tracker,
+        ros_node=args.ros_subscribe
     )
 
     # execute app app and run tracking

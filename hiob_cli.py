@@ -5,7 +5,7 @@ import asyncio
 import os, sys
 
 
-sys.path.append( os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))
 os.chdir(os.path.dirname(__file__))
 
 from .core.Configurator import Configurator
@@ -20,14 +20,14 @@ transitions.logger.setLevel(logging.WARN)
 logger = logging.getLogger(__name__)
 
 
-
-def track(environment_path=None, tracker_path=None):
+def track(environment_path=None, tracker_path=None, ros_node=None):
 
     # create Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=environment_path,
         tracker_path=tracker_path,
+        ros_node=ros_node
     )
 
 
@@ -53,7 +53,7 @@ def main():
     parser.prog = "hiob_cli"
     args = parser.parse_args()
 
-    ev = track(environment_path=args.environment, tracker_path=args.tracker)
+    ev = track(environment_path=args.environment, tracker_path=args.tracker, ros_node=args.ros_subscribe)
     logger.info("Tracking finished!")
     ev_lines = "\n  - ".join(["{}={}".format(k, v) for k, v in ev.items()])
     logger.info("Evaluation:\n  - %s", ev_lines)
