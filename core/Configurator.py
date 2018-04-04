@@ -15,6 +15,8 @@ class Configurator(object):
 
     def __init__(self, environment_path=None, tracker_path=None, ros_config=None):
         logger.info("Building Configurator")
+        logger.info("ros config is:")
+        logger.info(ros_config)
         if environment_path is None:
             self.environment_path = os.path.join('.', 'config', 'environment.yaml')
         else:
@@ -25,11 +27,12 @@ class Configurator(object):
             self.tracker_path = tracker_path
 
         self.overrides = {}
-        if ros_config is not None and (ros_config['subscribe'] is None or ros_config['publish'] is None):
-            raise Exception("Invalid ros parameters detected! Exiting...")
-        else:
-            self.overrides['tracking'] = ['ros/' + ros_config['subscribe'].rstrip('/')]
-            self.overrides['ros_node'] = ros_config['publish']
+        if ros_config is not None:
+            if ros_config['subscribe'] is None or ros_config['publish'] is None:
+                raise Exception("Invalid ros parameters detected! Exiting...")
+            else:
+                self.overrides['tracking'] = ['ros/' + ros_config['subscribe'].strip('/')]
+                self.overrides['ros_node'] = ros_config['publish']
         self.load_files()
 
     def load_files(self):

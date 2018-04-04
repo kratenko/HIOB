@@ -42,7 +42,7 @@ consolidator:
   min_cost: 0.0005
   sigma_train: 0.8
   sigma_update: 0.8
-  update_threshold: 0.0
+  update_threshold: 0.2
   update_lower_threshold: 0.4
   # number of frames stored for updates
   update_frame_store_size: 5

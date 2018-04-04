@@ -11,7 +11,7 @@ import hiob_msgs.msg
 class LiveSample:
 
     def __init__(self, node_id):
-        self.node_id = node_id
+        self.node_id = '/' + node_id.strip('/')
         self._buffer = []
         self.images = []
         self.attributes = []

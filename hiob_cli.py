@@ -5,12 +5,13 @@ import asyncio
 import os, sys
 
 
-sys.path.append(os.path.dirname(__file__))
-os.chdir(os.path.dirname(__file__))
+hiob_path = os.path.join(os.path.dirname(__file__), '..', 'hiob')
+sys.path.append( hiob_path )
+os.chdir(hiob_path)
 
-from .core.Configurator import Configurator
-from .core.Tracker import Tracker
-from .core.argparser import parser
+from core.Configurator import Configurator
+from core.Tracker import Tracker
+from core.argparser import parser
 
 # Set up logging:
 logging.getLogger().setLevel(logging.INFO)
