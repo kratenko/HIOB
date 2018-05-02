@@ -5,6 +5,7 @@
 print_usage() {
     echo "Usage: execute_experiments.sh [OPTIONS] tracker_configs_dir environment_config_file"
     echo ""
+    echo "Options:"
     echo "  -h, --help show this message"
     echo "  -b         emit a periodic beep sound when experiments are finished."
 }
@@ -42,9 +43,19 @@ then
     exit 1
 fi
 
+if [[ ! -f "$env_config" ]]
+then
+    echo "ERROR: '$env_config' not found - no such file!"
+    exit 1
+fi
+if [[ ! -d "$trackers_config_dir" ]]
+then
+    echo "ERROR: '$trackers_config_dir' not found - no such directory!"
+    exit 1
+fi
 
-log_dir=$(cat "$2" | grep 'log_dir:')
-log_dir=${log_dir#log_dir:}
+log_dir=$(cat "$env_config" | grep 'log_dir:')
+log_dir=${log_dir#*log_dir:}
 log_dir=$(echo "$log_dir" | sed -e 's/^[[ \t]]*//')
 
 
@@ -64,19 +75,22 @@ echo "environment file is \"$env_config\""
 echo "log directory is \"$log_dir\""
 
 
-#mkdir -p "$log_dir"
+mkdir -p "$log_dir"
 
 for conf in "$trackers_config_dir/tracker"*.yaml; do
     tags="$(cat $conf | grep '#tags:')" && \
-    tags=${tags#\#tags: } && \
+    tags=${tags#\#*tags:} && \
+    tags=$(echo "$tags" | sed -e 's/^[[ \t]]*//')
+    tags=${tags%\#*}
+    tags=$(echo "$tags" | sed -e 's/[ \t]*$//')
     echo "executing \"$(basename $conf)\"..." && \
-    #python hiob_cli.py -e "$env_config" -t "$conf"
+    python hiob_cli.py -e "$env_config" -t "$conf"
     if ! [[ -z "$tags" ]]
     then
         for log in "$log_dir/hiob-execution-"*
         do
             echo "moving \"$log\" to \"$log_dir/[$tags]_$(basename $log)\""
-            #mv "$log" "$log_dir/[$tags]_$(basename $log)"
+            mv "$log" "$log_dir/[$tags]_$(basename $log)"
         done
     fi
     sleep 3
