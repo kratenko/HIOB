@@ -1,22 +1,223 @@
-description: Recordings from the Nico camera
+description: Recordings of NICO doing stuff
 format: tb100zip
-name: nico_recordings
+name: nicovision
 samples:
-    - name: banana
-      attributes: []
-      actual_frames: 500
-    - name: cube
-      attributes: []
-      actual_frames: 540
-    - name: grapes
-      attributes: []
-      actual_frames: 543
-    - name: tomato
-      attributes: []
-      actual_frames: 505
-    - name: tomato_and_carrot.1
-      attributes: []
-      actual_frames: 1192
-    - name: tomato_and_carrot.2
-      attributes: []
-      actual_frames: 1192
+  - actual_frames: 672
+    attributes: []
+    name: bang_blue_tissue_01
+  - actual_frames: 571
+    attributes: []
+    name: bang_sponge_01
+  - actual_frames: 878
+    attributes: []
+    name: lift_blue_car_01
+  - actual_frames: 841
+    attributes: []
+    name: lift_blue_car_02
+  - actual_frames: 769
+    attributes: []
+    name: lift_blue_car_03
+  - actual_frames: 788
+    attributes: []
+    name: lift_blue_car_04
+  - actual_frames: 749
+    attributes: []
+    name: lift_blue_car_05
+  - actual_frames: 752
+    attributes: []
+    name: lift_blue_tissue_01
+  - actual_frames: 966
+    attributes: []
+    name: lift_heavy_banana_01
+  - actual_frames: 1095
+    attributes: []
+    name: lift_heavy_banana_02
+  - actual_frames: 825
+    attributes: []
+    name: lift_red_car_01
+  - actual_frames: 770
+    attributes: []
+    name: lift_red_car_02
+  - actual_frames: 758
+    attributes: []
+    name: lift_red_tissue_01
+  - actual_frames: 753
+    attributes: []
+    name: lift_small_yellow_cube_01
+  - actual_frames: 595
+    attributes: []
+    name: lift_sponge_02
+  - actual_frames: 772
+    attributes: []
+    name: lift_sponge_03
+  - actual_frames: 702
+    attributes: []
+    name: lift_styrofoam_cube_01
+  - actual_frames: 450
+    attributes: []
+    name: pull_blue_ball_01
+  - actual_frames: 481
+    attributes: []
+    name: pull_blue_car_01
+  - actual_frames: 369
+    attributes: []
+    name: pull_blue_plush_ball_01
+  - actual_frames: 470
+    attributes: []
+    name: pull_blue_tissue_01
+  - actual_frames: 400
+    attributes: []
+    name: pull_brown_plush_ball_01
+  - actual_frames: 483
+    attributes: []
+    name: pull_green_car_01
+  - actual_frames: 514
+    attributes: []
+    name: pull_heavy_apple_01
+  - actual_frames: 633
+    attributes: []
+    name: pull_heavy_tomato_01
+  - actual_frames: 418
+    attributes: []
+    name: pull_heavy_yellow_cube_01
+  - actual_frames: 410
+    attributes: []
+    name: pull_orange_patterned_plush_ball_01
+  - actual_frames: 440
+    attributes: []
+    name: pull_red_car_01
+  - actual_frames: 459
+    attributes: []
+    name: pull_red_car_02
+  - actual_frames: 456
+    attributes: []
+    name: pull_small_tomato_01
+  - actual_frames: 424
+    attributes: []
+    name: pull_small_yellow_cube_01
+  - actual_frames: 455
+    attributes: []
+    name: pull_sponge_01
+  - actual_frames: 420
+    attributes: []
+    name: pull_styrofoam_cube_01
+  - actual_frames: 448
+    attributes: []
+    name: pull_styrofoam_cube_02
+  - actual_frames: 630
+    attributes: []
+    name: push_blue_ball_01
+  - actual_frames: 472
+    attributes: []
+    name: push_blue_car_01
+  - actual_frames: 469
+    attributes: []
+    name: push_blue_car_02
+  - actual_frames: 300
+    attributes: []
+    name: push_blue_patterned_plush_ball_01
+  - actual_frames: 464
+    attributes: []
+    name: push_green_car_01
+  - actual_frames: 473
+    attributes: []
+    name: push_green_car_02
+  - actual_frames: 526
+    attributes: []
+    name: push_heavy_apple_01
+  - actual_frames: 466
+    attributes: []
+    name: push_heavy_apple_02
+  - actual_frames: 406
+    attributes: []
+    name: push_red_car_01
+  - actual_frames: 263
+    attributes: []
+    name: push_red_car_02
+  - actual_frames: 443
+    attributes: []
+    name: push_small_yellow_cube_01
+  - actual_frames: 367
+    attributes: []
+    name: push_sponge_01
+  - actual_frames: 604
+    attributes: []
+    name: scoot_blue_ball_01
+  - actual_frames: 447
+    attributes: []
+    name: scoot_blue_ball_02
+  - actual_frames: 545
+    attributes: []
+    name: scoot_blue_car_01
+  - actual_frames: 688
+    attributes: []
+    name: scoot_blue_car_02
+  - actual_frames: 645
+    attributes: []
+    name: scoot_blue_tissue_01
+  - actual_frames: 657
+    attributes: []
+    name: scoot_green_car_01
+  - actual_frames: 584
+    attributes: []
+    name: scoot_plush_banana_01
+  - actual_frames: 1050
+    attributes: []
+    name: shake_big_light_banana_01
+  - actual_frames: 980
+    attributes: []
+    name: shake_blue_plush_ball_01
+  - actual_frames: 1085
+    attributes: []
+    name: shake_blue_tissue_01
+  - actual_frames: 1045
+    attributes: []
+    name: shake_brown_plush_ball_01
+  - actual_frames: 963
+    attributes: []
+    name: shake_heavy_banana_01
+  - actual_frames: 1119
+    attributes: []
+    name: shake_heavy_banana_02
+  - actual_frames: 1066
+    attributes: []
+    name: shake_heavy_banana_03
+  - actual_frames: 1079
+    attributes: []
+    name: shake_heavy_banana_04
+  - actual_frames: 1040
+    attributes: []
+    name: shake_red_tissue_01
+  - actual_frames: 1061
+    attributes: []
+    name: shake_small_banana_01
+  - actual_frames: 1107
+    attributes: []
+    name: shake_small_banana_02
+  - actual_frames: 898
+    attributes: []
+    name: shake_small_banana_03
+  - actual_frames: 1080
+    attributes: []
+    name: shake_small_banana_04
+  - actual_frames: 1114
+    attributes: []
+    name: shake_small_banana_05
+  - actual_frames: 1092
+    attributes: []
+    name: shake_small_yellow_cube_01
+  - actual_frames: 1066
+    attributes: []
+    name: shake_sponge_01
+  - actual_frames: 992
+    attributes: []
+    name: shake_styrofoam_cube_01
+  - actual_frames: 729
+    attributes: []
+    name: lift_sponge_01
+  - actual_frames: 421
+    attributes: []
+    name: pull_red_tissue_01
+  - actual_frames: 785
+    attributes: []
+    name: push_tomato_01
