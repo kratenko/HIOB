@@ -140,7 +140,12 @@ class Tracking(object):
         self.ts_tracking_completed = None
 
         self.pursuing_total_seconds = 0.0
+        self.roi_calculation_total_seconds = 0.0
+        self.sroi_generation_total_seconds = 0.0
         self.feature_extraction_total_seconds = 0.0
+        self.feature_reduction_total_seconds = 0.0
+        self.feature_consolidation_total_seconds = 0.0
+
 
         # updates
         self.updates_max_frames = 0
@@ -343,17 +348,25 @@ class Tracking(object):
         self.commence_tracking_frame()
         frame = self.current_frame
         # process frame:
+        ts_start = datetime.now()
         self.calculate_frame_roi(frame)
+        self.roi_calculation_total_seconds += (datetime.now() - ts_start).total_seconds()
+        ts_start = datetime.now()
         self.generate_frame_sroi(frame)
-        ts_fe_started = datetime.now()
+        self.sroi_generation_total_seconds += (datetime.now() - ts_start).total_seconds()
+        ts_start = datetime.now()
         self.extract_frame_features(frame)
-        self.feature_extraction_total_seconds += (datetime.now() - ts_fe_started).total_seconds()
+        self.feature_extraction_total_seconds += (datetime.now() - ts_start).total_seconds()
+        ts_start = datetime.now()
         self.reduce_frame_features(frame)
+        self.feature_reduction_total_seconds += (datetime.now() - ts_start).total_seconds()
+        ts_start = datetime.now()
         self.consolidate_frame_features(frame, advance=True)
+        self.feature_consolidation_total_seconds += (datetime.now() - ts_start).total_seconds()
         # pursue - find the best prediction in frame
-        ts_pursuing_started = datetime.now()
+        ts_start = datetime.now()
         self.pursue_frame(frame)
-        self.pursuing_total_seconds += (datetime.now() - ts_pursuing_started).total_seconds()
+        self.pursuing_total_seconds += (datetime.now() - ts_start).total_seconds()
 
         # lost? TODO: make it modular and nice!
 #        if frame.prediction_quality <= 0.0:
