@@ -6,6 +6,7 @@ Created on 2016-11-29
 import numpy as np
 import scipy.ndimage
 import tensorflow as tf
+from functools import partial
 from matplotlib import pyplot as plt
 
 from .util import loc2xgeo, xgeo2loc
@@ -34,10 +35,14 @@ class SwarmPursuer(Pursuer):
         self.configuration = configuration
         pconf = configuration['pursuer']
         self.particle_count = pconf['particle_count']
+        self.particle_scale_factor = pconf['particle_scale_factor'] if 'particle_scale_factor' in pconf else 1.0
         self.target_lower_limit = float(pconf['target_lower_limit'])
         self.target_punish_low = float(pconf['target_punish_low'])
         self.target_punish_outside = float(pconf['target_punish_outside'])
         self.np_random = configuration['np_random']
+
+    def set_initial_position(self, pos):
+        self.initial_location = pos
 
     def setup(self, session):
         self.session = session
@@ -85,7 +90,7 @@ class SwarmPursuer(Pursuer):
     def generate_particles(self, loc, img_size, lost):
         geo = loc2xgeo(loc)
         geos = self.generate_geo_particles(geo, img_size, lost)
-        locs = [xgeo2loc(g) for g in geos]
+        locs = [Rect(xgeo2loc(g)) for g in geos]
         # add previous position, to make sure there is at least one valid
         # position:
         locs.append(loc)
@@ -104,8 +109,7 @@ class SwarmPursuer(Pursuer):
                  int(roi.left): int(roi.right)] = roi_mask
         return img_mask
 
-    @staticmethod
-    def position_quality(pos, roi, image_mask_sum, inner_sum):
+    def position_quality(self, pos, roi, image_mask_sum, inner_sum):
         #logger.info("QUALI: %s, %s", image_mask.shape, pos)
         # too small?
         # p1 = time.time()
@@ -136,7 +140,14 @@ class SwarmPursuer(Pursuer):
 
         print("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2});".format(t1, t1 / total, t2,
                                                                                          t2 / total, t3, t3 / total))"""
-        return max(inner_fill - outer_fill, 0.0)
+
+        # for dynamic rescaling, pass 'punish_low=True' to calculate_sum and use 'inner' as quality
+        if self.particle_scale_factor == 1.0: # no scaling
+            quality = max(inner_fill - outer_fill, 0.0)
+        else:
+            quality = max(inner, 0.0)
+        # print("quality: {}".format(quality))
+        return quality
 
     def pursue(self, state, frame, lost=0):
         # p1 = time.time()
@@ -168,15 +179,44 @@ class SwarmPursuer(Pursuer):
         p4 = time.time()
         quals = list(self.thread_executor.map(func, locs))"""
 
-        rects = [Rect(loc) for loc in locs]
+        if self.particle_scale_factor != 1.0:
+            scaled_locs = []
+            for loc in locs:
+                width_difference = int(loc.width * self.particle_scale_factor)
+                height_difference = int(loc.height * self.particle_scale_factor)
 
-        sums = list(self.thread_executor.map(np.sum, [img_mask[
-                int(pos.top):int(pos.bottom - 1),
-                int(pos.left):int(pos.right - 1)] for pos in rects]))
+                new_width = loc.width + width_difference
+                new_height = loc.height + height_difference
+                new_x = loc.x - (width_difference / 2)
+                new_y = loc.y - (height_difference / 2)
+                scaled_locs.append(Rect(new_x, new_y, new_width, new_height))
+
+                new_width = loc.width - width_difference
+                new_height = loc.height - height_difference
+                new_x = loc.x + (width_difference / 2)
+                new_y = loc.y + (height_difference / 2)
+                scaled_locs.append(Rect(new_x, new_y, new_width, new_height))
+
+                width_difference = self.initial_location.width - loc.width
+                height_difference = self.initial_location.height - loc.height
+                new_width = loc.width + width_difference
+                new_height = loc.height + height_difference
+                new_x = loc.x - (width_difference / 2)
+                new_y = loc.y - (height_difference / 2)
+                scaled_locs.append(Rect(new_x, new_y, new_width, new_height))
+
+            locs.extend(scaled_locs)
+
+        # if scaling is enabled, punish pixels with low feature rating
+        punish_low = self.particle_scale_factor != 1.0
+        sums = list(self.thread_executor.map(partial(self.calculate_sum, punish_low=punish_low),
+                                             [img_mask[
+                                              int(pos.top):int(pos.bottom - 1),
+                                              int(pos.left):int(pos.right - 1)] for pos in locs]))
         # p4 = time.time()
 
         quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum) / total_max
-                 for pos, inner_sum in zip(rects, sums)]
+                 for pos, inner_sum in zip(locs, sums)]
 
         # p5 = time.time()
 
@@ -191,3 +231,10 @@ class SwarmPursuer(Pursuer):
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
         return frame.predicted_position
+
+    @staticmethod
+    def calculate_sum(mat, punish_low=False):
+        if punish_low:
+            return np.multiply(mat - 0.2, 3, where=(mat < 0)).sum()
+        else:
+            return mat.sum()

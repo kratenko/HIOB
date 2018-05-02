@@ -14,9 +14,16 @@ class SimpleRoiCalculator(RoiCalculator):
 
     def configure(self, configuration):
         # magic number taken from init_tracker.m, pf_param.roi_scale
-        self.roi_scale = [2.0, 2.0]
+        self.roi_scale = configuration["roi_scale"] if "roi_scale" in configuration else [2.0, 2.0]
+        self.roi_movement_factor = configuration["roi_movement_factor"] if "roi_movement_factor" in configuration\
+            else 1.0
+        self.old_size_calculation = configuration['old_size_calculation'] if 'old_size_calculation' in configuration\
+            else False
 
-    def calculate_scale(self, position):
+    def set_initial_position(self, position):
+        self.initial_position = position
+
+    def calculate_scale(self, position, previous_position):
         # magic number taken from init_tracker.m, pf_param.roi_scale
         print("POSITION: " + str(position))
         w = position.width
@@ -26,15 +33,32 @@ class SimpleRoiCalculator(RoiCalculator):
         scale = [dia / w, dia / h]
         return scale[0] * self.roi_scale[0], scale[1] * self.roi_scale[1]
 
+    def calculate_size(self, position, previous_position):
+        # magic number taken from init_tracker.m, pf_param.roi_scale
+        # fcnt only uses initial frame's size for this
+        #dia = math.sqrt(position.width ** 2 + position.height ** 2)
+        #scale = [dia / w, dia / h]
+        #return scale[0] * self.roi_scale[0], scale[1] * self.roi_scale[1]
+
+        base_scale = position.center_distance(previous_position) * 2 * self.roi_movement_factor
+        return (max(self.initial_position.width, position.width) * 1.5 + base_scale) * self.roi_scale[0], \
+               (max(self.initial_position.height, position.height) * 1.5 + base_scale) * self.roi_scale[1]
+
     def calculate_roi(self, frame):
         i_w, i_h = frame.capture_image.size
 
         position = frame.previous_position
 
         c_x, c_y = position.center
-        r_w_scale = self.calculate_scale(position)
-        roi_w = r_w_scale[0] * position.width
-        roi_h = r_w_scale[1] * position.height
+        # original implementation:
+        if self.old_size_calculation:
+            r_w_scale = self.calculate_scale(position, frame.before_previous_position)
+            roi_w = r_w_scale[0] * position.width
+            roi_h = r_w_scale[1] * position.height
+        else:
+            roi_w, roi_h = self.calculate_size(position, frame.before_previous_position)
+        #print("roi width: {}|{}".format(roi_w, roi_w1))
+        #print("roi height: {}|{}".format(roi_h, roi_h1))
 
         # only one size, since we want a square
         s = round((roi_w + roi_h) / 2) + 1

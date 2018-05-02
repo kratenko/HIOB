@@ -3,8 +3,12 @@
 # Can be fed to program via command line argument --tracker [path]
 
 #sroi_size: [368, 368]
-#lsroi_size: [496, 496]
-sroi_size: [256, 256]
+#sroi_size: [50, 50]
+#sroi_size: [960, 720]
+roi_scale: [1.7,1.7]
+roi_movement_factor: 4.0
+sroi_size: [400,400]
+#sroi_scale: 0.5
 mask_size: null
 #extractor_net: alexnet
 #features:
@@ -15,7 +19,7 @@ features:
   - [conv4_3, 384]
 #  - [conv5_3, 384]
 #  - [conv4_3, 60]
-#  - [conv5_3, 120]
+  - [conv5_3, 120]
 #  - [pool3, 64]
 random_seed: 1338
 selector:
@@ -42,7 +46,7 @@ consolidator:
   min_cost: 0.0005
   sigma_train: 0.8
   sigma_update: 0.8
-  update_threshold: 0.0
+  update_threshold: 0.2
   update_lower_threshold: 0.4
   # number of frames stored for updates
   update_frame_store_size: 5
@@ -53,7 +57,7 @@ consolidator:
   # update_min_frames: number of frames that must have passed since the last update of consolidator (hard limit). Use null or (0 or 1) for no limit
   update_min_frames: null
   update_keep_initial_frame: true
-  update_initial_factor: 1.0
+  update_initial_factor: 4.0
   update_use_quality: False
   update_current_factor: 1.0
   net:
@@ -81,12 +85,15 @@ consolidator:
 
 pursuer:
   particle_count: 600
+  particle_scale_factor: 1.0
   target_lower_limit: 0.2
   target_punish_low: 0.0
   target_punish_outside: 0.0
 
 tracking_conf:
   fake_fps: 0
+  skip_fps: 0
+  shuffle: false
 
 # = tracking = 
 # which samples shall be tracked? Accepts samples, data sets, and data collections
@@ -125,6 +132,80 @@ tracking:
 #  - princeton/computerBar2
 #  - SET/princeton
 #  - princeton/book_turn
+  - nicovision/shake_heavy_banana_03
+  - nicovision/bang_blue_tissue_01
+  - nicovision/bang_sponge_01
+  - nicovision/lift_blue_car_01
+  - nicovision/lift_blue_car_02
+  - nicovision/lift_blue_car_03
+  - nicovision/lift_blue_car_04
+  - nicovision/lift_blue_car_05
+  - nicovision/lift_blue_tissue_01
+  - nicovision/lift_heavy_banana_01
+  - nicovision/lift_heavy_banana_02
+  - nicovision/lift_red_car_01
+  - nicovision/lift_red_car_02
+  - nicovision/lift_red_tissue_01
+  - nicovision/lift_small_yellow_cube_01
+  - nicovision/lift_sponge_02
+  - nicovision/lift_sponge_03
+  - nicovision/lift_styrofoam_cube_01
+  - nicovision/pull_blue_ball_01
+  - nicovision/pull_blue_car_01
+  - nicovision/pull_blue_plush_ball_01
+  - nicovision/pull_blue_tissue_01
+  - nicovision/pull_brown_plush_ball_01
+  - nicovision/pull_green_car_01
+  - nicovision/pull_heavy_apple_01
+  - nicovision/pull_heavy_tomato_01
+  - nicovision/pull_heavy_yellow_cube_01
+  - nicovision/pull_orange_patterned_plush_ball_01
+  - nicovision/pull_red_car_01
+  - nicovision/pull_red_car_02
+  - nicovision/pull_small_tomato_01
+  - nicovision/pull_small_yellow_cube_01
+  - nicovision/pull_sponge_01
+  - nicovision/pull_styrofoam_cube_01
+  - nicovision/pull_styrofoam_cube_02
+  - nicovision/push_blue_ball_01
+  - nicovision/push_blue_car_01
+  - nicovision/push_blue_car_02
+  - nicovision/push_blue_patterned_plush_ball_01
+  - nicovision/push_green_car_01
+  - nicovision/push_green_car_02
+  - nicovision/push_heavy_apple_01
+  - nicovision/push_heavy_apple_02
+  - nicovision/push_red_car_01
+  - nicovision/push_red_car_02
+  - nicovision/push_small_yellow_cube_01
+  - nicovision/push_sponge_01
+  - nicovision/scoot_blue_ball_01
+  - nicovision/scoot_blue_ball_02
+  - nicovision/scoot_blue_car_01
+  - nicovision/scoot_blue_car_02
+  - nicovision/scoot_blue_tissue_01
+  - nicovision/scoot_green_car_01
+  - nicovision/scoot_plush_banana_01
+  - nicovision/shake_big_light_banana_01
+  - nicovision/shake_blue_plush_ball_01
+  - nicovision/shake_blue_tissue_01
+  - nicovision/shake_brown_plush_ball_01
+  - nicovision/shake_heavy_banana_01
+  - nicovision/shake_heavy_banana_02
+  - nicovision/shake_heavy_banana_03
+  - nicovision/shake_heavy_banana_04
+  - nicovision/shake_red_tissue_01
+  - nicovision/shake_small_banana_01
+  - nicovision/shake_small_banana_02
+  - nicovision/shake_small_banana_03
+  - nicovision/shake_small_banana_04
+  - nicovision/shake_small_banana_05
+  - nicovision/shake_small_yellow_cube_01
+  - nicovision/shake_sponge_01
+  - nicovision/shake_styrofoam_cube_01
+  - nicovision/lift_sponge_01
+  - nicovision/pull_red_tissue_01
+  - nicovision/push_tomato_01
 
 xtracking:
 #  - tb100/SHORT

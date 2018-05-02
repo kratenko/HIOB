@@ -9,6 +9,8 @@ import logging
 import pickle
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
@@ -161,7 +163,9 @@ def do_tracking_evaluation(tracking):
     plt.ylabel("rel. center distance")
     plt.axhline(y=1, color='r', linestyle='--')
     plt.plot(dim, rcd, 'k', dim, rcd, 'bo')
-    plt.xlim(1, len(rcd))
+    #plt.ylim(1, 5.0)
+    plt.ylim(ymin=0.0, ymax=5.0)
+    plt.xlim(5, len(rcd))
     plt.savefig(figure_file2)
     plt.savefig(figure_file3)
 

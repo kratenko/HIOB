@@ -93,8 +93,16 @@ class Sample(object):
                 gt = gt[self.frame_offset:]
                 images = images[self.frame_offset:]
             if len(images) < len(gt):
-                raise DataSetException(
-                    "More ground truth frames than images in DataSet {}/{}".format(self.set_name, self.name))
+                # raise DataSetException(
+                #     "More ground truth frames than images in DataSet {}/{}".format(self.set_name, self.name))
+                print("len gt: {}".format(len(gt)))
+                print("len imgs: {}".format(len(images)))
+                gt = gt[:len(images) - 1]
+                print("len gt: {}".format(len(gt)))
+                print("len imgs: {}".format(len(images)))
+                if len(images) < len(gt):
+                    raise Exception("still more gts")
+
             if len(images) > len(gt):
                 # some samples have more images than gt at the end, cut them:
                 images = images[:len(gt)]
@@ -107,7 +115,7 @@ class Sample(object):
         if len(images) != self.actual_frames:
             logger.error(
                 "Wrong number for actual_images in sample {}".format(self))
-            self.actual_frames = len(images)
+            # self.actual_frames = len(images)
 
     def load_princeton(self):
         # find out, of sample is Evaluation or Validation set:
@@ -154,7 +162,7 @@ class Sample(object):
         if len(images) != self.actual_frames:
             logger.error(
                 "Wrong number for actual_images in sample {}".format(self))
-            self.actual_frames = len(images)
+            #self.actual_frames = len(images)
         # gt:
         gt_path = os.path.join(dir_path, self.name + '.txt')
         if os.path.isfile(gt_path):
@@ -202,7 +210,7 @@ class Sample(object):
         return self.images[img_id]
 
     def get_ground_truth(self, gt_id):
-        if len(self.ground_truth) > gt_id:
+        if len(self.ground_truth) > gt_id and len(self.ground_truth) > self.actual_frames:
             return self.ground_truth[gt_id]
         else:
             return None
@@ -214,7 +222,7 @@ class Sample(object):
             self.get_ground_truth(self.current_frame_id)]
 
     def frames_left(self):
-        return max(0, len(self.images) - self.current_frame_id - 1)
+        return max(0, min(self.actual_frames, len(self.images)) - self.current_frame_id - 1)
 
     def count_frames_processed(self):
         return self.current_frame_id + 1
