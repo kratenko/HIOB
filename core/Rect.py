@@ -5,6 +5,7 @@ Created on 2016-10-06
 """
 
 import numpy as np
+import math
 
 
 class Rect(object):
@@ -177,8 +178,8 @@ class Rect(object):
         :param other: another Rect object
         :return: relative distance in %
         """
-        self_size = (self.width + self.height) / 2
-        return self.center_distance(other) / max(1, self_size)
+        self_diag = math.sqrt(self.width ** 2 + self.height ** 2)
+        return self.center_distance(other) / (self_diag / 2)
 
     def pixel_count(self):
         """
