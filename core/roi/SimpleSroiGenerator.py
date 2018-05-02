@@ -6,6 +6,7 @@ Created on 2016-11-17
 
 
 from .SroiGenerator import SroiGenerator
+from PIL import Image
 
 
 class SimpleSroiGenerator(SroiGenerator):
@@ -18,4 +19,4 @@ class SimpleSroiGenerator(SroiGenerator):
 
     def generate_sroi(self, frame):
         frame.sroi_image = frame.capture_image.crop(
-            frame.roi.outer).resize(self.sroi_size)
+            frame.roi.outer).resize(self.sroi_size, Image.LANCZOS)
