@@ -181,10 +181,13 @@ class Tracking(object):
         self.initial_frame = await self._get_next_sample_frame()
         # store initial position as position of previous frame:
         self.initial_frame.previous_position = self.sample.initial_position
+        self.initial_frame.before_previous_position = self.sample.initial_position
         # we know the truth for this frame, use as prediction:
         self.initial_frame.predicted_position = self.sample.initial_position
         # for now, the initial frame is the current frame:
         self.current_frame = self.initial_frame
+        self.tracker.pursuer.set_initial_position(self.initial_frame.previous_position)
+        self.tracker.roi_calculator.set_initial_position(self.initial_frame.previous_position)
 
     async def _get_next_sample_frame(self):
         frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
@@ -584,6 +587,7 @@ class Tracking(object):
         previous_position = self.current_frame.predicted_position
         frame = await self._get_next_sample_frame()
         frame.previous_position = previous_position
+        frame.before_previous_position = self.current_frame.previous_position
         self.current_frame = frame
 
     # information:

@@ -71,6 +71,7 @@ class Frame(object):
         self.ground_truth = None
         self.capture_image = None
         self.previous_position = None
+        self.before_previous_position = None
         self.roi = None
         self.sroi_image = None
         self.features = None
