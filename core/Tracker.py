@@ -86,6 +86,8 @@ class Tracker:
         if 'tracking' in self.configuration:
             self.samples = self.data_directory.evaluate_sample_list(
                 self.configuration['tracking'], self.configuration['tracking_conf'])
+            if "shuffle" in self.configuration['tracking_conf'] and self.configuration['tracking_conf']['shuffle']:
+                random.shuffle(self.samples)
 
         self.roi_calculator = roi.SimpleRoiCalculator()
         self.modules.append(self.roi_calculator)
