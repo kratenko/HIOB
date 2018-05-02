@@ -46,10 +46,10 @@ class Sample(object):
         if '.' in self.name:
             # is sample like 'Jogging.2' with multiple ground truths
             name, number = self.name.split('.')
-            gt_name = name + '/groundtruth_rect.{}.txt'.format(number)
+            gt_name = 'groundtruth_rect.{}.txt'.format(number)
         else:
             name = self.name
-            gt_name = name + '/groundtruth_rect.txt'
+            gt_name = 'groundtruth_rect.txt'
 
         path = os.path.join(self.data_set.path, name + '.zip')
         with zipfile.ZipFile(path, 'r') as zf:
@@ -67,7 +67,7 @@ class Sample(object):
                         gt.append(None)
             # get frames (images):
             img_paths = []
-            r = re.compile(r".+/img/\d+\.[0-9a-zA-Z]+")
+            r = re.compile(r"img/\d+\.[0-9a-zA-Z]+")
             for fn in zf.namelist():
                 if r.match(fn):
                     img_paths.append(fn)
