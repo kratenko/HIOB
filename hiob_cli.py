@@ -55,7 +55,8 @@ def main():
     args = parser.parse_args()
 
     ev = track(environment_path=args.environment, tracker_path=args.tracker,
-               ros_config={'subscribe': args.ros_subscribe, 'publish': args.ros_publish})
+               ros_config=None if args.ros_subscribe is None and args.ros_publish is None
+               else {'subscribe': args.ros_subscribe, 'publish': args.ros_publish})
     logger.info("Tracking finished!")
     ev_lines = "\n  - ".join(["{}={}".format(k, v) for k, v in ev.items()])
     logger.info("Evaluation:\n  - %s", ev_lines)
