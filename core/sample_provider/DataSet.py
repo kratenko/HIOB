@@ -30,7 +30,7 @@ class DataSet(object):
         self.path = os.path.join(data_dir, name)
         print(self.path)
 
-    def load(self, definition, fake_fps):
+    def load(self, definition, tracking_conf=None):
         if self.name == '__ros__':
             raise InvalidSetNameError("'__ros__' is a reserved keyword. It is not allowed for sample names!")
         if 'description' in definition:
@@ -38,8 +38,8 @@ class DataSet(object):
         if 'format' in definition:
             self.format = definition['format']
         for sdef in definition['samples']:
-            if fake_fps > 0:
-                s = FakeLiveSample(self, sdef['name'], fake_fps)
+            if tracking_conf is not None and (tracking_conf["fake_fps"] > 0 or tracking_conf["skip_frames"] > 0):
+                s = FakeLiveSample(self, sdef['name'], tracking_conf["fake_fps"], tracking_conf["skip_frames"])
             else:
                 s = Sample(self, sdef['name'])
             if 'attributes' in sdef:

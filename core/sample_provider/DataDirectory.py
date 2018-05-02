@@ -26,25 +26,25 @@ class DataDirectory(object):
         self.data_sets = {}
         self.data_collections = {}
 
-    def _load_data_set(self, name, fake_fps=0):
+    def _load_data_set(self, name, tracking_conf=None):
         set_file = os.path.join(self.data_set_dir, name + '.yaml')
         ds = DataSet(name, self.data_dir)
         with open(set_file, "r") as f:
             y = yaml.safe_load(f)
-            ds.load(y, fake_fps)
+            ds.load(y, tracking_conf)
         self.data_sets[name] = ds
 
-    def _load_data_collection(self, name, fake_fps=0):
+    def _load_data_collection(self, name, tracking_config):
         col_file = os.path.join(self.data_collection_dir, name + '.yaml')
         dc = DataCollection(self, name)
         with open(col_file, "r") as f:
             y = yaml.safe_load(f)
-            dc.load(y, fake_fps)
+            dc.load(y, tracking_config)
         self.data_collections[name] = dc
 
-    def get_data_set(self, name, fake_fps=0):
+    def get_data_set(self, name, tracking_config):
         if name not in self.data_sets:
-            self._load_data_set(name, fake_fps)
+            self._load_data_set(name, tracking_config)
         return self.data_sets[name]
 
     def get_data_collection(self, name, fake_fps=0):
@@ -52,8 +52,8 @@ class DataDirectory(object):
             self._load_data_collection(name, fake_fps)
         return self.data_collections[name]
 
-    def get_sample(self, set_name, sample_name, fake_fps=0):
-        ds = self.get_data_set(set_name, fake_fps)
+    def get_sample(self, set_name, sample_name, tracking_config=None):
+        ds = self.get_data_set(set_name, tracking_config)
         sample = ds.samples_by_name[sample_name]
         return sample
 
@@ -65,21 +65,18 @@ class DataDirectory(object):
             raise Exception("rospy could not by loaded!")
 
     def evaluate_sample_list(self, sample_names, tracking_conf):
-        fake_fps = 0
-        if 'fake_fps' in tracking_conf:
-            fake_fps = tracking_conf['fake_fps']
         samples = []
         for sname in sample_names:
             p1, p2 = sname.split(os.path.sep, 1)
             if p1 == 'SET':
                 # this is a full sample set:
                 set_name = p2
-                ds = self.get_data_set(set_name, fake_fps)
+                ds = self.get_data_set(set_name, tracking_conf)
                 samples.extend(ds.samples)
             elif p1 == 'COLLECTION':
                 # this is a collection of samples
                 collection_name = p2
-                dc = self.get_data_collection(collection_name, fake_fps)
+                dc = self.get_data_collection(collection_name, tracking_conf)
                 dc.load_samples()
                 samples.extend(dc.samples)
             else:
@@ -88,5 +85,5 @@ class DataDirectory(object):
                     samples.append(self.get_ros_sample(p2))
                 else:
                     set_name, sample_name = p1, p2
-                    samples.append(self.get_sample(set_name, sample_name, fake_fps))
+                    samples.append(self.get_sample(set_name, sample_name, tracking_conf))
         return samples
