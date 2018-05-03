@@ -45,7 +45,7 @@ class SimpleRoiCalculator(RoiCalculator):
                (max(self.initial_position.height, position.height) * 1.5 + base_scale) * self.roi_scale[1]
 
     def calculate_roi(self, frame):
-        i_w, i_h = frame.capture_image.size
+        i_w, i_h = frame.size
 
         position = frame.previous_position
 

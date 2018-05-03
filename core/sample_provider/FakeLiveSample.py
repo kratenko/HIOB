@@ -31,10 +31,11 @@ class FakeLiveSample(Sample):
             self.get_ground_truth(self.current_frame_id)]
 
     def get_image(self, img_id):
-        if len(self.images) > img_id:
-            return self.images[img_id]
+        if len(self.img_paths) > img_id:
+            return super(FakeLiveSample, self).get_image(img_id)
+            #return self.image_cache[img_id]
         else:
-            return self.images[-1]
+            return super(FakeLiveSample, self).get_image(len(self.img_paths - 1))
 
     def get_ground_truth(self, gt_id):
         if len(self.ground_truth) > 0:
@@ -48,4 +49,4 @@ class FakeLiveSample(Sample):
         return self.frames_processed
 
     def count_frames_skipped(self):
-        return len(self.images) - self.frames_processed
+        return len(self.img_paths) - self.frames_processed

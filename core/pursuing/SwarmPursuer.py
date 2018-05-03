@@ -161,12 +161,12 @@ class SwarmPursuer(Pursuer):
         mask[mask < 0.0] = 0.0
 
         #print("a", mask.max(), mask.min(), np.average(mask))
-        img_size = [frame.capture_image.size[1], frame.capture_image.size[0]]
+        img_size = [frame.size[1], frame.size[0]]
         img_mask = self.upscale_mask(mask, frame.roi, img_size)
         #print("a", img_mask.max(), img_mask.min(), np.average(img_mask))
         frame.image_mask = img_mask
         locs = self.generate_particles(
-            frame.previous_position, frame.capture_image.size, lost)
+            frame.previous_position, frame.size, lost)
         #total = np.sum(img_mask)
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))

@@ -9,6 +9,9 @@ import zipfile
 import logging
 import re
 import io
+import tensorflow as tf
+import numpy as np
+import time
 
 from PIL import Image
 
@@ -33,16 +36,19 @@ class Sample(object):
         self.total_frames = None
         self.actual_frames = None
         # data from actual data set sample:
-        self.images = []
+        self.image_cache = []
+        self.img_paths = []
         self.ground_truth = []
         self.current_frame_id = -1
         self.initial_position = None
         self.frame_offset = None
+        self.capture_size = None
 
     def __repr__(self):
         return '<Sample {name}/{set_name}>'.format(name=self.name, set_name=self.set_name)
 
     def load_tb100zip(self):
+        logging.info("Start loading sample {}".format(self.name))
         if '.' in self.name:
             # is sample like 'Jogging.2' with multiple ground truths
             name, number = self.name.split('.')
@@ -52,63 +58,63 @@ class Sample(object):
             gt_name = 'groundtruth_rect.txt'
 
         path = os.path.join(self.data_set.path, name + '.zip')
-        with zipfile.ZipFile(path, 'r') as zf:
-            # get ground truth:
-            r = re.compile(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)")
-            gt = []
-            with zf.open(gt_name, 'r') as gtf:
-                for line in gtf.readlines():
-                    if type(line) is bytes:
-                        line = line.decode('utf-8')
-                    m = r.match(line)
-                    if m:
-                        gt.append(Rect(m.groups()))
-                    else:
-                        gt.append(None)
-            # get frames (images):
-            img_paths = []
-            r = re.compile(r"img/\d+\.[0-9a-zA-Z]+")
-            for fn in zf.namelist():
-                if r.match(fn):
-                    img_paths.append(fn)
-            img_paths.sort()
-            images = []
-            for img_path in img_paths:
-                data = zf.read(img_path)
-                stream = io.BytesIO(data)
-                im = Image.open(stream)
-                if im.mode != "RGB":
-                    # convert s/w to colour:
-                    im = im.convert("RGB")
-                images.append(im)
+        self.zip_file = zipfile.ZipFile(path, 'r')
+        # get ground truth:
+        r = re.compile(r"(\d+)\D+(\d+)\D+(\d+)\D+(\d+)")
+        gt = []
+        with self.zip_file.open(gt_name, 'r') as gtf:
+            for line in gtf.readlines():
+                if type(line) is bytes:
+                    line = line.decode('utf-8')
+                m = r.match(line)
+                if m:
+                    gt.append(Rect(m.groups()))
+                else:
+                    gt.append(None)
+        # get frames (images):
+        self.img_paths = []
+        r = re.compile(r"img/\d+\.[0-9a-zA-Z]+")
+        for fn in self.zip_file.namelist():
+            if r.match(fn):
+                self.img_paths.append(fn)
+        self.img_paths.sort()
+        images = []
+        # fix weird frame cases like David and Football1
+        if self.first_frame is None:
+            self.first_frame = 1
+        self.frame_offset = self.first_frame - 1
 
-            # fix weird frame cases like David and Football1
-            if self.first_frame is None:
-                self.first_frame = 1
-            if self.last_frame is None:
-                self.last_frame = len(images) + 1
-            self.frame_offset = self.first_frame - 1
-            if self.first_frame != 1:
-                # truncate everything before first frame:
-                gt = gt[self.frame_offset:]
-                images = images[self.frame_offset:]
+        c = 1
+        for img_path in self.img_paths[self.frame_offset:]:
+            c += 1
+            im = self.load_tb100_image(img_path)
+            images.append(im)
+
+        self.capture_size = tuple(reversed(images[0].shape[:-1]))
+
+        if self.last_frame is None:
+            self.last_frame = len(self.img_paths) + 1
+        if self.first_frame != 1:
+            # truncate everything before first frame:
+            gt = gt[self.frame_offset:]
+            #images = images[self.frame_offset:]
+        if len(images) < len(gt):
+            # raise DataSetException(
+            #     "More ground truth frames than images in DataSet {}/{}".format(self.set_name, self.name))
+            print("len gt: {}".format(len(gt)))
+            print("len imgs: {}".format(len(images)))
+            gt = gt[:len(images) - 1]
+            print("len gt: {}".format(len(gt)))
+            print("len imgs: {}".format(len(images)))
             if len(images) < len(gt):
-                # raise DataSetException(
-                #     "More ground truth frames than images in DataSet {}/{}".format(self.set_name, self.name))
-                print("len gt: {}".format(len(gt)))
-                print("len imgs: {}".format(len(images)))
-                gt = gt[:len(images) - 1]
-                print("len gt: {}".format(len(gt)))
-                print("len imgs: {}".format(len(images)))
-                if len(images) < len(gt):
-                    raise Exception("still more gts")
+                raise Exception("still more gts")
 
-            if len(images) > len(gt):
-                # some samples have more images than gt at the end, cut them:
-                images = images[:len(gt)]
+        if len(images) > len(gt):
+            # some samples have more images than gt at the end, cut them:
+            images = images[:len(gt)]
         # save what we got
         self.ground_truth = gt
-        self.images = images
+        self.image_cache = images
         # first ground truth position is initial position
         self.initial_position = gt[0]
         # verify number of actual frames from data set file:
@@ -116,6 +122,13 @@ class Sample(object):
             logger.error(
                 "Wrong number for actual_images in sample {}".format(self))
             # self.actual_frames = len(images)
+        logging.info("Sample '{}' loaded".format(self.name))
+
+    def load_tb100_image(self, img_path):
+        data = self.zip_file.read(img_path)
+        stream = io.BytesIO(data)
+        im = np.array(Image.open(stream))
+        return im
 
     def load_princeton(self):
         # find out, of sample is Evaluation or Validation set:
@@ -157,7 +170,7 @@ class Sample(object):
                 # convert s/w to colour:
                 im = im.convert("RGB")
             images.append(im)
-        self.images = images
+        self.image_cache = images
         # verify number of actual frames from data set file:
         if len(images) != self.actual_frames:
             logger.error(
@@ -203,11 +216,18 @@ class Sample(object):
         Delete the images in the sample to free most of the memory taken by sample.
         """
         if self.loaded:
-            self.images = []
+            self.image_cache = []
             self.loaded = False
 
     def get_image(self, img_id):
-        return self.images[img_id]
+        if img_id >= len(self.img_paths):
+            return None
+        #if len(self.image_cache) <= img_id or self.image_cache[img_id] is None:
+        #    self.image_cache[-9] = None
+        #    print("img_id: {}".format(img_id))
+        #    print("cache_length: {}".format(len(self.image_cache)))
+        #    self.image_cache.append(self.load_tb100_image(self.img_paths[img_id]))
+        return self.image_cache[img_id]
 
     def get_ground_truth(self, gt_id):
         if len(self.ground_truth) > gt_id and len(self.ground_truth) > self.actual_frames:
@@ -222,7 +242,7 @@ class Sample(object):
             self.get_ground_truth(self.current_frame_id)]
 
     def frames_left(self):
-        return max(0, min(self.actual_frames, len(self.images)) - self.current_frame_id - 1)
+        return max(0, min(self.actual_frames, len(self.img_paths)) - self.current_frame_id - 1)
 
     def count_frames_processed(self):
         return self.current_frame_id + 1

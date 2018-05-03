@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 
 from .. import AlexNet
 from .. import Vgg16
@@ -30,19 +31,21 @@ class CnnFeatureExtractor(FeatureExtractor):
     def configure(self, configuration):
         self.configuration = configuration
         self.sroi_size = configuration['sroi_size']
-        self.input_shape = [1, self.sroi_size[0], self.sroi_size[1], 3]
+        # self.sroi_scale = configuration["sroi_scale"] if "sroi_scale" in configuration else 1.0
+        self.input_shape = [1, self.sroi_size[1], self.sroi_size[0], 3]
         self.net_dir = configuration['net_dir']
         self.net_name = configuration['extractor_net']
         self.requested_feature_names = [x[0]
                                         for x in configuration['features']]
         self.output_size = configuration['mask_size']
 
-    def setup(self, session):
+    def setup(self, session, sroi):
         self.session = session
         if self.net_name == 'vgg16':
             logger.info("creating pretrained vgg16 net as feature extractor")
             net_path = os.path.join(self.net_dir, 'vgg16.npy')
             self.net = Vgg16.Vgg16(
+                sroi,
                 input_size=self.sroi_size,
                 vgg16_npy_path=net_path,
             )
@@ -84,16 +87,13 @@ class CnnFeatureExtractor(FeatureExtractor):
 
     def extract_features(self, tracking, frame):
         logger.info("Extracting features for %s", frame)
-        # get np-array from image data as input:
-        feature_input = np.array(frame.sroi_image.getdata(), dtype=np.float32).reshape(
-            self.input_shape)
-        # execute net to get requested output layers:
+
         outputs = self.session.run(
-            list(self.output_features.values()),
-            feed_dict={self.net.input_placeholder: feature_input})
-        # pack for frame storage:
+            list(self.output_features.values()))
+        frame.features = self.post_process_features(outputs)
+
+    def post_process_features(self, outputs):
         features = OrderedDict()
         for n, o in enumerate(outputs):
             features[self.requested_feature_names[n]] = o
-        # store features in frame:
-        frame.features = features
+        return features

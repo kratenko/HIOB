@@ -53,12 +53,13 @@ class Frame(object):
         ['complete_evaluation', 'evaluating', 'evaluated'],
     ]
 
-    def __init__(self, tracking, number):
+    def __init__(self, tracking, number, size):
         logger.info("Creating new Frame")
         # the tracking process this frame is part of:
         self.tracking = tracking
         # number of this frame within the tracking process:
         self.number = number
+        self.size = size
 
         # state machine for this frame:
         self.machine = transitions.Machine(
