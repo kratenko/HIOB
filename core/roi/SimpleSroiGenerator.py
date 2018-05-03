@@ -9,8 +9,6 @@ from .SroiGenerator import SroiGenerator
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-import time
-import zipfile, io, re
 
 
 class SimpleSroiGenerator(SroiGenerator):
@@ -42,5 +40,5 @@ class SimpleSroiGenerator(SroiGenerator):
             frame.sroi_image = Image.fromarray(np.asarray((resized.eval() * 255)[0], dtype=np.uint8))
         else:
             frame.sroi_image = frame.capture_image.crop(
-                frame.roi.outer).resize(self.sroi_size, Image.LANCZOS)
+                frame.roi.outer).resize(self.sroi_size)
 
