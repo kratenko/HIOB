@@ -5,6 +5,7 @@ from datetime import datetime
 
 import matplotlib.cm
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 import numpy as np
 import transitions
@@ -91,7 +92,7 @@ class Tracking(object):
             'evaluating_tracking', 'tracking_evaluated'],
     ]
 
-    def __init__(self, tracker):
+    def __init__(self, tracker, session):
         Tracking._LAST_SERIAL += 1
         self.serial = Tracking._LAST_SERIAL
         logger.info("Creating new Tracking#%d", self.serial)
@@ -159,6 +160,7 @@ class Tracking(object):
             self.publisher = RosPositionPublisher(tracker.configuration['ros_node'])
         else:
             self.publisher = None
+        self.session = session
 
     def get_total_frames(self):
         if not self.sample:
@@ -171,9 +173,9 @@ class Tracking(object):
         # self.sample = hiob.data_set_old.load_sample(
         #    data_set, sample, config=self.tracker.configuration)
         self.sample = sample
-        self.total_frames = len(self.sample.images)
+        self.total_frames = self.sample.get_actual_frames()
         await self._load_initial_frame()
-        self.capture_size = self.initial_frame.capture_image.size
+        self.capture_size = self.initial_frame.size
         # update name:
         self.name = "tracking-%04d-%s-%s" % (self.serial,
                                              sample.set_name, sample.name)
@@ -195,7 +197,7 @@ class Tracking(object):
         self.tracker.roi_calculator.set_initial_position(self.initial_frame.previous_position)
 
     async def _get_next_sample_frame(self):
-        frame = Frame(tracking=self, number=self.sample.current_frame_id + 1)
+        frame = Frame(tracking=self, number=self.sample.current_frame_id + 1, size=self.sample.capture_size)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
         frame.capture_image, frame.ground_truth = await self.sample.get_next_frame_data()
@@ -206,11 +208,15 @@ class Tracking(object):
 
     def start_feature_selection(self):
         self.commence_feature_selection()
+        logger.info("calculate roi...")
         self.calculate_frame_roi(self.initial_frame)
+        logger.info("generate sroi and extract features")
         self.generate_frame_sroi(self.initial_frame)
+        logger.info("generate target mask")
         self.extract_frame_features(self.initial_frame)
         self.generate_frame_target_mask(self.initial_frame)
 
+        logger.info("train selector")
         self.tracker.feature_selector.start_training(
             self.module_states.feature_selector,
             self.initial_frame)
@@ -505,15 +511,14 @@ class Tracking(object):
         if frame is None:
             frame = self.current_frame
         frame.commence_sroi()
-        self.tracker.sroi_generator.generate_sroi(frame=frame)
+        self.tracker.sroi_generator.generate_sroi(frame)
         frame.complete_sroi()
 
     def extract_frame_features(self, frame=None):
         if frame is None:
             frame = self.current_frame
         frame.commence_extraction()
-        self.tracker.feature_extractor.extract_features(
-            tracking=self, frame=frame)
+        self.tracker.feature_extractor.extract_features(self, frame)
         frame.complete_extraction()
 
     def generate_frame_target_mask(self, frame=None, dev=0.6):
@@ -693,7 +698,8 @@ class Tracking(object):
     def get_frame_capture_image(self, frame=None, decorations=True):
         if frame is None:
             frame = self.current_frame
-        im = frame.capture_image.copy()
+        #im = frame.capture_image.copy()
+        im = Image.fromarray(np.asarray(frame.capture_image, dtype=np.uint8))
         if decorations:
             draw = ImageDraw.Draw(im)
             if frame.roi:
@@ -711,7 +717,7 @@ class Tracking(object):
     def get_frame_sroi_image(self, frame=None, decorations=True):
         if frame is None:
             frame = self.current_frame
-        im = frame.sroi_image.copy()
+        im = Image.fromarray(np.asarray(frame.sroi_image.eval(), dtype=np.uint8)[0])
         if decorations:
             draw = ImageDraw.Draw(im)
             if frame.ground_truth and frame.roi:

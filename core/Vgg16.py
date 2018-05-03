@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Vgg16(object):
     VGG_MEAN = [103.939, 116.779, 123.68]
 
-    def __init__(self, input_size=None, vgg16_npy_path=None):
+    def __init__(self, sroi_placeholder, input_size=(224, 224), vgg16_npy_path=None):
         if input_size is None:
             input_size = (224, 224)
 
@@ -27,12 +27,14 @@ class Vgg16(object):
 
         self.input_size = input_size
         self.input_shape = (1, input_size[0], input_size[1], 3)
+        self.sroi = sroi_placeholder
 
-        self.input_placeholder = tf.placeholder(
-            dtype=tf.float32, shape=self.input_shape, name='input_placeholder')
+        #self.input_placeholder = tf.placeholder(
+        #    dtype=tf.float32, shape=self.input_shape, name='input_placeholder')
+
 
         # convert from rgb to bgr and apply mean
-        red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=self.input_placeholder)
+        red, green, blue = tf.split(self.sroi, axis=3, num_or_size_splits=3)
         assert red.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert green.get_shape().as_list()[1:] == [
@@ -64,7 +66,7 @@ class Vgg16(object):
         # rgb_scaled = rgb * 255.0
 
         # Convert RGB to BGR
-        red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=self.input_placeholder)
+        red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=self.sroi)
         assert red.get_shape().as_list()[1:] == [
             self.input_size[0], self.input_size[1], 1]
         assert green.get_shape().as_list()[1:] == [

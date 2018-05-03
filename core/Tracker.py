@@ -173,7 +173,7 @@ class Tracker:
         # setup modules
         self.roi_calculator.setup(self.session)
         self.sroi_generator.setup(self.session)
-        self.feature_extractor.setup(self.session)
+        self.feature_extractor.setup(self.session, self.sroi_generator.generated_sroi)
         # cannot know mask size up to this point:
         self.mask_size = self.feature_extractor.output_size
         self.configuration.set_override('mask_size', self.mask_size)
@@ -183,6 +183,7 @@ class Tracker:
             self.session)
         self.consolidator.setup(self.session)
         self.pursuer.setup(self.session)
+        logger.info("Setup done")
 
     def setup_session(self):
         self.setup(tf.Session())
@@ -193,7 +194,8 @@ class Tracker:
         return await self.start_tracking_sample(sample)
 
     async def start_tracking_sample(self, sample):
-        tracking = Tracking(tracker=self)
+        logging.info("start tracking sample {}".format(sample.name))
+        tracking = Tracking(tracker=self, session=self.session)
 
         # setup tracking:
         self.feature_selector.setup_tracking(
