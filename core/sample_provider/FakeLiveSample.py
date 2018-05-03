@@ -5,9 +5,10 @@ from .Sample import Sample
 
 class FakeLiveSample(Sample):
 
-    def __init__(self, data_set, name, fps):
+    def __init__(self, data_set, name, fps=0, skip_frames=0):
         super().__init__(data_set, name)
         self.fps = float(fps)
+        self.skip_frames = float(skip_frames)
         self.start_time = None
         self.current_frame_id = -1
         self.frames_processed = 0
@@ -23,8 +24,10 @@ class FakeLiveSample(Sample):
         curr_frame = time_passed.total_seconds() * self.fps
         if self.prestream_count > curr_frame:
             self.current_frame_id = 0
-        else:
+        elif self.fps != 0:
             self.current_frame_id = int(curr_frame) - self.prestream_count
+        else:
+            self.current_frame_id += 1 + self.skip_frames
         print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         return [
             self.get_image(self.current_frame_id),
