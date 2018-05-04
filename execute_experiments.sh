@@ -78,7 +78,7 @@ echo "log directory is \"$log_dir\""
 mkdir -p "$log_dir"
 
 for conf in "$trackers_config_dir/tracker"*.yaml; do
-    tags="$(cat $conf | grep '#tags:')" && \
+    tags="$(cat $conf | grep 'tags:')" && \
     tags=${tags#\#*tags:} && \
     tags=$(echo "$tags" | sed -e 's/^[[ \t]]*//')
     tags=${tags%\#*}

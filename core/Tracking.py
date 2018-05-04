@@ -6,6 +6,7 @@ from datetime import datetime
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import pdb
 
 import numpy as np
 import transitions
@@ -389,6 +390,10 @@ class Tracking(object):
         self.commence_evaluating_frame()
         frame = self.current_frame
         self.evaluate_frame(frame)
+        #frame.sroi_image = None
+        #frame.capture_image = None
+        #frame.features = None
+        del frame
         self.complete_evaluating_frame()
 
     def tracking_log_frame(self):
@@ -422,6 +427,8 @@ class Tracking(object):
             self.tracking_publish_position()
 
     def finish_tracking(self):
+        self.initial_frame = None
+        self.current_frame = None
         self.commence_evaluate_tracking()
         self.ts_tracking_completed = datetime.now()
         #rospy.signal_shutdown("Tracking terminated.")
@@ -717,7 +724,7 @@ class Tracking(object):
     def get_frame_sroi_image(self, frame=None, decorations=True):
         if frame is None:
             frame = self.current_frame
-        im = Image.fromarray(np.asarray(frame.sroi_image.eval(), dtype=np.uint8)[0])
+        im = Image.fromarray(np.asarray(self.tracker.sroi_generator.generated_sroi.read_value().eval(), dtype=np.uint8)[0])
         if decorations:
             draw = ImageDraw.Draw(im)
             if frame.ground_truth and frame.roi:

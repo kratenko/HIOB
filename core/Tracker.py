@@ -236,15 +236,15 @@ class Tracker:
             self.total_adjusted_overlap_scores, adjusted_overlap_scores)
 
     async def execute_tracking_on_sample(self, sample):
+        sample.load()
         tracking = await self.start_tracking_sample(sample)
         await tracking.execute_everything()
         self.evaluate_tracking(tracking)
+        sample.unload()
 
     async def execute_tracking_on_all_samples(self):
         for sample in self.samples:
-            sample.load()
             await self.execute_tracking_on_sample(sample)
-            sample.unload()
 
     async def execute_everything(self):
         await self.execute_tracking_on_all_samples()

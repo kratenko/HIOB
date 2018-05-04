@@ -2,6 +2,8 @@ import os
 import itertools
 import numpy as np
 from core.Rect import Rect
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot
 import yaml
 import zipfile
@@ -53,9 +55,9 @@ if __name__ == '__main__':
         with zipfile.ZipFile(os.path.join(env_config["data_dir"], sample + ".zip")) as zip_file:
             with zip_file.open("groundtruth_rect.txt", 'r') as gt_file:
                 result = get_distances_and_sizes(gt_file)
-                print(str(result[0]))
-                print(str(result[1]))
-                print("----------------------")
+                #print(str(result[0]))
+                #print(str(result[1]))
+                #print("----------------------")
                 results["individual"].append({
                     "name": sample,
                     "distances": sorted(result[0], reverse=True),
@@ -75,22 +77,22 @@ if __name__ == '__main__':
     print("Samples with biggest avg distances: {}".format(
         ["{} ({})".format(sample["name"], avg(sample["distances"])) for sample in
          sorted(results["individual"], reverse=True,
-                key=lambda sample: avg(sample["distances"]))]
+             key=lambda sample: avg(sample["distances"]))[:10]]
     ))
     print("Samples with biggest max distances: {}".format(
         ["{} ({})".format(sample["name"], sample["distances"][0]) for sample in
          sorted(results["individual"], reverse=True,
-                key=lambda sample: sample["distances"][0])]
+             key=lambda sample: sample["distances"][0])[:10]]
     ))
     print("Samples with biggest avg sizes: {}".format(
         ["{} ({})".format(sample["name"], avg(sample["radii"])) for sample in
          sorted(results["individual"], reverse=True,
-                key=lambda sample: avg(sample["radii"]))]
+             key=lambda sample: avg(sample["radii"]))[:10]]
     ))
     print("Samples with biggest max sizes: {}".format(
         ["{} ({})".format(sample["name"], sample["radii"][0]) for sample in
          sorted(results["individual"], reverse=True,
-                key=lambda sample: sample["radii"][0])]
+             key=lambda sample: sample["radii"][0])[:10]]
     ))
 
     print("recommended sroi size:")
@@ -101,10 +103,6 @@ if __name__ == '__main__':
     print(" => {}".format(
         ((results["total"]["distances"][0] * 2)
          + (results["total"]["radii"][0] / 2)) * 1.2))
-
-    print("calculated roi size:")
-
-    print("    ")
 
 
     output_dir = os.path.join(env_config["data_dir"], tracker_config["tracking"][0].split('/', 1)[0])

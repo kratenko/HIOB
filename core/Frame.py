@@ -54,6 +54,7 @@ class Frame(object):
     ]
 
     def __init__(self, tracking, number, size):
+        self.is_frame = True
         logger.info("Creating new Frame")
         # the tracking process this frame is part of:
         self.tracking = tracking
@@ -74,7 +75,6 @@ class Frame(object):
         self.previous_position = None
         self.before_previous_position = None
         self.roi = None
-        self.sroi_image = None
         self.features = None
         self.consolidated_features = None
         self.predicted_position = None
