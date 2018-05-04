@@ -15,6 +15,7 @@ class SimpleRoiCalculator(RoiCalculator):
     def configure(self, configuration):
         # magic number taken from init_tracker.m, pf_param.roi_scale
         self.roi_scale = configuration["roi_scale"] if "roi_scale" in configuration else [2.0, 2.0]
+        self.fixed_size = configuration["roi_fixed_size"] if "roi_fixed_size" in configuration else None
         self.roi_movement_factor = configuration["roi_movement_factor"] if "roi_movement_factor" in configuration\
             else 1.0
         self.old_size_calculation = configuration['old_size_calculation'] if 'old_size_calculation' in configuration\
@@ -41,8 +42,12 @@ class SimpleRoiCalculator(RoiCalculator):
         #return scale[0] * self.roi_scale[0], scale[1] * self.roi_scale[1]
 
         base_scale = position.center_distance(previous_position) * 2 * self.roi_movement_factor
-        return (max(self.initial_position.width, position.width) * 1.5 + base_scale) * self.roi_scale[0], \
-               (max(self.initial_position.height, position.height) * 1.5 + base_scale) * self.roi_scale[1]
+        if self.fixed_size:
+            return self.fixed_size[0] + self.roi_movement_factor * self.roi_scale[0], \
+                   self.fixed_size[1] + self.roi_movement_factor * self.roi_scale[1]
+        else:
+            return (max(self.initial_position.width, position.width) * 1.5 + base_scale) * self.roi_scale[0], \
+                   (max(self.initial_position.height, position.height) * 1.5 + base_scale) * self.roi_scale[1]
 
     def calculate_roi(self, frame):
         i_w, i_h = frame.size
