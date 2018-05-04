@@ -150,7 +150,7 @@ class SwarmPursuer(Pursuer):
         return quality
 
     def pursue(self, state, frame, lost=0):
-        # p1 = time.time()
+        p1 = time.time()
         logger.info("Predicting position for frame %s, Lost: %d", frame, lost)
         # TODO: not here...
         self.mask_size = self.configuration['mask_size']
@@ -171,15 +171,15 @@ class SwarmPursuer(Pursuer):
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
 
-        # p2 = time.time()
+        p2 = time.time()
         img_mask_sum = img_mask.sum()
-        # p3 = time.time()
+        p3 = time.time()
         total_max = 1
         """func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
         p4 = time.time()
         quals = list(self.thread_executor.map(func, locs))"""
 
-        if self.particle_scale_factor != 1.0:
+        if False and self.particle_scale_factor != 1.0:
             scaled_locs = []
             for loc in locs:
                 width_difference = int(loc.width * self.particle_scale_factor)
@@ -213,12 +213,12 @@ class SwarmPursuer(Pursuer):
                                              [img_mask[
                                               int(pos.top):int(pos.bottom - 1),
                                               int(pos.left):int(pos.right - 1)] for pos in locs]))
-        # p4 = time.time()
+        p4 = time.time()
 
         quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum) / total_max
                  for pos, inner_sum in zip(locs, sums)]
 
-        # p5 = time.time()
+        p5 = time.time()
 
         best_arg = np.argmax(quals)
         frame.predicted_position = Rect(locs[best_arg])
@@ -230,7 +230,18 @@ class SwarmPursuer(Pursuer):
             0.0, min(1.0, quals[best_arg] / perfect_quality))
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
+
+        total = p5 - p1
+        t1 = p2 - p1
+        t2 = p3 - p2
+        t3 = p4 - p3
+        t4 = p5 - p4
+
+        print("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2}); part4: {:.2} ({:.2});".format(t1, t1 / total, t2,
+                                                                                         t2 / total, t3, t3 / total, t4, t4 / total))
+
         return frame.predicted_position
+
 
     @staticmethod
     def calculate_sum(mat, punish_low=False):

@@ -45,7 +45,7 @@ class SimpleSroiGenerator(SroiGenerator):
                 self.input_placeholder: frame.capture_image,
                 self.bbox_placeholder: the_bbox
             })
-        frame.sroi_image = self.generated_sroi.read_value()
+        #frame.sroi_image = self.generated_sroi.read_value()
 
     def get_bbox(self, frame):
         bbox = np.array([

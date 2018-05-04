@@ -15,20 +15,21 @@ class FakeLiveSample(Sample):
         self.prestream_count = 100
 
     async def get_next_frame_data(self):
-        if self.start_time is None:
-            self.start_time = datetime.now()
-            print("FakeLiveSample::init")
         self.frames_processed += 1
-        time_passed = datetime.now() - self.start_time
+        if self.fps != 0.0:
+            if self.start_time is None:
+                self.start_time = datetime.now()
+                print("FakeLiveSample::init")
+            time_passed = datetime.now() - self.start_time
 
-        curr_frame = time_passed.total_seconds() * self.fps
-        if self.prestream_count > curr_frame:
-            self.current_frame_id = 0
-        elif self.fps != 0:
+            curr_frame = time_passed.total_seconds() * self.fps
+            if self.prestream_count > curr_frame:
+                self.current_frame_id = 0
             self.current_frame_id = int(curr_frame) - self.prestream_count
-        else:
-            self.current_frame_id += 1 + self.skip_frames
-        print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
+            print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
+        elif self.skip_frames != 0.0:
+            curr_frame = self.current_frame_id + self.skip_frames
+            self.current_frame_id = int(curr_frame)
         return [
             self.get_image(self.current_frame_id),
             self.get_ground_truth(self.current_frame_id)]
@@ -38,7 +39,7 @@ class FakeLiveSample(Sample):
             return super(FakeLiveSample, self).get_image(img_id)
             #return self.image_cache[img_id]
         else:
-            return super(FakeLiveSample, self).get_image(len(self.img_paths - 1))
+            return super(FakeLiveSample, self).get_image(self.actual_frames - 1)
 
     def get_ground_truth(self, gt_id):
         if len(self.ground_truth) > 0:

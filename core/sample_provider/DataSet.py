@@ -37,9 +37,11 @@ class DataSet(object):
             self.description = definition['description']
         if 'format' in definition:
             self.format = definition['format']
+        fake_fps = tracking_conf['fake_fps'] if 'fake_fps' in tracking_conf else None
+        skip_frames = tracking_conf['skip_frames'] if 'skip_frames' in tracking_conf else None
         for sdef in definition['samples']:
-            if tracking_conf is not None and (tracking_conf["fake_fps"] > 0 or tracking_conf["skip_frames"] > 0):
-                s = FakeLiveSample(self, sdef['name'], tracking_conf["fake_fps"], tracking_conf["skip_frames"])
+            if (fake_fps is not None and fake_fps > 0) or (skip_frames is not None and skip_frames > 0):
+                s = FakeLiveSample(self, sdef['name'], fake_fps, skip_frames)
             else:
                 s = Sample(self, sdef['name'])
             if 'attributes' in sdef:
