@@ -39,8 +39,9 @@ class SwarmPursuer(Pursuer):
         self.target_punish_low = float(pconf['target_punish_low'])
         self.target_punish_outside = float(pconf['target_punish_outside'])
         available_cpus = multiprocessing.cpu_count()
-        self.max_cpus = max(configuration['max_cpus'], available_cpus) if 'max_cpus' in configuration else available_cpus
-        self.thread_executor = futures.ThreadPoolExecutor(max_workers=self.max_cpus)
+        self.worker_count = min(configuration['max_cpus'], available_cpus) if 'max_cpus' in configuration else available_cpus
+        print("Spawning {} workers.".format(self.worker_count));
+        self.thread_executor = futures.ThreadPoolExecutor(max_workers=self.worker_count)
         self.np_random = configuration['np_random']
 
     def set_initial_position(self, pos):
