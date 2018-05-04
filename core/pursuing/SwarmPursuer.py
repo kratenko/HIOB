@@ -209,7 +209,7 @@ class SwarmPursuer(Pursuer):
 
         # if scaling is enabled, punish pixels with low feature rating
         punish_low = self.particle_scale_factor != 1.0
-        sums = list(self.thread_executor.map(partial(self.calculate_sum, punish_low=punish_low),
+        sums = list(self.thread_executor.map(np.sum,
                                              [img_mask[
                                               int(pos.top):int(pos.bottom - 1),
                                               int(pos.left):int(pos.right - 1)] for pos in locs]))
