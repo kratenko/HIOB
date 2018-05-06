@@ -5,8 +5,6 @@ from datetime import datetime
 
 import matplotlib.cm
 import matplotlib.pyplot as plt
-import tensorflow as tf
-import pdb
 
 import numpy as np
 import transitions
