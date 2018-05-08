@@ -109,8 +109,11 @@ class SwarmPursuer(Pursuer):
         # put mask in capture image mask:
         img_mask = np.full((int(image_size[0] / relation[0]),
                             int(image_size[1] / relation[1])), self.target_punish_outside)
-        img_mask[int(roi.top / relation[1]): int(roi.bottom / relation[1]),
-                 int(roi.left / relation[0]): int(roi.right / relation[0])] = roi_mask
+        y0 = int(roi.top / relation[1])
+        x0 = int(roi.left / relation[0])
+        y1 = y0 + roi_mask.shape[1]
+        x1 = x0 + roi_mask.shape[0]
+        img_mask[y0: y1, x0: x1] = roi_mask
         return img_mask, relation
 
     def position_quality(self, pos, roi, image_mask_sum, inner_sum, scale_factor):
