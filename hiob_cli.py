@@ -21,14 +21,15 @@ transitions.logger.setLevel(logging.WARN)
 logger = logging.getLogger(__name__)
 
 
-def track(environment_path=None, tracker_path=None, ros_config=None):
+def track(environment_path=None, tracker_path=None, ros_config=None, silent=False):
 
     # create Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
         environment_path=environment_path,
         tracker_path=tracker_path,
-        ros_config=ros_config
+        ros_config=ros_config,
+        silent=silent
     )
 
 
@@ -56,7 +57,8 @@ def main():
 
     ev = track(environment_path=args.environment, tracker_path=args.tracker,
                ros_config=None if args.ros_subscribe is None and args.ros_publish is None
-               else {'subscribe': args.ros_subscribe, 'publish': args.ros_publish})
+               else {'subscribe': args.ros_subscribe, 'publish': args.ros_publish},
+               silent=args.silent)
     logger.info("Tracking finished!")
     ev_lines = "\n  - ".join(["{}={}".format(k, v) for k, v in ev.items()])
     logger.info("Evaluation:\n  - %s", ev_lines)
