@@ -101,21 +101,23 @@ class SwarmPursuer(Pursuer):
 
     def upscale_mask(self, mask, roi, image_size):
         # scale prediction mask up to size of roi (not of sroi!):
-        relation = roi.width / self.mask_size[0], \
-            roi.height / self.mask_size[1]
-        roi_mask = scipy.ndimage.zoom(mask.reshape(self.mask_size), relation)
+        relation = roi.width / self.mask_size[0], roi.height / self.mask_size[1]
+        #roi_mask = scipy.ndimage.zoom(mask.reshape(self.mask_size), relation)
+        roi_mask = mask.reshape((mask.shape[1], mask.shape[2]))
         # crop low values
         roi_mask[roi_mask < self.target_lower_limit] = self.target_punish_low
         # put mask in capture image mask:
-        img_mask = np.full(image_size, self.target_punish_outside)
-        img_mask[int(roi.top): int(roi.bottom),
-                 int(roi.left): int(roi.right)] = roi_mask
-        return img_mask
+        img_mask = np.full((round(image_size[0] / relation[0]),
+                            round(image_size[1] / relation[1])), self.target_punish_outside)
+        img_mask[round(roi.top / relation[1]): round(roi.bottom / relation[1]),
+                 round(roi.left / relation[0]): round(roi.right / relation[0])] = roi_mask
+        return img_mask, relation
 
-    def position_quality(self, pos, roi, image_mask_sum, inner_sum):
+    def position_quality(self, pos, roi, image_mask_sum, inner_sum, scale_factor):
         #logger.info("QUALI: %s, %s", image_mask.shape, pos)
         # too small?
         # p1 = time.time()
+        scale_factor_squared = scale_factor[0] *scale_factor[1]
         if pos.width < 8 or pos.height < 8:
             return -1e12
         # outside roi?
@@ -128,10 +130,10 @@ class SwarmPursuer(Pursuer):
         inner = inner_sum
 
         # p3 = time.time()
-        inner_fill = inner / pos.pixel_count()
+        inner_fill = inner / (pos.pixel_count() / scale_factor_squared)
         outer = image_mask_sum - inner
 
-        outer_fill = outer / max(roi.pixel_count() - pos.pixel_count(), 1)
+        outer_fill = outer / max((roi.pixel_count() - pos.pixel_count()) / scale_factor_squared, 1)
         # p4 = time.time()
         # p5 = time.time()
 
@@ -153,30 +155,37 @@ class SwarmPursuer(Pursuer):
         return quality
 
     def pursue(self, state, frame, lost=0):
-        p1 = time.time()
+        ps = [time.time()]  # 0
         logger.info("Predicting position for frame %s, Lost: %d", frame, lost)
         # TODO: not here...
         self.mask_size = self.configuration['mask_size']
         #
         mask = frame.prediction_mask.copy()
 
+        ps.append(time.time())  # 1
+
         mask[mask < self.target_lower_limit] = self.target_punish_low
         mask[mask < 0.0] = 0.0
 
         #print("a", mask.max(), mask.min(), np.average(mask))
         img_size = [frame.size[1], frame.size[0]]
-        img_mask = self.upscale_mask(mask, frame.roi, img_size)
+
+        ps.append(time.time())  # 2
+        img_mask, scale_factor = self.upscale_mask(mask, frame.roi, img_size)
         #print("a", img_mask.max(), img_mask.min(), np.average(img_mask))
         frame.image_mask = img_mask
+
+        ps.append(time.time())  # 3
+
         locs = self.generate_particles(
             frame.previous_position, frame.size, lost)
         #total = np.sum(img_mask)
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
 
-        p2 = time.time()
+        ps.append(time.time())  # 4
         img_mask_sum = img_mask.sum()
-        p3 = time.time()
+        ps.append(time.time())  # 5
         total_max = 1
         """func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
         p4 = time.time()
@@ -212,16 +221,18 @@ class SwarmPursuer(Pursuer):
 
         # if scaling is enabled, punish pixels with low feature rating
         punish_low = self.particle_scale_factor != 1.0
-        sums = list(self.thread_executor.map(np.sum,
-                                             [img_mask[
-                                              int(pos.top):int(pos.bottom - 1),
-                                              int(pos.left):int(pos.right - 1)] for pos in locs]))
-        p4 = time.time()
+        slices = [img_mask[round(pos.top / scale_factor[1]):round((pos.bottom - 1) / scale_factor[1]),
+                  round(pos.left / scale_factor[0]):round((pos.right - 1) / scale_factor[0])] for pos in locs]
 
-        quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum) / total_max
+        ps.append(time.time())  # 6
+
+        sums = list(self.thread_executor.map(np.sum, slices))
+        ps.append(time.time())  # 7
+
+        quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum, scale_factor) / total_max
                  for pos, inner_sum in zip(locs, sums)]
 
-        p5 = time.time()
+        ps.append(time.time())  # 8
 
         best_arg = np.argmax(quals)
         frame.predicted_position = Rect(locs[best_arg])
@@ -234,14 +245,17 @@ class SwarmPursuer(Pursuer):
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
 
-        total = p5 - p1
-        t1 = p2 - p1
-        t2 = p3 - p2
-        t3 = p4 - p3
-        t4 = p5 - p4
+        ps.append(time.time())  # 9
 
-        print("part1: {:.2} ({:.2}); part2: {:.2} ({:.2}); part3: {:.2} ({:.2}); part4: {:.2} ({:.2});".format(t1, t1 / total, t2,
-                                                                                         t2 / total, t3, t3 / total, t4, t4 / total))
+        # i = i+1 - i
+
+        ts = [p1 - p0 for p0,p1 in zip(ps[:-1], ps[1:])]
+
+        total = ps[-1] - ps[0]
+        log = ""
+        for n, t in enumerate(ts):
+            log += "; part{}: {:.2} ({:.2})".format(n, t, t / total)
+        print(log[2:])
 
         return frame.predicted_position
 
