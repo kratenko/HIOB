@@ -107,10 +107,10 @@ class SwarmPursuer(Pursuer):
         # crop low values
         roi_mask[roi_mask < self.target_lower_limit] = self.target_punish_low
         # put mask in capture image mask:
-        img_mask = np.full((round(image_size[0] / relation[0]),
-                            round(image_size[1] / relation[1])), self.target_punish_outside)
-        img_mask[round(roi.top / relation[1]): round(roi.bottom / relation[1]),
-                 round(roi.left / relation[0]): round(roi.right / relation[0])] = roi_mask
+        img_mask = np.full((int(image_size[0] / relation[0]),
+                            int(image_size[1] / relation[1])), self.target_punish_outside)
+        img_mask[int(roi.top / relation[1]): int(roi.bottom / relation[1]),
+                 int(roi.left / relation[0]): int(roi.right / relation[0])] = roi_mask
         return img_mask, relation
 
     def position_quality(self, pos, roi, image_mask_sum, inner_sum, scale_factor):
@@ -221,8 +221,8 @@ class SwarmPursuer(Pursuer):
 
         # if scaling is enabled, punish pixels with low feature rating
         punish_low = self.particle_scale_factor != 1.0
-        slices = [img_mask[round(pos.top / scale_factor[1]):round((pos.bottom - 1) / scale_factor[1]),
-                  round(pos.left / scale_factor[0]):round((pos.right - 1) / scale_factor[0])] for pos in locs]
+        slices = [img_mask[int(pos.top / scale_factor[1]):int((pos.bottom - 1) / scale_factor[1]),
+                  int(pos.left / scale_factor[0]):int((pos.right - 1) / scale_factor[0])] for pos in locs]
 
         ps.append(time.time())  # 6
 
