@@ -84,7 +84,7 @@ for conf in "$trackers_config_dir/tracker"*.yaml; do
     tags=${tags%\#*}
     tags=$(echo "$tags" | sed -e 's/[ \t]*$//')
     echo "executing \"$(basename $conf)\"..." && \
-    python hiob_cli.py -e "$env_config" -t "$conf"
+    python hiob_cli.py -e "$env_config" -t "$conf" --silent
     if ! [[ -z "$tags" ]]
     then
         for log in "$log_dir/hiob-execution-"*
