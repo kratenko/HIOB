@@ -124,13 +124,15 @@ class Tracker:
 
         if self.configuration['log_level'] == logging.INFO:
             self.priority_log_console_handler = self.log_console_handler
+            self.logging_context_manager = LoggingContextManager(None)
         else:
             self.priority_log_console_handler = logging.StreamHandler()
             self.priority_log_console_handler.setFormatter(self.log_formatter)
             self.priority_log_console_handler.setLevel(logging.INFO)
             logger.addHandler(self.priority_log_console_handler)
+            self.logging_context_manager = LoggingContextManager(self.priority_log_console_handler)
 
-        self.logging_context_manager = LoggingContextManager(self.priority_log_console_handler)
+
 
         # base dir for hiob operations:
         logger.info("log_dir is '%s'", self.log_dir)
@@ -283,7 +285,9 @@ class ForceLoggingContext:
         self.log_handler = log_handler
 
     def __enter__(self):
-        self.logger.addHandler(self.log_handler)
+        if self.log_handler is not None:
+            self.logger.addHandler(self.log_handler)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.logger.removeHandler(self.log_handler)
+        if self.log_handler is not None:
+            self.logger.removeHandler(self.log_handler)
