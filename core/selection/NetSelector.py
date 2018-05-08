@@ -133,7 +133,6 @@ class NetSelector(FeatureSelector):
             in_diff2 = net.gradient()[0][0]
             sal = (in_diff1 * input_data) + \
                 (0.5 * in_diff2 * input_data * input_data)
-            print(np.shape(sal))
             import pickle
             with open('/tmp/' + name + '.sal.p', 'wb') as f:
                 pickle.dump(sal, f)
@@ -154,7 +153,7 @@ class NetSelector(FeatureSelector):
         # store in state:
         state['feature_ratings'] = feature_ratings
         state['feature_orders'] = feature_orders
-        print(feature_ratings, feature_orders)
+        #print(feature_ratings, feature_orders)
 
     def free_selection_nets(self, state):
         del state['nets']

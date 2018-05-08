@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Configurator(object):
 
-    def __init__(self, environment_path=None, tracker_path=None, ros_config=None):
+    def __init__(self, environment_path=None, tracker_path=None, ros_config=None, silent=False):
         logger.info("Building Configurator")
         logger.info("ros config is:")
         logger.info(ros_config)
@@ -33,6 +33,7 @@ class Configurator(object):
             else:
                 self.overrides['tracking'] = ['ros/' + ros_config['subscribe'].strip('/')]
                 self.overrides['ros_node'] = ros_config['publish']
+        self.overrides['log_level'] = logging.WARN if silent else logging.INFO
         self.load_files()
 
     def load_files(self):

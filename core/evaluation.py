@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 #from matplotlib import rcParams
 #rcParams['font.family'] = 'serif'
@@ -52,6 +53,7 @@ def do_tracking_evaluation(tracking):
     evaluation['sample_frames'] = tracking.total_frames
     evaluation['frame_rate'] = tracking.total_frames / \
         evaluation['total_seconds']
+    evaluation['tracking_frame_rate'] = tracking.total_frames / evaluation['tracking_seconds']
     evaluation['pursuing_frame_rate'] = tracking.total_frames / tracking.pursuing_total_seconds
     evaluation['roi_calculation_frame_rate'] = tracking.total_frames / tracking.roi_calculation_total_seconds
     evaluation['sroi_generation_frame_rate'] = tracking.total_frames / tracking.sroi_generation_total_seconds
@@ -473,3 +475,22 @@ def do_tracker_evaluation(tracker):
         for k, v in ev.items():
             f.write("{}={}\n".format(k, v))
     return ev
+
+
+def print_tracking_evaluation(evaluation, log_context):
+    with log_context(logger):
+
+        logger.info("Tracking complete for '{}/{}'.".format(
+            evaluation['set_name'], evaluation['sample_name']))
+        for key in ["total_seconds",
+                    "preparing_seconds",
+                    "sample_frames",
+                    "frame_rate",
+                    "tracking_frame_rate",
+                    "pursuing_frame_rate",
+                    "roi_calculation_frame_rate",
+                    "sroi_generation_frame_rate",
+                    "feature_extraction_frame_rate",
+                    "feature_reduction_frame_rate",
+                    "feature_consolidation_frame_rate"]:
+            logger.info("{}: {}".format(key, evaluation[key]))

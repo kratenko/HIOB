@@ -2,6 +2,7 @@ import asyncio
 import logging
 from collections import OrderedDict
 from datetime import datetime
+import time
 
 import matplotlib.cm
 import matplotlib.pyplot as plt
@@ -356,25 +357,32 @@ class Tracking(object):
         self.commence_tracking_frame()
         frame = self.current_frame
         # process frame:
+        # ps = [time.time()]  # 0
         ts_start = datetime.now()
         self.calculate_frame_roi(frame)
         self.roi_calculation_total_seconds += (datetime.now() - ts_start).total_seconds()
+        # ps.append(time.time())  # 1
         ts_start = datetime.now()
         self.generate_frame_sroi(frame)
         self.sroi_generation_total_seconds += (datetime.now() - ts_start).total_seconds()
+        # ps.append(time.time())  # 2
         ts_start = datetime.now()
         self.extract_frame_features(frame)
         self.feature_extraction_total_seconds += (datetime.now() - ts_start).total_seconds()
+        # ps.append(time.time())  # 3
         ts_start = datetime.now()
         self.reduce_frame_features(frame)
         self.feature_reduction_total_seconds += (datetime.now() - ts_start).total_seconds()
+        # ps.append(time.time())  # 4
         ts_start = datetime.now()
         self.consolidate_frame_features(frame, advance=True)
         self.feature_consolidation_total_seconds += (datetime.now() - ts_start).total_seconds()
         # pursue - find the best prediction in frame
+        # ps.append(time.time())  # 5
         ts_start = datetime.now()
         self.pursue_frame(frame)
         self.pursuing_total_seconds += (datetime.now() - ts_start).total_seconds()
+        # ps.append(time.time())  # 6
 
         # lost? TODO: make it modular and nice!
 #        if frame.prediction_quality <= 0.0:
@@ -383,6 +391,14 @@ class Tracking(object):
 #            exit()
 
         self.complete_tracking_frame()
+
+        # ts = [p1 - p0 for p0, p1 in zip(ps[:-1], ps[1:])]
+        #
+        # total = ps[-1] - ps[0]
+        # log = "tracking profile"
+        # for n, t in enumerate(ts):
+        #     log += "; part{}: {:.2} ({:.2})".format(n, t, t / total)
+        # print(log)
 
     def tracking_evaluate_frame(self):
         self.commence_evaluating_frame()
@@ -403,8 +419,8 @@ class Tracking(object):
             'consolidation_images': self.get_frame_consolidation_images(frame, decorations=False),
             'roi': frame.roi,
         }
-        print("tracking log:")
-        print(str(l))
+        #print("tracking log:")
+        #print(str(l))
         self.tracking_log.append(l)
 
     def tracking_publish_position(self):

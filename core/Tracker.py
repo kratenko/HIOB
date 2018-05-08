@@ -63,11 +63,11 @@ class Tracker:
 
         self.log_dir = configuration['log_dir']
         self.data_dir = re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), configuration['data_dir'])
-        print(configuration["data_dir"], "->", self.data_dir)
+        #print(configuration["data_dir"], "->", self.data_dir)
         tracking_tmp = configuration["tracking"][0]
         self.configuration.set_override("tracking", [re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), name)
                                                      for name in self.configuration["tracking"]])
-        print(tracking_tmp, "->", configuration["tracking"][0])
+        #print(tracking_tmp, "->", configuration["tracking"][0])
         self.sroi_size = configuration['sroi_size']
 
         self.modules = []
@@ -117,8 +117,20 @@ class Tracker:
 
         self.log_console_handler = logging.StreamHandler()
         self.log_console_handler.setFormatter(self.log_formatter)
+        self.log_console_handler.setLevel(self.configuration['log_level'])
+
         self.root_logger = logging.getLogger()
         self.root_logger.addHandler(self.log_console_handler)
+
+        if self.configuration['log_level'] == logging.INFO:
+            self.priority_log_console_handler = self.log_console_handler
+        else:
+            self.priority_log_console_handler = logging.StreamHandler()
+            self.priority_log_console_handler.setFormatter(self.log_formatter)
+            self.priority_log_console_handler.setLevel(logging.INFO)
+            logger.addHandler(self.priority_log_console_handler)
+
+        self.logging_context_manager = LoggingContextManager(self.priority_log_console_handler)
 
         # base dir for hiob operations:
         logger.info("log_dir is '%s'", self.log_dir)
@@ -235,8 +247,10 @@ class Tracker:
         self.total_adjusted_overlap_scores = np.append(
             self.total_adjusted_overlap_scores, adjusted_overlap_scores)
 
+        evaluation.print_tracking_evaluation(tracking.evaluation, self.logging_context_manager)
+
     async def execute_tracking_on_sample(self, sample):
-        sample.load()
+        sample.load(self.logging_context_manager)
         tracking = await self.start_tracking_sample(sample)
         await tracking.execute_everything()
         self.evaluate_tracking(tracking)
@@ -253,3 +267,23 @@ class Tracker:
     def evaluate_tracker(self):
         self.ts_done = datetime.datetime.now()
         self.evaluation = evaluation.do_tracker_evaluation(self)
+
+
+class LoggingContextManager:
+    def __init__(self, log_handler):
+        self.log_handler = log_handler
+
+    def __call__(self, logger):
+        return ForceLoggingContext(logger, self.log_handler)
+
+
+class ForceLoggingContext:
+    def __init__(self, logger, log_handler):
+        self.logger = logger
+        self.log_handler = log_handler
+
+    def __enter__(self):
+        self.logger.addHandler(self.log_handler)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.logger.removeHandler(self.log_handler)

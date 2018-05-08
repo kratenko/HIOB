@@ -5,7 +5,6 @@ from .util import weight_variable, bias_variable
 
 logger = logging.getLogger(__name__)
 
-
 class SelNet(object):
     DROPOUT_KEEP = 0.7
     LEARNING_RATE = 0.000001

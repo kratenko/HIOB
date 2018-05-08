@@ -47,8 +47,14 @@ class Sample(object):
     def __repr__(self):
         return '<Sample {name}/{set_name}>'.format(name=self.name, set_name=self.set_name)
 
-    def load_tb100zip(self):
-        logging.info("Start loading sample {}".format(self.name))
+    def load_tb100zip(self, log_context=None):
+
+        msg = "Start loading sample {}".format(self.name)
+        if log_context is not None:
+            with log_context(logger):
+                logger.info(msg)
+        else:
+            logger.info(msg)
         if '.' in self.name:
             # is sample like 'Jogging.2' with multiple ground truths
             name, number = self.name.split('.')
@@ -101,11 +107,7 @@ class Sample(object):
         if len(images) < len(gt):
             # raise DataSetException(
             #     "More ground truth frames than images in DataSet {}/{}".format(self.set_name, self.name))
-            print("len gt: {}".format(len(gt)))
-            print("len imgs: {}".format(len(images)))
             gt = gt[:len(images) - 1]
-            print("len gt: {}".format(len(gt)))
-            print("len imgs: {}".format(len(images)))
             if len(images) < len(gt):
                 raise Exception("still more gts")
 
@@ -122,7 +124,14 @@ class Sample(object):
             logger.error(
                 "Wrong number for actual_images in sample {}".format(self))
             # self.actual_frames = len(images)
-        logging.info("Sample '{}' loaded".format(self.name))
+
+        msg = "Sample '{}' loaded".format(self.name)
+        if log_context is not None:
+            with log_context(logger):
+                logger.info(msg)
+        else:
+            logger.info(msg)
+
 
     def load_tb100_image(self, img_path):
         data = self.zip_file.read(img_path)
@@ -130,7 +139,7 @@ class Sample(object):
         im = np.array(Image.open(stream))
         return im
 
-    def load_princeton(self):
+    def load_princeton(self, log_context=None):
         # find out, of sample is Evaluation or Validation set:
         dir_e = os.path.join(self.data_set.path, 'EvaluationSet', self.name)
         dir_v = os.path.join(self.data_set.path, 'ValidationSet', self.name)
@@ -195,15 +204,21 @@ class Sample(object):
                             logger.error(
                                 "Invalid line in ground truth: '%s'", line.strip())
             self.ground_truth = gts
-        logger.info("loaded %s with %d frames", self.name, len(images))
 
-    def load(self):
+        msg = "loaded %s with %d frames", self.name, len(images)
+        if log_context is not None:
+            with log_context(logger):
+                logger.info(msg)
+        else:
+            logger.info(msg)
+
+    def load(self, log_context=None):
         if self.loaded:
             return
         if self.data_set.format == 'tb100zip':
-            self.load_tb100zip()
+            self.load_tb100zip(log_context)
         elif self.data_set.format == 'princeton':
-            self.load_princeton()
+            self.load_princeton(log_context)
         else:
             raise DataSetException("Unknown DataSet format:" + self.set.format)
         self.loaded = True

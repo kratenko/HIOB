@@ -89,7 +89,7 @@ class CnnFeatureExtractor(FeatureExtractor):
         logger.info("Extracting features for %s", frame)
 
         outputs = self.session.run(
-            list(self.output_features.values()))
+            [self.output_features.values()])
         frame.features = self.post_process_features(outputs)
 
     def post_process_features(self, outputs):

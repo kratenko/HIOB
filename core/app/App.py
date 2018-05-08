@@ -280,6 +280,7 @@ if __name__ == '__main__':
     conf = Configurator(
         environment_path=args.environment,
         tracker_path=args.tracker,
+        silent=args.silent
     )
 
     # execute gui app and run tracking

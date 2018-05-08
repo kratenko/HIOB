@@ -19,7 +19,6 @@ class FakeLiveSample(Sample):
         if self.fps != 0.0:
             if self.start_time is None:
                 self.start_time = datetime.now()
-                print("FakeLiveSample::init")
             time_passed = datetime.now() - self.start_time
 
             curr_frame = time_passed.total_seconds() * self.fps

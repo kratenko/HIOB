@@ -15,8 +15,10 @@ logger = logging.getLogger(__name__)
 
 path_sep_pattern = re.compile('/')
 
+
 class InvalidSetNameError(BaseException):
     pass
+
 
 class DataSet(object):
 
@@ -28,7 +30,6 @@ class DataSet(object):
         self.total_samples = 0
         self.format = None
         self.path = os.path.join(data_dir, name)
-        print(self.path)
 
     def load(self, definition, tracking_conf=None):
         if self.name == '__ros__':
