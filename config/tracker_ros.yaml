@@ -2,9 +2,10 @@
 # defines how the tracker is set up and what samples will be tracked
 # Can be fed to program via command line argument --tracker [path]
 
-#sroi_size: [368, 368]
-#lsroi_size: [496, 496]
-sroi_size: [256, 256]
+roi_scale: [1.0,1.0]
+roi_movement_factor: 0.0
+roi_fixed_size: [960,960]
+sroi_size: [200, 200]
 mask_size: null
 #extractor_net: alexnet
 #features:
@@ -13,7 +14,7 @@ mask_size: null
 extractor_net: vgg16
 features:
   - [conv4_3, 384]
-#  - [conv5_3, 384]
+  - [conv5_3, 384]
 #  - [conv4_3, 60]
 #  - [conv5_3, 120]
 #  - [pool3, 64]
@@ -81,12 +82,15 @@ consolidator:
 
 pursuer:
   particle_count: 600
+  particle_scale_factor: 1.0
   target_lower_limit: 0.2
   target_punish_low: 0.0
   target_punish_outside: 0.0
 
 tracking_conf:
   fake_fps: 0
+  skip_fps: 0
+  shuffle: false
 
 # = tracking = 
 # which samples shall be tracked? Accepts samples, data sets, and data collections
@@ -126,33 +130,33 @@ tracking_conf:
 #  - SET/princeton
 #  - princeton/book_turn
 
-xtracking:
+#xtracking:
 #  - tb100/SHORT
 #  - tb100/SHORT
 #  - tb100/SHORT
-  - tb100/Basketball
-  - tb100/Biker
-  - tb100/Bird1
-  - tb100/Bird2
-  - tb100/BlurBody
-  - tb100/BlurCar1
-  - tb100/BlurCar2
-  - tb100/BlurCar3
-  - tb100/BlurCar4
-  - tb100/BlurFace
-  - tb100/BlurOwl
-  - tb100/Board
-  - tb100/Bolt
-  - tb100/Bolt2
-  - tb100/Box
-  - SET/tb100
-  - tb50_paper
-  - tb100/Boy
-  - tb100/Car1
-  - tb100/Car2
-  - tb100/Car4
-  - tb100/Car24
-  - tb100/Dancer
-  - tb100/MotorRolling
-  - tb100/Deer
+#  - tb100/Basketball
+#  - tb100/Biker
+#  - tb100/Bird1
+#  - tb100/Bird2
+#  - tb100/BlurBody
+#  - tb100/BlurCar1
+#  - tb100/BlurCar2
+#  - tb100/BlurCar3
+#  - tb100/BlurCar4
+#  - tb100/BlurFace
+#  - tb100/BlurOwl
+#  - tb100/Board
+#  - tb100/Bolt
+#  - tb100/Bolt2
+#  - tb100/Box
+#  - SET/tb100
+#  - tb50_paper
+#  - tb100/Boy
+#  - tb100/Car1
+#  - tb100/Car2
+#  - tb100/Car4
+#  - tb100/Car24
+#  - tb100/Dancer
+#  - tb100/MotorRolling
+#  - tb100/Deer
   
