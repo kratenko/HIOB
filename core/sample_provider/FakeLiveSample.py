@@ -7,8 +7,8 @@ class FakeLiveSample(Sample):
 
     def __init__(self, data_set, name, fps=0, skip_frames=0):
         super().__init__(data_set, name)
-        self.fps = float(fps)
-        self.skip_frames = float(skip_frames)
+        self.fps = float(fps or 0)
+        self.skip_frames = float(skip_frames or 0)
         self.start_time = None
         self.current_frame_id = -1
         self.frames_processed = 0
@@ -22,9 +22,7 @@ class FakeLiveSample(Sample):
             time_passed = datetime.now() - self.start_time
 
             curr_frame = time_passed.total_seconds() * self.fps
-            if self.prestream_count > curr_frame:
-                self.current_frame_id = 0
-            self.current_frame_id = int(curr_frame) - self.prestream_count
+            self.current_frame_id = max(0, int(curr_frame) - self.prestream_count)
             print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         elif self.skip_frames != 0.0:
             curr_frame = self.current_frame_id + self.skip_frames
@@ -34,7 +32,7 @@ class FakeLiveSample(Sample):
             self.get_ground_truth(self.current_frame_id)]
 
     def get_image(self, img_id):
-        if len(self.img_paths) > img_id:
+        if len(self.image_cache) > img_id:
             return super(FakeLiveSample, self).get_image(img_id)
             #return self.image_cache[img_id]
         else:

@@ -32,9 +32,9 @@ class SimpleSroiGenerator(SroiGenerator):
         self.sroi_size = configuration['sroi_size']
         self.resize_on_gpu = configuration['sroi_gpu_resize'] if 'gpu_resize' in configuration else True
 
-    def setup(self, session):
+    def setup(self, session, size):
         self.session = session
-        self.build_tf_model((960, 720))
+        self.build_tf_model(size)
 
     def generate_sroi(self, frame):
 

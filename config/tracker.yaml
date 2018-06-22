@@ -5,9 +5,9 @@
 #sroi_size: [368, 368]
 #sroi_size: [50, 50]
 #sroi_size: [960, 720]
-roi_scale: [1.7,1.7]
-roi_movement_factor: 4.0
-sroi_size: [400,400]
+roi_scale: [2.0,2.0]
+roi_movement_factor: 0.0
+sroi_size: [200,200]
 #sroi_scale: 0.5
 mask_size: null
 #extractor_net: alexnet
@@ -19,7 +19,7 @@ features:
   - [conv4_3, 384]
 #  - [conv5_3, 384]
 #  - [conv4_3, 60]
-  - [conv5_3, 120]
+  - [conv5_3, 384]
 #  - [pool3, 64]
 random_seed: 1338
 selector:
@@ -132,80 +132,81 @@ tracking:
 #  - princeton/computerBar2
 #  - SET/princeton
 #  - princeton/book_turn
-  - nicovision/shake_heavy_banana_03
-  - nicovision/bang_blue_tissue_01
   - nicovision/bang_sponge_01
-  - nicovision/lift_blue_car_01
-  - nicovision/lift_blue_car_02
-  - nicovision/lift_blue_car_03
-  - nicovision/lift_blue_car_04
-  - nicovision/lift_blue_car_05
-  - nicovision/lift_blue_tissue_01
-  - nicovision/lift_heavy_banana_01
-  - nicovision/lift_heavy_banana_02
-  - nicovision/lift_red_car_01
-  - nicovision/lift_red_car_02
-  - nicovision/lift_red_tissue_01
-  - nicovision/lift_small_yellow_cube_01
-  - nicovision/lift_sponge_02
-  - nicovision/lift_sponge_03
-  - nicovision/lift_styrofoam_cube_01
-  - nicovision/pull_blue_ball_01
-  - nicovision/pull_blue_car_01
-  - nicovision/pull_blue_plush_ball_01
-  - nicovision/pull_blue_tissue_01
-  - nicovision/pull_brown_plush_ball_01
-  - nicovision/pull_green_car_01
-  - nicovision/pull_heavy_apple_01
-  - nicovision/pull_heavy_tomato_01
-  - nicovision/pull_heavy_yellow_cube_01
-  - nicovision/pull_orange_patterned_plush_ball_01
-  - nicovision/pull_red_car_01
-  - nicovision/pull_red_car_02
-  - nicovision/pull_small_tomato_01
-  - nicovision/pull_small_yellow_cube_01
-  - nicovision/pull_sponge_01
-  - nicovision/pull_styrofoam_cube_01
-  - nicovision/pull_styrofoam_cube_02
-  - nicovision/push_blue_ball_01
-  - nicovision/push_blue_car_01
-  - nicovision/push_blue_car_02
-  - nicovision/push_blue_patterned_plush_ball_01
-  - nicovision/push_green_car_01
-  - nicovision/push_green_car_02
-  - nicovision/push_heavy_apple_01
-  - nicovision/push_heavy_apple_02
-  - nicovision/push_red_car_01
-  - nicovision/push_red_car_02
-  - nicovision/push_small_yellow_cube_01
-  - nicovision/push_sponge_01
-  - nicovision/scoot_blue_ball_01
-  - nicovision/scoot_blue_ball_02
-  - nicovision/scoot_blue_car_01
-  - nicovision/scoot_blue_car_02
-  - nicovision/scoot_blue_tissue_01
-  - nicovision/scoot_green_car_01
-  - nicovision/scoot_plush_banana_01
-  - nicovision/shake_big_light_banana_01
-  - nicovision/shake_blue_plush_ball_01
-  - nicovision/shake_blue_tissue_01
-  - nicovision/shake_brown_plush_ball_01
-  - nicovision/shake_heavy_banana_01
-  - nicovision/shake_heavy_banana_02
-  - nicovision/shake_heavy_banana_03
-  - nicovision/shake_heavy_banana_04
-  - nicovision/shake_red_tissue_01
-  - nicovision/shake_small_banana_01
-  - nicovision/shake_small_banana_02
-  - nicovision/shake_small_banana_03
-  - nicovision/shake_small_banana_04
-  - nicovision/shake_small_banana_05
-  - nicovision/shake_small_yellow_cube_01
-  - nicovision/shake_sponge_01
-  - nicovision/shake_styrofoam_cube_01
-  - nicovision/lift_sponge_01
-  - nicovision/pull_red_tissue_01
-  - nicovision/push_tomato_01
+#  - nicovision/lift_sponge_02
+#  - nicovision/shake_small_banana_02
+#  - nicovision/scoot_blue_ball_02
+#  - nicovision/lift_blue_car_05
+#  - nicovision/shake_heavy_banana_03
+#  - nicovision/bang_blue_tissue_01
+#  - nicovision/lift_blue_car_01
+#  - nicovision/lift_blue_car_02
+#  - nicovision/lift_blue_car_03
+#  - nicovision/lift_blue_car_04
+#  - nicovision/lift_blue_tissue_01
+#  - nicovision/lift_heavy_banana_01
+#  - nicovision/lift_heavy_banana_02
+#  - nicovision/lift_red_car_01
+#  - nicovision/lift_red_car_02
+#  - nicovision/lift_small_yellow_cube_01
+#  - nicovision/lift_sponge_02
+#  - nicovision/lift_sponge_03
+#  - nicovision/lift_styrofoam_cube_01
+#  - nicovision/pull_blue_ball_01
+#  - nicovision/pull_blue_car_01
+#  - nicovision/pull_blue_plush_ball_01
+#  - nicovision/pull_blue_tissue_01
+#  - nicovision/pull_brown_plush_ball_01
+#  - nicovision/pull_green_car_01
+#  - nicovision/pull_heavy_apple_01
+#  - nicovision/pull_heavy_tomato_01
+#  - nicovision/pull_heavy_yellow_cube_01
+#  - nicovision/pull_orange_patterned_plush_ball_01
+#  - nicovision/pull_red_car_01
+#  - nicovision/pull_red_car_02
+#  - nicovision/pull_small_tomato_01
+#  - nicovision/pull_small_yellow_cube_01
+#  - nicovision/pull_sponge_01
+#  - nicovision/pull_styrofoam_cube_01
+#  - nicovision/pull_styrofoam_cube_02
+#  - nicovision/push_blue_ball_01
+#  - nicovision/push_blue_car_01
+#  - nicovision/push_blue_car_02
+#  - nicovision/push_blue_patterned_plush_ball_01
+#  - nicovision/push_green_car_01
+#  - nicovision/push_green_car_02
+#  - nicovision/push_heavy_apple_01
+#  - nicovision/push_heavy_apple_02
+#  - nicovision/push_red_car_01
+#  - nicovision/push_red_car_02
+#  - nicovision/push_small_yellow_cube_01
+#  - nicovision/push_sponge_01
+#  - nicovision/scoot_blue_ball_01
+#  - nicovision/scoot_blue_car_01
+#  - nicovision/scoot_blue_car_02
+#  - nicovision/scoot_blue_tissue_01
+#  - nicovision/scoot_green_car_01
+#  - nicovision/scoot_plush_banana_01
+#  - nicovision/shake_big_light_banana_01
+#  - nicovision/shake_blue_plush_ball_01
+#  - nicovision/shake_blue_tissue_01
+#  - nicovision/shake_brown_plush_ball_01
+#  - nicovision/shake_heavy_banana_01
+#  - nicovision/shake_heavy_banana_02
+#  - nicovision/shake_heavy_banana_03
+#  - nicovision/shake_heavy_banana_04
+#  - nicovision/shake_red_tissue_01
+#  - nicovision/shake_small_banana_01
+#  - nicovision/shake_small_banana_02
+#  - nicovision/shake_small_banana_03
+#  - nicovision/shake_small_banana_04
+#  - nicovision/shake_small_banana_05
+#  - nicovision/shake_small_yellow_cube_01
+#  - nicovision/shake_sponge_01
+#  - nicovision/shake_styrofoam_cube_01
+#  - nicovision/lift_sponge_01
+#  - nicovision/pull_red_tissue_01
+#  - nicovision/push_tomato_01
 
 xtracking:
 #  - tb100/SHORT

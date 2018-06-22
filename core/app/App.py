@@ -241,9 +241,12 @@ class App:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
+
             with tracker.setup_session():
                 for sample in tracker.samples:
                     sample.load()
+                    if not tracker.is_setup:
+                        tracker.setup(sample)
                     tracking = loop.run_until_complete(self.tracker_one(tracker, sample))
                     tracker.evaluate_tracking(tracking)
                     sample.unload()

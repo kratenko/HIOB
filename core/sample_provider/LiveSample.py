@@ -4,6 +4,7 @@ import rospy
 import threading
 import tempfile
 import os.path
+import numpy as np
 from ..Rect import Rect
 import hiob_msgs.msg
 
@@ -19,22 +20,29 @@ class LiveSample:
         self.current_frame_id = 0
         self.frames_skipped = 0
         self.subscriber = None
-        self.loaded = True
+        self.loaded = False
         self.full_name = 'ros/' + node_id
         self.ros_event = threading.Event()
+        self.first_frame_event = threading.Event()
         self.initial_position = None
         self.set_name = '__ros__'
         self.name = self.node_id
         self._img_path = os.path.join(tempfile.gettempdir(), 'hiob.received.png')
+        self.capture_size = None
         #self._bridge = CvBridge()
         rospy.on_shutdown(self.unload)
 
     def __repr__(self):
         return '<ROS::{node}>'.format(node=self.node_id)
 
-    def load(self):
+    def load(self, log_context=None):
         self.subscriber = rospy.Subscriber(self.node_id, hiob_msgs.msg.FrameWithGroundTruth, self.receive_frame)
         self.images = []
+
+        while not self.loaded:
+            self.ros_event.wait()
+            print("callback fired!")
+            self.ros_event.clear()
 
     def unload(self):
         if self.loaded:
@@ -49,21 +57,25 @@ class LiveSample:
         #cv_img = self._bridge.imgmsg_to_cv2(msg)
         #img = Image.open(io.BytesIO(bytearray(msg)))
         #img = Image.fromarray(cv_img)
-        if msg.lastImage:
+        if msg.command == 'stop':
             self.unload()
-        img = Image.open(io.BytesIO(bytearray(msg.frame.data)))
-        if img.mode != "RGB":
-            # convert s/w to colour:
-            img = img.convert("RGB")
+        #img = np.array(Image.open(io.BytesIO(msg.frame.data)))
+        img = np.array(Image.frombytes("RGB", (msg.frame.width, msg.frame.height), msg.frame.data))
+        #img = np.array(msg.frame.data)
+        #if img.mode != "RGB":
+        #    # convert s/w to colour:
+        #    img = img.convert("RGB")
 
         #img.show()
-        gt = msg.groundTruth
-        if gt:
+        if msg.command == 'start':
+            gt = msg.position
             rect = Rect(gt.x, gt.y, gt.w, gt.h)
             self._buffer.append((img, rect))
-            if self.initial_position is None:
-                print("Updating initial position... (" + str(rect) + "/" + str(gt) + ")")
-                self.initial_position = rect
+            print("Updating initial position... (" + str(rect) + "/" + str(gt) + ")")
+            self.initial_position = rect
+            print("image shape is: {}".format(img.shape))
+            self.capture_size = tuple(reversed(img.shape[:-1]))
+            self.loaded = True
         else:
             self._buffer.append((img, None))
         print("buffer length: " + str(len(self._buffer)))

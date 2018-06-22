@@ -4,8 +4,8 @@
 
 roi_scale: [1.0,1.0]
 roi_movement_factor: 0.0
-roi_fixed_size: [960,960]
-sroi_size: [200, 200]
+roi_fixed_size: "full" #[960,960]
+sroi_size: [480, 480]
 mask_size: null
 #extractor_net: alexnet
 #features:

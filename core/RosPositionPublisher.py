@@ -36,10 +36,13 @@ class RosPositionPublisher:
         logger.info(str(tracking_result))
         pos = tracking_result['predicted_position']
         pos_msg = hiob_msgs.msg.Rect(pos.x, pos.y, pos.w, pos.h)
-        self._publisher.publish(
+        frame_id = tracking_result['frame_id'] if 'frame_id' in tracking_result else None
+        result_msg = hiob_msgs.msg.TrackingResult(
             pos_msg,
             tracking_result['prediction_quality'],
-            tracking_result['lost'])
+            tracking_result['lost'],
+            frame_id)
+        self._publisher.publish(result_msg)
 
 
 class PublisherTerminatedError(Exception):

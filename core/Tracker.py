@@ -109,6 +109,9 @@ class Tracker:
         self.feature_selector.configure(configuration)
         self.consolidator.configure(configuration)
         self.pursuer.configure(configuration)
+        self.is_setup = False
+
+        self.current_sample = None
 
     def setup_environment(self):
         logger.info("Setting up environment")
@@ -182,11 +185,16 @@ class Tracker:
         shutil.copyfile(self.configuration.tracker_path, os.path.join(
             self.execution_dir, 'tracker.yaml'))
 
-    def setup(self, session):
-        self.session = session
+    def setup(self, sample):
+        #if self.current_sample is not None and sample.capture_size != self.current_sample.capture_size:
+            #tf.reset_default_graph()
+        self.current_sample = sample
+
         # setup modules
         self.roi_calculator.setup(self.session)
-        self.sroi_generator.setup(self.session)
+        size = sample.capture_size
+        #size = size[1], size[0]
+        self.sroi_generator.setup(self.session, size)
         self.feature_extractor.setup(self.session, self.sroi_generator.generated_sroi)
         # cannot know mask size up to this point:
         self.mask_size = self.feature_extractor.output_size
@@ -197,17 +205,22 @@ class Tracker:
             self.session)
         self.consolidator.setup(self.session)
         self.pursuer.setup(self.session)
+        self.is_setup = True
         logger.info("Setup done")
 
     def setup_session(self):
-        self.setup(tf.Session())
+        self.session = tf.Session()
+        #self.setup(sample)
         return self.session
 
     async def start_tracking_sample_by_name(self, set_name, sample_name):
         sample = self.data_directory.get_sample(set_name, sample_name)
+        #self.session = tf.Session()
+        #self.setup(sample)
         return await self.start_tracking_sample(sample)
 
     async def start_tracking_sample(self, sample):
+        #self.setup(sample)
         logging.info("start tracking sample {}".format(sample.name))
         tracking = Tracking(tracker=self, session=self.session)
 
@@ -253,6 +266,8 @@ class Tracker:
 
     async def execute_tracking_on_sample(self, sample):
         sample.load(self.logging_context_manager)
+        if not self.is_setup:
+            self.setup(sample)
         tracking = await self.start_tracking_sample(sample)
         await tracking.execute_everything()
         self.evaluate_tracking(tracking)

@@ -74,6 +74,7 @@ def do_tracking_evaluation(tracking):
     lost1 = 0
     lost2 = 0
     lost3 = 0
+    failures = 0
     for n, l in enumerate(log):
         r = l['result']
         pos = r['predicted_position']
@@ -107,9 +108,13 @@ def do_tracking_evaluation(tracking):
             lost2 += 1
         elif r['lost'] == 3:
             lost3 += 1
+        if r['overlap_score'] == 0.0:
+            failures += 1
     evaluation['lost1'] = lost1
     evaluation['lost2'] = lost2
     evaluation['lost3'] = lost3
+    evaluation['failures'] = failures
+    evaluation['failurePercentage'] = (failures * 100) / len(log)
     evaluation['updates_max_frames'] = tracking.updates_max_frames
     evaluation['updates_confidence'] = tracking.updates_confidence
     evaluation['updates_total'] = tracking.updates_max_frames + \
@@ -317,6 +322,7 @@ def do_tracker_evaluation(tracker):
     updates_max_frames = 0
     updates_confidence = 0
     updates_total = 0
+    failures = 0
     with open(trackings_file, 'w') as f:
 
         line = "#n,set_name,sample_name,sample_frames,precision_rating,relative_precision_rating,success_rating,adjusted_success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,roi_calculation_sum,sroi_generation_sum,feature_extraction_frame_rate,feature_reduction_sum,feature_consolidation_sum,pursuing_frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
@@ -341,6 +347,7 @@ def do_tracker_evaluation(tracker):
             lost1 += e['lost1']
             lost2 += e['lost2']
             lost3 += e['lost3']
+            failures += e['failures']
             updates_max_frames += e['updates_max_frames']
             updates_confidence += e['updates_confidence']
             updates_total += e['updates_total']
@@ -467,6 +474,7 @@ def do_tracker_evaluation(tracker):
     ev['lost1'] = lost1
     ev['lost2'] = lost2
     ev['lost3'] = lost3
+    ev['failures'] = failures
     ev['updates_max_frames'] = updates_max_frames
     ev['updates_confidence'] = updates_confidence
     ev['updates_total'] = updates_total
@@ -492,5 +500,10 @@ def print_tracking_evaluation(evaluation, log_context):
                     "sroi_generation_frame_rate",
                     "feature_extraction_frame_rate",
                     "feature_reduction_frame_rate",
-                    "feature_consolidation_frame_rate"]:
+                    "feature_consolidation_frame_rate",
+                    "lost1",
+                    "lost2",
+                    "lost3",
+                    "failures",
+                    "failurePercentage"]:
             logger.info("{}: {}".format(key, evaluation[key]))

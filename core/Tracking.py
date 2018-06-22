@@ -197,10 +197,11 @@ class Tracking(object):
         self.tracker.roi_calculator.set_initial_position(self.initial_frame.previous_position)
 
     async def _get_next_sample_frame(self):
-        frame = Frame(tracking=self, number=self.sample.current_frame_id + 1, size=self.sample.capture_size)
+        frame = Frame(tracking=self, number=self.sample.current_frame_id + 1, size=None)
         frame.commence_capture()
         # frame.capture_image = self.sample.images[number - 1]
         frame.capture_image, frame.ground_truth = await self.sample.get_next_frame_data()
+        frame.size = self.sample.capture_size
         frame.complete_capture()
         return frame
 

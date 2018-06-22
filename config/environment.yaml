@@ -11,7 +11,7 @@ environment_name: default
 log_dir: ./hiob_logs
 
 # directory in which data samples are kept:
-data_dir: ./data
+data_dir: /media/tobias/Massively Modded Skyrim/hiob_data #./data
 
 # directory in which net weight files are kept:
 net_dir: ./net
