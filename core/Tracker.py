@@ -64,11 +64,16 @@ class Tracker:
         self.log_dir = configuration['log_dir']
         self.data_dir = re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), configuration['data_dir'])
         #print(configuration["data_dir"], "->", self.data_dir)
-        tracking_tmp = configuration["tracking"][0]
         self.configuration.set_override("tracking", [re.sub(r"[/\\]", os.path.sep.replace("\\", "\\\\"), name)
                                                      for name in self.configuration["tracking"]])
         #print(tracking_tmp, "->", configuration["tracking"][0])
         self.sroi_size = configuration['sroi_size']
+
+        print("tracking_conf:")
+        print("fake_fps: {}\nskip_frames: {}\nshuffle: {}".format(
+            configuration["tracking_conf"]["fake_fps"],
+            configuration["tracking_conf"]["skip_frames"],
+            configuration["tracking_conf"]["shuffle"]))
 
         self.modules = []
         self.session = None

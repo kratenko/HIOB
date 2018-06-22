@@ -4,6 +4,7 @@ import tkinter as tk
 import asyncio
 import logging
 import argparse
+import os
 
 from .AppTerminatedException import AppTerminatedException
 from .ImageLabel import ImageLabel
@@ -201,7 +202,7 @@ class App:
             await tracking.tracking_step()
 #            evs = tracking.get_evaluation_figures()
             sample = tracking.sample
-            cf = tracking.current_frame_number
+            cf = tracking.get_current_frame_number()
             fr = tracking.current_frame.result
             self.confidence_plotter.append(
                 tracking.current_frame.prediction_quality)
@@ -228,9 +229,26 @@ class App:
                 'lost_plot': self.lost_plotter.get_image(),
             }
             self.feed_queue(entry)
+            if "save_images" in self.conf and self.conf["save_images"]:
+                self.save_images(tracking)
         tracking.finish_tracking()
 
         return tracking
+
+    def save_images(self, tracking):
+        heatmap = tracking.get_frame_consolidation_images(decorations=False)['single']
+        sroi = tracking.get_frame_sroi_image(decorations=False)
+        capture_image = tracking.get_frame_capture_image(decorations=False)
+        result = tracking.get_frame_sroi_image()
+
+        image_dir = os.path.join("images", tracking.sample.name)
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+
+        heatmap.save(os.path.join(image_dir, "{}-heatmap.png".format(tracking.get_current_frame_number())))
+        sroi.save(os.path.join(image_dir, "{}-sroi.png".format(tracking.get_current_frame_number())))
+        capture_image.save(os.path.join(image_dir, "{}-frame.png".format(tracking.get_current_frame_number())))
+        result.save(os.path.join(image_dir, "{}-tracked.png".format(tracking.get_current_frame_number())))
 
     def tracker_fun(self):
         tracker = Tracker(self.conf)

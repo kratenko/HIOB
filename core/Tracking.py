@@ -184,7 +184,7 @@ class Tracking(object):
         self.complete_load_sample()
 
     async def _load_initial_frame(self):
-        self.current_frame_number = 1
+        #self.current_frame_number = 1
         self.initial_frame = await self._get_next_sample_frame()
         # store initial position as position of previous frame:
         self.initial_frame.previous_position = self.sample.initial_position
@@ -716,6 +716,9 @@ class Tracking(object):
         return Rect(cx, cy, cw, ch)
 
     # == images ==
+
+    def get_current_frame_number(self):
+        return self.sample.current_frame_id
 
     def get_frame_capture_image(self, frame=None, decorations=True):
         if frame is None:

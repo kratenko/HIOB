@@ -26,6 +26,7 @@ class FakeLiveSample(Sample):
             print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         elif self.skip_frames != 0.0:
             curr_frame = self.current_frame_id + self.skip_frames
+            print("sample advanced by {} frames".format(self.skip_frames))
             self.current_frame_id = int(curr_frame)
         return [
             self.get_image(self.current_frame_id),
