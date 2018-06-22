@@ -23,10 +23,10 @@ class FakeLiveSample(Sample):
 
             curr_frame = time_passed.total_seconds() * self.fps
             self.current_frame_id = max(0, int(curr_frame) - self.prestream_count)
-            print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
+            #print("{} seconds passed - current frame: {}".format(time_passed.total_seconds(), self.current_frame_id))
         elif self.skip_frames != 0.0:
             curr_frame = self.current_frame_id + self.skip_frames
-            print("sample advanced by {} frames".format(self.skip_frames))
+            #print("sample advanced by {} frames".format(self.skip_frames))
             self.current_frame_id = int(curr_frame)
         return [
             self.get_image(self.current_frame_id),
