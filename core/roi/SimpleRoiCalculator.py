@@ -65,7 +65,7 @@ class SimpleRoiCalculator(RoiCalculator):
                 roi_w = roi_h = min(frame.size)
             else:
                 roi_w, roi_h = self.calculate_size(position, frame.before_previous_position)
-        print("roi size: {}|{}".format(roi_w, roi_h))
+        #print("roi size: {}|{}".format(roi_w, roi_h))
         #print("roi height: {}|{}".format(roi_h, roi_h1))
 
         # only one size, since we want a square

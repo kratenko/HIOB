@@ -158,14 +158,14 @@ class SwarmPursuer(Pursuer):
         return quality
 
     def pursue(self, state, frame, lost=0):
-        ps = [time.time()]  # 0
+        #ps = [time.time()]  # 0
         logger.info("Predicting position for frame %s, Lost: %d", frame, lost)
         # TODO: not here...
         self.mask_size = self.configuration['mask_size']
         #
         mask = frame.prediction_mask.copy()
 
-        ps.append(time.time())  # 1
+        #ps.append(time.time())  # 1
 
         mask[mask < self.target_lower_limit] = self.target_punish_low
         mask[mask < 0.0] = 0.0
@@ -173,12 +173,12 @@ class SwarmPursuer(Pursuer):
         #print("a", mask.max(), mask.min(), np.average(mask))
         img_size = [frame.size[1], frame.size[0]]
 
-        ps.append(time.time())  # 2
+        #ps.append(time.time())  # 2
         img_mask, scale_factor = self.upscale_mask(mask, frame.roi, img_size)
         #print("a", img_mask.max(), img_mask.min(), np.average(img_mask))
         frame.image_mask = img_mask
 
-        ps.append(time.time())  # 3
+        #ps.append(time.time())  # 3
 
         locs = self.generate_particles(
             frame.previous_position, frame.size, lost)
@@ -186,9 +186,9 @@ class SwarmPursuer(Pursuer):
         #total_max = np.sum(img_mask[img_mask > 0])
 #        total_max = np.sum(np.abs(img_mask))
 
-        ps.append(time.time())  # 4
+        #ps.append(time.time())  # 4
         img_mask_sum = img_mask.sum()
-        ps.append(time.time())  # 5
+        #ps.append(time.time())  # 5
         total_max = 1
         """func = partial(position_quality_helper, img_mask, frame.roi, total_max, img_mask_sum)
         p4 = time.time()
@@ -227,15 +227,15 @@ class SwarmPursuer(Pursuer):
         slices = [img_mask[round(pos.top / scale_factor[1]):round((pos.bottom - 1) / scale_factor[1]),
                   round(pos.left / scale_factor[0]):round((pos.right - 1) / scale_factor[0])] for pos in locs]
 
-        ps.append(time.time())  # 6
+        #ps.append(time.time())  # 6
 
         sums = list(self.thread_executor.map(np.sum, slices))
-        ps.append(time.time())  # 7
+        #ps.append(time.time())  # 7
 
         quals = [self.position_quality(pos, frame.roi, img_mask_sum, inner_sum, scale_factor) / total_max
                  for pos, inner_sum in zip(locs, sums)]
 
-        ps.append(time.time())  # 8
+        #ps.append(time.time())  # 8
 
         best_arg = np.argmax(quals)
         frame.predicted_position = Rect(locs[best_arg])
@@ -248,17 +248,17 @@ class SwarmPursuer(Pursuer):
         logger.info("Prediction: %s, quality: %f",
                     frame.predicted_position, frame.prediction_quality)
 
-        ps.append(time.time())  # 9
+        #ps.append(time.time())  # 9
 
         # i = i+1 - i
 
-        ts = [p1 - p0 for p0,p1 in zip(ps[:-1], ps[1:])]
+        #ts = [p1 - p0 for p0,p1 in zip(ps[:-1], ps[1:])]
 
-        total = ps[-1] - ps[0]
-        log = ""
-        for n, t in enumerate(ts):
-            log += "; part{}: {:.2} ({:.2})".format(n, t, t / total)
-        print(log[2:])
+        #total = ps[-1] - ps[0]
+        #log = ""
+        #for n, t in enumerate(ts):
+        #    log += "; part{}: {:.2} ({:.2})".format(n, t, t / total)
+        #print(log[2:])
 
         return frame.predicted_position
 
