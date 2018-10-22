@@ -43,10 +43,10 @@ class DataSet(object):
         for sdef in definition['samples']:
             #print("fake_fps is {} and skip_frames is {}.".format(fake_fps, skip_frames))
             if fake_fps > 0 or skip_frames > 0:
-                logger.log("Adding fake live-sample (fake_fps:{}, skip_frames:{})".format(fake_fps, skip_frames))
+                logger.info("Adding fake live-sample (fake_fps:{}, skip_frames:{})".format(fake_fps, skip_frames))
                 s = FakeLiveSample(self, sdef['name'], fake_fps, skip_frames)
             else:
-                logger.log("Adding sample")
+                logger.info("Adding sample")
                 s = Sample(self, sdef['name'])
             if 'attributes' in sdef:
                 s.attributes = tuple(sdef['attributes'])

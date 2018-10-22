@@ -36,6 +36,7 @@ class Tracker:
 
     def __init__(self, configuration):
         logger.warning("CREATING NEW TRACKER")
+        self.context = None
         self.configuration = configuration
 
         # prepare random seeds:
@@ -191,32 +192,41 @@ class Tracker:
             self.execution_dir, 'tracker.yaml'))
 
     def setup(self, sample):
-        #if self.current_sample is not None and sample.capture_size != self.current_sample.capture_size:
-            #tf.reset_default_graph()
         self.current_sample = sample
+        self.current_sample.load(self.logging_context_manager)
+        self.setup_session()
+
+        if self.is_setup and self.context is not None \
+                and (self.current_sample is None or sample.capture_size != self.current_sample.capture_size):
+            return self.context
+
+        #if self.current_sample is not None:
+        #self.current_sample = sample
 
         # setup modules
-        self.roi_calculator.setup(self.session)
+        self.roi_calculator.setup(self)
         size = sample.capture_size
         #size = size[1], size[0]
-        self.sroi_generator.setup(self.session, size)
-        self.feature_extractor.setup(self.session, self.sroi_generator.generated_sroi)
+        self.sroi_generator.setup(self, size)
+        self.feature_extractor.setup(self, self.sroi_generator.generated_sroi)
         # cannot know mask size up to this point:
         self.mask_size = self.feature_extractor.output_size
         self.configuration.set_override('mask_size', self.mask_size)
         self.configuration.set_override(
             'output_features', self.feature_extractor.output_features)
         self.feature_selector.setup(
-            self.session)
-        self.consolidator.setup(self.session)
-        self.pursuer.setup(self.session)
+            self)
+        self.consolidator.setup(self)
+        self.pursuer.setup(self)
         self.is_setup = True
         logger.info("Setup done")
 
+        return self.context
+
     def setup_session(self):
-        self.session = tf.Session()
+        self.context = TrackerContext(self)
+        return self.context
         #self.setup(sample)
-        return self.session
 
     async def start_tracking_sample_by_name(self, set_name, sample_name):
         sample = self.data_directory.get_sample(set_name, sample_name)
@@ -270,16 +280,19 @@ class Tracker:
         evaluation.print_tracking_evaluation(tracking.evaluation, self.logging_context_manager)
 
     async def execute_tracking_on_sample(self, sample):
-        sample.load(self.logging_context_manager)
-        if not self.is_setup:
-            self.setup(sample)
-        tracking = await self.start_tracking_sample(sample)
-        await tracking.execute_everything()
-        self.evaluate_tracking(tracking)
-        sample.unload()
+
+        with self.setup(sample):
+            #sample.load(self.logging_context_manager)
+            if not self.is_setup:
+                self.setup(sample)
+            tracking = await self.start_tracking_sample(sample)
+            await tracking.execute_everything()
+            self.evaluate_tracking(tracking)
+            #sample.unload()
 
     async def execute_tracking_on_all_samples(self):
         for sample in self.samples:
+            #with self.setup(sample):
             await self.execute_tracking_on_sample(sample)
 
     async def execute_everything(self):
@@ -311,3 +324,20 @@ class ForceLoggingContext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.log_handler is not None:
             self.logger.removeHandler(self.log_handler)
+
+
+class TrackerContext:
+    def __init__(self, tracker):
+        self.tracker = tracker
+
+    def __enter__(self):
+        #self.tracker.current_sample.load()
+        print("setting up new session")
+        self.tracker.session = tf.Session()
+        return self.tracker.session.__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("closing session...")
+        self.tracker.session.__exit__(exc_type, exc_val, exc_tb)
+        self.tracker.current_sample.unload()
+        tf.reset_default_graph()

@@ -20,7 +20,7 @@ class SimpleSroiGenerator(SroiGenerator):
     def __init__(self):
         self.sroi_size = None
         self.resize_on_gpu = True
-        self.session = None
+        self.tracker = None
 
         self.generated_sroi = None
         self.generated_sroi_tensor = None
@@ -32,14 +32,14 @@ class SimpleSroiGenerator(SroiGenerator):
         self.sroi_size = configuration['sroi_size']
         self.resize_on_gpu = configuration['sroi_gpu_resize'] if 'gpu_resize' in configuration else True
 
-    def setup(self, session, size):
-        self.session = session
+    def setup(self, tracker, size):
+        self.tracker = tracker
         self.build_tf_model(size)
 
     def generate_sroi(self, frame):
 
         the_bbox = self.get_bbox(frame)
-        self.session.run(
+        self.tracker.session.run(
             [self.cache_sroi],
             feed_dict={
                 self.input_placeholder: frame.capture_image,

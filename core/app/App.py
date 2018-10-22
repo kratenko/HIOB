@@ -260,15 +260,17 @@ class App:
         asyncio.set_event_loop(loop)
         try:
 
-            with tracker.setup_session():
-                for sample in tracker.samples:
-                    sample.load()
-                    if not tracker.is_setup:
-                        tracker.setup(sample)
+            for i, sample in enumerate(tracker.samples):
+                #sample.load()
+                with tracker.setup(sample):
+                    #if not tracker.is_setup:
+                    #tracker.setup(sample)
                     tracking = loop.run_until_complete(self.tracker_one(tracker, sample))
                     tracker.evaluate_tracking(tracking)
-                    sample.unload()
-                tracker.evaluate_tracker()
+                    #sample.unload()
+                    if i == len(tracker.samples) - 1:
+                        tracker.evaluate_tracker()
+                    print("with clause done")
         except AppTerminatedException:
             self.logger.info("App terminated, ending tracker thread early.")
             # tracking.execute_consolidator_training()

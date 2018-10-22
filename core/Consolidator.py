@@ -25,6 +25,26 @@ class SingleNetConsolidator(Consolidator):
 
     def __init__(self):
         self.dtype = tf.float32
+        self.tracker = None
+        self.configuration = None
+        self.max_iterations = None
+        self.min_cost = None
+        self.sigma_train = None
+        self.sigma_update = None
+        self.update_threshold = None
+        self.update_lower_threshold = None
+        self.update_frame_store_size = None
+        self.update_keep_initial_frame = None
+        self.update_initial_factor = None
+        self.update_max_iterations = None
+        self.update_use_quality = None
+        self.update_current_factor = None
+        self.update_max_frames = None
+        self.update_min_frames = None
+        self.net_configuration = None
+        self.feature_counts = None
+        self.total_feature_count = None
+        self.input_shape = None
 
     def configure(self, configuration):
         self.configuration = configuration
@@ -51,8 +71,8 @@ class SingleNetConsolidator(Consolidator):
         self.total_feature_count = sum(self.feature_counts.values())
         #
 
-    def setup(self, session):
-        self.session = session
+    def setup(self, tracker):
+        self.tracker = tracker
 
 
     def setup_tracking(self, state, output_features):
@@ -63,7 +83,7 @@ class SingleNetConsolidator(Consolidator):
         logger.info("Input shape for ConsolidatorNet: %s", self.input_shape)
         #
         net = BuiltNet(
-            self.session,
+            self.tracker.session,
             self.net_configuration,
             input_shape=self.input_shape,
         )
@@ -92,7 +112,7 @@ class SingleNetConsolidator(Consolidator):
         feed_dict = {}
         for name, placeholder in self.concatenation_placeholders.items():
             feed_dict[placeholder] = features[name]
-        return self.session.run(self.concatenated, feed_dict=feed_dict)
+        return self.tracker.session.run(self.concatenated, feed_dict=feed_dict)
 
     def _forward(self, state, features):
         con = self._concat_features(features)
@@ -192,6 +212,7 @@ class SingleNetConsolidator(Consolidator):
             weight_data[n + 1] = value['weight']
         logger.info("Update weights: %s", weight_data)
         # train it
+        ret = None
         for _ in range(steps):
             ret = state['net'].train(
                 input_data=input_data, target_data=target_data, target_weight=weight_data)

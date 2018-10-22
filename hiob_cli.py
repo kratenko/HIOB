@@ -41,8 +41,7 @@ def track(environment_path=None, tracker_path=None, ros_config=None, silent=Fals
     # create tensorflow session and do the tracking
     logger.info("Initiate tracking process")
     loop = asyncio.get_event_loop()
-    with tracker.setup_session():
-        loop.run_until_complete(tracker.execute_everything())
+    loop.run_until_complete(tracker.execute_everything())
     loop.close()
 
     # return the evaluation results (an OrderedDict)

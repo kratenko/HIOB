@@ -85,5 +85,5 @@ class SimpleRoiCalculator(RoiCalculator):
         # set roi in frame:
         frame.roi = Rect(x1, y1, s, s)
 
-    def setup(self, session):
+    def setup(self, tracker):
         pass

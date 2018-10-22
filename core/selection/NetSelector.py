@@ -15,7 +15,7 @@ class NetSelector(FeatureSelector):
     MIN_COST = 0.1
 
     def __init__(self):
-        pass
+        self.tracker = None
 
     def configure(self, configuration):
         self.dtype = tf.float32
@@ -30,8 +30,8 @@ class NetSelector(FeatureSelector):
         #
         self.net_configuration = sconf['net']
 
-    def setup(self, session):
-        self.session = session
+    def setup(self, tracker):
+        self.tracker = tracker
 
     def setup_tracking(self, state, output_features):
         nets = OrderedDict()
@@ -39,7 +39,7 @@ class NetSelector(FeatureSelector):
         for name, feature in output_features.items():
             logger.info("Building SelNet for feature %s", name)
             net = BuiltNet(
-                self.session,
+                self.tracker.session,
                 self.net_configuration,
                 input_shape=feature.get_shape().as_list(),
                 use_input_variable=True,

@@ -24,7 +24,7 @@ class CnnFeatureExtractor(FeatureExtractor):
         self.net_name = None
         self.requested_feature_names = None
         self.output_size = None
-        self.session = None
+        self.tracker = None
         self.output_features = None
         self.net = None
 
@@ -39,8 +39,8 @@ class CnnFeatureExtractor(FeatureExtractor):
                                         for x in configuration['features']]
         self.output_size = configuration['mask_size']
 
-    def setup(self, session, sroi):
-        self.session = session
+    def setup(self, tracker, sroi):
+        self.tracker = tracker
         if self.net_name == 'vgg16':
             logger.info("creating pretrained vgg16 net as feature extractor")
             net_path = os.path.join(self.net_dir, 'vgg16.npy')
@@ -88,7 +88,7 @@ class CnnFeatureExtractor(FeatureExtractor):
     def extract_features(self, tracking, frame):
         logger.info("Extracting features for %s", frame)
 
-        outputs = self.session.run(
+        outputs = self.tracker.session.run(
             list(self.output_features.values()))
         frame.features = self.post_process_features(outputs)
 

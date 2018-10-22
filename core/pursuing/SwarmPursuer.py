@@ -29,6 +29,17 @@ class SwarmPursuer(Pursuer):
         self.dtype = tf.float32
         #self.thread_executor = futures.ProcessPoolExecutor(max_workers=workers)
         self.thread_executor = None
+        self.tracker = None
+        self.configuration = None
+        self.particle_count = None
+        self.particle_scale_factor = None
+        self.target_lower_limit = None
+        self.target_punish_low = None
+        self.target_punish_outside = None
+        self.worker_count = 1
+        self.thread_executor = None
+        self.np_random = None
+        self.initial_location = None
 
     def configure(self, configuration):
         self.configuration = configuration
@@ -40,15 +51,15 @@ class SwarmPursuer(Pursuer):
         self.target_punish_outside = float(pconf['target_punish_outside'])
         available_cpus = multiprocessing.cpu_count()
         self.worker_count = min(configuration['max_cpus'], available_cpus * 2) if 'max_cpus' in configuration else available_cpus
-        print("Spawning {} workers.".format(self.worker_count));
+        logger.info("Spawning {} workers.".format(self.worker_count))
         self.thread_executor = futures.ThreadPoolExecutor(max_workers=self.worker_count)
         self.np_random = configuration['np_random']
 
     def set_initial_position(self, pos):
         self.initial_location = pos
 
-    def setup(self, session):
-        self.session = session
+    def setup(self, tracker):
+        self.tracker = tracker
 
     def generate_geo_particles(self, geo, img_size, lost):
         if lost == 0:
