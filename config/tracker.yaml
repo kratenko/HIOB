@@ -92,7 +92,7 @@ pursuer:
 
 tracking_conf:
   fake_fps: 0
-  skip_fps: 0
+  skip_frames: 0
   shuffle: false
 
 # = tracking = 
