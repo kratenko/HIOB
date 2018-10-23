@@ -74,8 +74,9 @@ class Configurator(object):
 
         print("-----------------------------------------------------------------------------")
         print("ros mode is {0}.".format("TRUE" if self["ros_mode"] else "FALSE"))
-        print("subscribing to {}".format(self['tracking'][0]))
-        print("publishing to {}".format(self['ros_node']))
+        if self["ros_mode"]:
+            print("subscribing to {}".format(self['tracking'][0]))
+            print("publishing to {}".format(self['ros_node']))
         print("-----------------------------------------------------------------------------")
 
         if self['ros_mode']:
