@@ -28,7 +28,7 @@ class Configurator(object):
 
         self.overrides = {}
         if ros_config is not None:
-            if ros_config['subscribe'] is None != ros_config['publish'] is None:
+            if (ros_config['subscribe'] is None) != (ros_config['publish'] is None):
                 raise Exception("Invalid ros parameters detected! Exiting...")
             else:
                 self.overrides['tracking'] = ['ros/' + ros_config['subscribe'].strip('/')]
@@ -74,6 +74,8 @@ class Configurator(object):
 
         print("-----------------------------------------------------------------------------")
         print("ros mode is {0}.".format("TRUE" if self["ros_mode"] else "FALSE"))
+        print("subscribing to {}".format(self['tracking'][0]))
+        print("publishing to {}".format(self['ros_node']))
         print("-----------------------------------------------------------------------------")
 
         if self['ros_mode']:
