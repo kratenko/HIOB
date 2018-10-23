@@ -7,6 +7,7 @@ import shutil
 import socket
 import uuid
 import re
+import signal
 
 import numpy as np
 import tensorflow as tf
@@ -34,10 +35,18 @@ class Tracker:
             self.git_revision = "--INVALID--"
             self.git_dirty = True
 
+    def abort(self):
+        self.interrupt_received = True
+        if self.current_sample is not None:
+            self.current_sample.unload()
+        print("received SIGINT! Exiting")
+
     def __init__(self, configuration):
+        signal.signal(signal.SIGINT, self.abort)
         logger.warning("CREATING NEW TRACKER")
         self.context = None
         self.configuration = configuration
+        self.interrupt_received = False
 
         # prepare random seeds:
         self.py_seed = None

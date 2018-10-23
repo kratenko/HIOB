@@ -40,8 +40,7 @@ class LiveSample:
         self.images = []
 
         while not self.loaded:
-            self.ros_event.wait()
-            print("callback fired!")
+            self.ros_event.wait(1)
             self.ros_event.clear()
 
     def unload(self):
@@ -71,21 +70,19 @@ class LiveSample:
             gt = msg.position
             rect = Rect(gt.x, gt.y, gt.w, gt.h)
             self._buffer.append((img, rect))
-            print("Updating initial position... (" + str(rect) + "/" + str(gt) + ")")
+            #print("Updating initial position... (" + str(rect) + "/" + str(gt) + ")")
             self.initial_position = rect
-            print("image shape is: {}".format(img.shape))
+            #print("image shape is: {}".format(img.shape))
             self.capture_size = tuple(reversed(img.shape[:-1]))
             self.loaded = True
         else:
             self._buffer.append((img, None))
-        print("buffer length: " + str(len(self._buffer)))
         self.ros_event.set()
 
     async def get_next_frame_data(self):
         self.current_frame_id = len(self.images)
         while len(self._buffer) == 0 and self.loaded:
-            self.ros_event.wait()
-            print("callback fired!")
+            self.ros_event.wait(1)
             self.ros_event.clear()
         else:
             #if not self.loaded:

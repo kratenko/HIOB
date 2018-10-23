@@ -430,7 +430,7 @@ class Tracking(object):
             self.publisher.publish(frame.result)
 
     def tracking_done(self):
-        return not self.frames_left()
+        return not self.frames_left() or self.tracker.interrupt_received
 
     async def tracking_step(self):
         await self.tracking_next_frame()
