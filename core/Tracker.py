@@ -35,11 +35,11 @@ class Tracker:
             self.git_revision = "--INVALID--"
             self.git_dirty = True
 
-    def abort(self):
+    def abort(self, signum, _):
         self.interrupt_received = True
         if self.current_sample is not None:
             self.current_sample.unload()
-        print("received SIGINT! Exiting")
+        print("received abort signal! Exiting")
 
     def __init__(self, configuration):
         signal.signal(signal.SIGINT, self.abort)
