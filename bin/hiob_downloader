@@ -1,0 +1,167 @@
+#!/bin/sh
+
+usage () {
+	echo "Download helper for the hierarchical object tracker HIOB"
+	echo "see https://github.com/kratenko/HIOB/ for more information"
+	echo "\nUsage:\n $0 <target>"
+	echo "\n loads target into current directory.\n Targets are:"
+	echo "  vgg16: download pretrained extractor network"
+	echo "  deer:  download single sample \"Deer\" from tb100 dataset"
+	echo "  tb100: download tb100 dataset -- will take a long time!"
+}
+
+DlDeerSample () {
+	echo "Downloading Deer sample from tb100 tracking benchmark data set"
+	if [ ! -f Deer.zip ]; then
+		wget https://github.com/kratenko/HIOB/releases/download/deer-sample/Deer.zip
+	else
+		echo "File 'Deer.zip' exists, skipping"
+	fi
+}
+
+DlVgg16 () {
+	echo "Downloading pre-trained weights of VGG16 for hiob"
+	echo "Based on work by K. Simonyan and A. Zisserman, "
+	echo "released under Creative Commons Attribution License"
+	echo "See https://github.com/kratenko/HIOB/releases/tag/vgg16-conv"
+	if [ ! -f vgg16.npy ]; then
+		wget https://github.com/kratenko/HIOB/releases/download/vgg16-conv/vgg16.npy
+	else
+		echo "File 'vgg16.npy' exists, skipping"
+	fi
+}
+
+DlTb100File () {
+	if [ ! -f $1.zip ]; then
+		wget http://cvlab.hanyang.ac.kr/tracker_benchmark/seq/$1.zip
+	else
+		echo "File '$1.zip' exists, skipping"
+	fi
+}
+
+DlTb100Set () {
+	echo "\n"
+	echo "Downloading tb100 online tracking benchmark data set"
+	echo "BE WARNED! The server is slow. This might take hours!\n"
+	while read p; do
+		DlTb100File "$p"
+	done <<final
+Basketball
+Biker
+Bird1
+Bird2
+BlurBody
+BlurCar1
+BlurCar2
+BlurCar3
+BlurCar4
+BlurFace
+BlurOwl
+Board
+Bolt
+Bolt2
+Box
+Boy
+Car1
+Car2
+Car24
+Car4
+CarDark
+CarScale
+ClifBar
+Coke
+Couple
+Coupon
+Crossing
+Crowds
+Dancer
+Dancer2
+David
+David2
+David3
+Deer
+Diving
+Dog
+Dog1
+Doll
+DragonBaby
+Dudek
+FaceOcc1
+FaceOcc2
+Fish
+FleetFace
+Football
+Football1
+Freeman1
+Freeman3
+Freeman4
+Girl
+Girl2
+Gym
+Human2
+Human3
+Human4
+Human5
+Human6
+Human7
+Human8
+Human9
+Ironman
+Jogging
+Jump
+Jumping
+KiteSurf
+Lemming
+Liquor
+Man
+Matrix
+Mhyang
+MotorRolling
+MountainBike
+Panda
+RedTeam
+Rubik
+Shaking
+Singer1
+Singer2
+Skater
+Skater2
+Skating1
+Skating2
+Skiing
+Soccer
+Subway
+Surfer
+Suv
+Sylvester
+Tiger1
+Tiger2
+Toy
+Trans
+Trellis
+Twinnings
+Vase
+Walking
+Walking2
+Woman
+
+final
+}
+
+
+# --
+case $1 in
+	deer)
+		DlDeerSample
+		;;
+	tb100)
+		DlTb100Set
+		;;
+	vgg16)
+		DlVgg16
+		;;
+	*)
+		usage
+		;;
+esac
+
