@@ -10,6 +10,7 @@
         - setup environment.yaml
         - provide sensible default configuration files -> Tobias
     - custom use cases
+        - documentation of tracker.yaml -> Tobias + Peer 
         - add a data set
 - Running/Usage
     - Command line parameters
