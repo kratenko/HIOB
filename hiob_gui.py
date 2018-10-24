@@ -3,9 +3,8 @@ import logging
 import transitions
 import sys, os
 
-hiob_path = os.path.join(os.path.dirname(__file__), '..', 'hiob')
+hiob_path = os.path.join(os.path.dirname(__file__))
 sys.path.append( hiob_path )
-os.chdir(hiob_path)
 
 from core.Configurator import Configurator
 from core.app import App
@@ -30,6 +29,7 @@ def main():
     if args.ros_publish is not None or args.ros_subscribe is not None:
         ros_config = {'subscribe': args.ros_subscribe, 'publish': args.ros_publish}
     conf = Configurator(
+        hiob_path=hiob_path,
         environment_path=args.environment,
         tracker_path=args.tracker,
         ros_config=ros_config

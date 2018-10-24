@@ -13,16 +13,17 @@ logger = logging.getLogger(__name__)
 
 class Configurator(object):
 
-    def __init__(self, environment_path=None, tracker_path=None, ros_config=None, silent=False):
+    def __init__(self, hiob_path=None, environment_path=None, tracker_path=None, ros_config=None, silent=False):
         logger.info("Building Configurator")
         logger.info("ros config is:")
         logger.info(ros_config)
+        wdir = "." if hiob_path is None else hiob_path
         if environment_path is None:
-            self.environment_path = os.path.join('.', 'config', 'environment.yaml')
+            self.environment_path = os.path.join(wdir, 'config', 'environment.yaml')
         else:
             self.environment_path = environment_path
         if tracker_path is None:
-            self.tracker_path = os.path.join('.', 'config', 'tracker.yaml')
+            self.tracker_path = os.path.join(wdir, 'config', 'tracker.yaml')
         else:
             self.tracker_path = tracker_path
 

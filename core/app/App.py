@@ -5,6 +5,7 @@ import asyncio
 import logging
 import argparse
 import os
+import signal
 
 from .AppTerminatedException import AppTerminatedException
 from .ImageLabel import ImageLabel
@@ -28,6 +29,12 @@ class App:
         self.texts = {}
         self.build_widgets()
         self.logger = logger
+
+        self.tracker = Tracker(self.conf)
+        signal.signal(signal.SIGINT, self.tracker.abort)
+        signal.signal(signal.SIGTERM, self.tracker.abort)
+        signal.signal(signal.SIGQUIT, self.tracker.abort)
+        signal.signal(signal.SIGABRT, self.tracker.abort)
 
         self.logger.info("starting tracker")
         self.start_tracker()
@@ -198,6 +205,8 @@ class App:
         # tracking:
         tracking.start_tracking()
         while tracking.frames_left() and not threading.current_thread().terminating:
+            if self.tracker.interrupt_received:
+                return tracking
             self.verify_running()
             await tracking.tracking_step()
 #            evs = tracking.get_evaluation_figures()
@@ -251,25 +260,28 @@ class App:
         result.save(os.path.join(image_dir, "{}-tracked.png".format(tracking.get_current_frame_number())))
 
     def tracker_fun(self):
-        tracker = Tracker(self.conf)
+        if self.tracker is None:
+            raise Exception("You need to create a tracker first!")
         if self.conf['ros_mode']:
             import rospy
             rospy.on_shutdown(self.tracker_thread.stop)
-        tracker.setup_environment()
+        self.tracker.setup_environment()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
 
-            for i, sample in enumerate(tracker.samples):
+            for i, sample in enumerate(self.tracker.samples):
                 #sample.load()
-                with tracker.setup(sample):
+                with self.tracker.setup(sample):
                     #if not tracker.is_setup:
                     #tracker.setup(sample)
-                    tracking = loop.run_until_complete(self.tracker_one(tracker, sample))
-                    tracker.evaluate_tracking(tracking)
+                    tracking = loop.run_until_complete(self.tracker_one(self.tracker, sample))
+                    if self.tracker.interrupt_received:
+                        raise AppTerminatedException()
+                    self.tracker.evaluate_tracking(tracking)
                     #sample.unload()
-                    if i == len(tracker.samples) - 1:
-                        tracker.evaluate_tracker()
+                    if i == len(self.tracker.samples) - 1:
+                        self.tracker.evaluate_tracker()
                     print("with clause done")
         except AppTerminatedException:
             self.logger.info("App terminated, ending tracker thread early.")

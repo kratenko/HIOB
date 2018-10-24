@@ -2,12 +2,13 @@
 import logging
 import transitions
 import asyncio
+import signal
 import os, sys
 
 
-hiob_path = os.path.join(os.path.dirname(__file__), '..', 'hiob')
+hiob_path = os.path.join(os.path.dirname(__file__))
 sys.path.append( hiob_path )
-os.chdir(hiob_path)
+#os.chdir(hiob_path)
 
 from core.Configurator import Configurator
 from core.Tracker import Tracker
@@ -26,6 +27,7 @@ def track(environment_path=None, tracker_path=None, ros_config=None, silent=Fals
     # create Configurator
     logger.info("Creating configurator object")
     conf = Configurator(
+        hiob_path=hiob_path,
         environment_path=environment_path,
         tracker_path=tracker_path,
         ros_config=ros_config,
@@ -36,6 +38,11 @@ def track(environment_path=None, tracker_path=None, ros_config=None, silent=Fals
     # create the tracker instance
     logger.info("Creating tracker object")
     tracker = Tracker(conf)
+
+    signal.signal(signal.SIGINT, tracker.abort)
+    signal.signal(signal.SIGTERM, tracker.abort)
+    signal.signal(signal.SIGQUIT, tracker.abort)
+    signal.signal(signal.SIGABRT, tracker.abort)
     tracker.setup_environment()
 
     # create tensorflow session and do the tracking

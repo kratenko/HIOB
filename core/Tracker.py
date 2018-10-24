@@ -42,10 +42,6 @@ class Tracker:
         print("received abort signal! Exiting")
 
     def __init__(self, configuration):
-        signal.signal(signal.SIGINT, self.abort)
-        signal.signal(signal.SIGTERM, self.abort)
-        signal.signal(signal.SIGQUIT, self.abort)
-        signal.signal(signal.SIGABRT, self.abort)
 
         logger.warning("CREATING NEW TRACKER")
         self.context = None
