@@ -45,7 +45,12 @@ class Sample(object):
         self.capture_size = None
 
     def __repr__(self):
-        return '<Sample {name}/{set_name}>'.format(name=self.name, set_name=self.set_name)
+        return '<Sample {set_name}/{name},{frames}fs,{gt}>'.format(
+                set_name=self.set_name,
+                name=self.name,
+                frames=self.actual_frames,
+                gt='GT' if self.ground_truth else 'noGT',
+            )
 
     def load_tb100zip(self, log_context=None):
 
@@ -125,7 +130,7 @@ class Sample(object):
                 "Wrong number for actual_images in sample {}".format(self))
             # self.actual_frames = len(images)
 
-        msg = "Sample '{}' loaded".format(self.name)
+        msg = "Sample '{}' loaded".format(self.__repr__())
         if log_context is not None:
             with log_context(logger):
                 logger.info(msg)
