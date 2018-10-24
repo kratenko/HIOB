@@ -1,0 +1,206 @@
+description: >
+  Princeton tracking benchmark dataset
+format: princeton
+samples:
+  # ValidationSet:
+  - name: bear_front
+    actual_frames: 295
+  - name: child_no1
+    actual_frames: 164
+  - name: face_occ5
+    actual_frames: 330
+  - name: new_ex_occ4
+    actual_frames: 51
+  - name: zcup_move_1
+    actual_frames: 370
+  # EvaluationSet:
+  - name: bag1
+    actual_frames: 273
+  - name: basketball1
+    actual_frames: 213
+  - name: basketball2.2
+    actual_frames: 249
+  - name: basketball2
+    actual_frames: 54
+  - name: basketballnew
+    actual_frames: 124
+  - name: bdog_occ2
+    actual_frames: 186
+  - name: bear_back
+    actual_frames: 176
+  - name: bear_change
+    actual_frames: 591
+  - name: bird1.1_no
+    actual_frames: 136
+  - name: bird3.1_no
+    actual_frames: 119
+  - name: book_move1
+    actual_frames: 294
+  - name: book_turn2
+    actual_frames: 195
+  - name: book_turn
+    actual_frames: 459
+  - name: box_no_occ
+    actual_frames: 318
+  - name: br_occ_0
+    actual_frames: 176
+  - name: br_occ1
+    actual_frames: 220
+  - name: br_occ_turn0
+    actual_frames: 214
+  - name: cafe_occ1
+    actual_frames: 56
+  - name: cc_occ1
+    actual_frames: 173
+  - name: cf_difficult
+    actual_frames: 242
+  - name: cf_no_occ
+    actual_frames: 66
+  - name: cf_occ2
+    actual_frames: 45
+  - name: cf_occ3
+    actual_frames: 46
+  - name: child_no2
+    actual_frames: 155
+  - name: computerbar1
+    actual_frames: 221
+  - name: computerBar2
+    actual_frames: 100
+  - name: cup_book
+    actual_frames: 261
+  - name: dog_no_1
+    actual_frames: 44
+  - name: dog_occ_2
+    actual_frames: 251
+  - name: dog_occ_3
+    actual_frames: 226
+  - name: express1_occ
+    actual_frames: 354
+  - name: express2_occ
+    actual_frames: 122
+  - name: express3_static_occ
+    actual_frames: 196
+  - name: face_move1
+    actual_frames: 469
+  - name: face_occ2
+    actual_frames: 387
+  - name: face_occ3
+    actual_frames: 262
+  - name: face_turn2
+    actual_frames: 600
+  - name: flower_red_occ
+    actual_frames: 380
+  - name: gre_book
+    actual_frames: 469
+  - name: hand_no_occ
+    actual_frames: 196
+  - name: hand_occ
+    actual_frames: 59
+  - name: library2.1_occ
+    actual_frames: 71
+  - name: library2.2_occ
+    actual_frames: 420
+  - name: mouse_no1
+    actual_frames: 157
+  - name: new_ex_no_occ
+    actual_frames: 116
+  - name: new_ex_occ1
+    actual_frames: 102
+  - name: new_ex_occ2
+    actual_frames: 67
+  - name: new_ex_occ3
+    actual_frames: 49
+  - name: new_ex_occ5_long
+    actual_frames: 192
+  - name: new_ex_occ6
+    actual_frames: 48
+  - name: new_ex_occ7.1
+    actual_frames: 58
+  - name: new_student_center1
+    actual_frames: 101
+  - name: new_student_center2
+    actual_frames: 125
+  - name: new_student_center3
+    actual_frames: 181
+  - name: new_student_center4
+    actual_frames: 65
+  - name: new_student_center_no_occ
+    actual_frames: 75
+  - name: new_ye_no_occ
+    actual_frames: 235
+  - name: new_ye_occ
+    actual_frames: 245
+  - name: one_book_move
+    actual_frames: 292
+  - name: rose1.2
+    actual_frames: 404
+  - name: static_sign1
+    actual_frames: 201
+  - name: studentcenter2.1
+    actual_frames: 155
+  - name: studentcenter3.1
+    actual_frames: 189
+  - name: studentcenter3.2
+    actual_frames: 105
+  - name: three_people
+    actual_frames: 260
+  - name: toy_car_no
+    actual_frames: 103
+  - name: toy_car_occ
+    actual_frames: 154
+  - name: toy_green_occ
+    actual_frames: 99
+  - name: toy_mo_occ
+    actual_frames: 191
+  - name: toy_no
+    actual_frames: 102
+  - name: toy_no_occ
+    actual_frames: 165
+  - name: toy_wg_no_occ
+    actual_frames: 158
+  - name: toy_wg_occ1
+    actual_frames: 127
+  - name: toy_wg_occ
+    actual_frames: 158
+  - name: toy_yellow_no
+    actual_frames: 163
+  - name: tracking4
+    actual_frames: 290
+  - name: tracking7.1
+    actual_frames: 234
+  - name: two_book
+    actual_frames: 189
+  - name: two_dog_occ1
+    actual_frames: 107
+  - name: two_people_1.1
+    actual_frames: 300
+  - name: two_people_1.2
+    actual_frames: 300
+  - name: two_people_1.3
+    actual_frames: 300
+  - name: walking_no_occ
+    actual_frames: 118
+  - name: walking_occ1
+    actual_frames: 68
+  - name: walking_occ_long
+    actual_frames: 199
+  - name: wdog_no1
+    actual_frames: 86
+  - name: wdog_occ3
+    actual_frames: 124
+  - name: wr_no1
+    actual_frames: 156
+  - name: wr_no
+    actual_frames: 77
+  - name: wr_occ2
+    actual_frames: 151
+  - name: wuguiTwo_no
+    actual_frames: 346
+  - name: zball_no1
+    actual_frames: 122
+  - name: zball_no2
+    actual_frames: 117
+  - name: zball_no3
+    actual_frames: 86
+  - name: zballpat_no1
+    actual_frames: 128

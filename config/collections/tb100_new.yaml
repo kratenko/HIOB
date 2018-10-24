@@ -1,0 +1,53 @@
+description: >
+  The new additional 49 sequences of the tb100 Benchmark, excluding the ones
+  from the original paper.
+samples:
+  - tb100/Biker
+  - tb100/Bird1
+  - tb100/Bird2
+  - tb100/BlurBody
+  - tb100/BlurCar1
+  - tb100/BlurCar2
+  - tb100/BlurCar3
+  - tb100/BlurCar4
+  - tb100/BlurFace
+  - tb100/BlurOwl
+  - tb100/Board
+  - tb100/Bolt2
+  - tb100/Box
+  - tb100/Car1
+  - tb100/Car2
+  - tb100/Car24
+  - tb100/ClifBar
+  - tb100/Coupon
+  - tb100/Crowds
+  - tb100/Dancer
+  - tb100/Dancer2
+  - tb100/Diving
+  - tb100/Dog
+  - tb100/DragonBaby
+  - tb100/Girl2
+  - tb100/Gym
+  - tb100/Human2
+  - tb100/Human3
+  - tb100/Human4.2
+  - tb100/Human5
+  - tb100/Human6
+  - tb100/Human7
+  - tb100/Human8
+  - tb100/Human9
+  - tb100/Jump
+  - tb100/KiteSurf
+  - tb100/Man
+  - tb100/Panda
+  - tb100/RedTeam
+  - tb100/Rubik
+  - tb100/Skater
+  - tb100/Skater2
+  - tb100/Skating2.1
+  - tb100/Skating2.2
+  - tb100/Surfer
+  - tb100/Toy
+  - tb100/Trans
+  - tb100/Twinnings
+  - tb100/Vase

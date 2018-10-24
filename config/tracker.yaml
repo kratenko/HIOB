@@ -1,0 +1,240 @@
+# tracker.yaml
+# defines how the tracker is set up and what samples will be tracked
+# Can be fed to program via command line argument --tracker [path]
+
+#sroi_size: [368, 368]
+#sroi_size: [50, 50]
+#sroi_size: [960, 720]
+roi_scale: [2.0,2.0]
+roi_movement_factor: 0.0
+sroi_size: [200,200]
+#sroi_scale: 0.5
+mask_size: null
+#extractor_net: alexnet
+#features:
+#  - [conv4, 256]
+#  - [conv5, 128]
+extractor_net: vgg16
+features:
+  - [conv4_3, 384]
+#  - [conv5_3, 384]
+#  - [conv4_3, 60]
+  - [conv5_3, 384]
+#  - [pool3, 64]
+random_seed: 1338
+selector:
+  max_iterations: 50
+  min_cost: null
+  net:
+    name: selector_net
+    cost: mean_square
+    optimizer: [adam, {learning_rate: 0.000001}]
+    layers:
+      - type: dropout
+        name: dropout
+        keep_prob: 0.7
+      - type: conv
+        name: conv1
+        #weight_initial: [truncated_normal, {stddev: 0.1}]
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: zeros 
+        kernel_size: 3
+        channels: 1
+      
+consolidator:
+  max_iterations: 20
+  min_cost: 0.0005
+  sigma_train: 0.8
+  sigma_update: 0.8
+  update_threshold: 0.2
+  update_lower_threshold: 0.4
+  # number of frames stored for updates
+  update_frame_store_size: 5
+  # number of training cycles for update
+  update_max_iterations: 2
+  # update_max_frames: number of frames until update of consolidator is forced. Use null for never
+  update_max_frames: null
+  # update_min_frames: number of frames that must have passed since the last update of consolidator (hard limit). Use null or (0 or 1) for no limit
+  update_min_frames: null
+  update_keep_initial_frame: true
+  update_initial_factor: 4.0
+  update_use_quality: False
+  update_current_factor: 1.0
+  net:
+    name: consolidator_net
+    cost: mean_square
+#    optimizer: [adam, {learning_rate: 0.000000001}]
+    optimizer: [adam, {learning_rate: 0.00001}]
+#    optimizer: [momentum, {learning_rate: 0.00001, momentum: 0.6}]
+    layers:
+      - type: conv
+        name: conv1
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: 0.1
+        kernel_size: 9
+        channels: 32
+      - type: activation
+        name: activation1
+        function: crelu
+      - type: conv
+        name: conv2
+        weight_initial: [truncated_normal, {stddev: 0.0000001}]
+        bias_initial: 0
+        kernel_size: 5
+        channels: 1
+
+pursuer:
+  particle_count: 600
+  particle_scale_factor: 1.0
+  target_lower_limit: 0.2
+  target_punish_low: 0.0
+  target_punish_outside: 0.0
+
+tracking_conf:
+  fake_fps: 0
+  skip_frames: 0
+  shuffle: false
+
+# = tracking = 
+# which samples shall be tracked? Accepts samples, data sets, and data collections
+# examples: ['tb100/MotorRolling', 'SET/tb100', 'COLLECTION/tb100_probe']
+tracking:
+#  - ros/nico/vision/videoStream
+#  - nico_recordings/banana
+#  - nico_recordings/cube
+#  - nico_recordings/grapes
+#  - nico_recordings/tomato
+#  - nico_recordings/tomato_and_carrot.1
+#  - nico_recordings/tomato_and_carrot.2
+#  - tb100/BlurCar1
+#  - tb100/David
+#  - tb100/Panda
+#  - tb100/Basketball
+#  - tb100/RedTeam
+#  - tb100/BlurBody
+#  - tb100/Liquor
+#  - tb100/Coke
+#  - tb100/Matrix
+#  - tb100/MotorRolling
+#  - tb100/Soccer
+#  - tb100/Freeman3
+#  - tb100/Deer
+#  - tb100/Lemming
+#  - tb100/Tiger2
+#  - tb100/Jumping
+#  - tb100/Ironman
+#  - tb100/Twinnings
+#  - tb100/CarScale
+#  - COLLECTION/tb100_probe
+#  - COLLECTION/tb100_paper50
+#  - princeton/zcup_move_1
+#  - princeton/cup_book
+#  - princeton/computerBar2
+#  - SET/princeton
+#  - princeton/book_turn
+  - nicovision/bang_sponge_01
+#  - nicovision/lift_sponge_02
+#  - nicovision/shake_small_banana_02
+#  - nicovision/scoot_blue_ball_02
+#  - nicovision/lift_blue_car_05
+#  - nicovision/shake_heavy_banana_03
+#  - nicovision/bang_blue_tissue_01
+#  - nicovision/lift_blue_car_01
+#  - nicovision/lift_blue_car_02
+#  - nicovision/lift_blue_car_03
+#  - nicovision/lift_blue_car_04
+#  - nicovision/lift_blue_tissue_01
+#  - nicovision/lift_heavy_banana_01
+#  - nicovision/lift_heavy_banana_02
+#  - nicovision/lift_red_car_01
+#  - nicovision/lift_red_car_02
+#  - nicovision/lift_small_yellow_cube_01
+#  - nicovision/lift_sponge_02
+#  - nicovision/lift_sponge_03
+#  - nicovision/lift_styrofoam_cube_01
+#  - nicovision/pull_blue_ball_01
+#  - nicovision/pull_blue_car_01
+#  - nicovision/pull_blue_plush_ball_01
+#  - nicovision/pull_blue_tissue_01
+#  - nicovision/pull_brown_plush_ball_01
+#  - nicovision/pull_green_car_01
+#  - nicovision/pull_heavy_apple_01
+#  - nicovision/pull_heavy_tomato_01
+#  - nicovision/pull_heavy_yellow_cube_01
+#  - nicovision/pull_orange_patterned_plush_ball_01
+#  - nicovision/pull_red_car_01
+#  - nicovision/pull_red_car_02
+#  - nicovision/pull_small_tomato_01
+#  - nicovision/pull_small_yellow_cube_01
+#  - nicovision/pull_sponge_01
+#  - nicovision/pull_styrofoam_cube_01
+#  - nicovision/pull_styrofoam_cube_02
+#  - nicovision/push_blue_ball_01
+#  - nicovision/push_blue_car_01
+#  - nicovision/push_blue_car_02
+#  - nicovision/push_blue_patterned_plush_ball_01
+#  - nicovision/push_green_car_01
+#  - nicovision/push_green_car_02
+#  - nicovision/push_heavy_apple_01
+#  - nicovision/push_heavy_apple_02
+#  - nicovision/push_red_car_01
+#  - nicovision/push_red_car_02
+#  - nicovision/push_small_yellow_cube_01
+#  - nicovision/push_sponge_01
+#  - nicovision/scoot_blue_ball_01
+#  - nicovision/scoot_blue_car_01
+#  - nicovision/scoot_blue_car_02
+#  - nicovision/scoot_blue_tissue_01
+#  - nicovision/scoot_green_car_01
+#  - nicovision/scoot_plush_banana_01
+#  - nicovision/shake_big_light_banana_01
+#  - nicovision/shake_blue_plush_ball_01
+#  - nicovision/shake_blue_tissue_01
+#  - nicovision/shake_brown_plush_ball_01
+#  - nicovision/shake_heavy_banana_01
+#  - nicovision/shake_heavy_banana_02
+#  - nicovision/shake_heavy_banana_03
+#  - nicovision/shake_heavy_banana_04
+#  - nicovision/shake_red_tissue_01
+#  - nicovision/shake_small_banana_01
+#  - nicovision/shake_small_banana_02
+#  - nicovision/shake_small_banana_03
+#  - nicovision/shake_small_banana_04
+#  - nicovision/shake_small_banana_05
+#  - nicovision/shake_small_yellow_cube_01
+#  - nicovision/shake_sponge_01
+#  - nicovision/shake_styrofoam_cube_01
+#  - nicovision/lift_sponge_01
+#  - nicovision/pull_red_tissue_01
+#  - nicovision/push_tomato_01
+
+xtracking:
+#  - tb100/SHORT
+#  - tb100/SHORT
+#  - tb100/SHORT
+  - tb100/Basketball
+  - tb100/Biker
+  - tb100/Bird1
+  - tb100/Bird2
+  - tb100/BlurBody
+  - tb100/BlurCar1
+  - tb100/BlurCar2
+  - tb100/BlurCar3
+  - tb100/BlurCar4
+  - tb100/BlurFace
+  - tb100/BlurOwl
+  - tb100/Board
+  - tb100/Bolt
+  - tb100/Bolt2
+  - tb100/Box
+  - SET/tb100
+  - tb50_paper
+  - tb100/Boy
+  - tb100/Car1
+  - tb100/Car2
+  - tb100/Car4
+  - tb100/Car24
+  - tb100/Dancer
+  - tb100/MotorRolling
+  - tb100/Deer
+  
