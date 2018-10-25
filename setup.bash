@@ -101,5 +101,6 @@
 
     echo ""
     echo "All done. HIOB is installed."
-    echo "HIOB can now be launched with '$VENV_PATH/bin/python hiob_cli.py' or '$VENV_PATH/bin/python hiob_gui.py'."
+    echo "The venv can be activated with '. $VENV_PATH/bin/activate'."
+    echo "Thereafter HIOB can now be launched with 'python hiob_cli.py' or 'python hiob_gui.py'."
 )
