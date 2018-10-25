@@ -12,14 +12,7 @@ The algorithm in HIOB is inspired by the [FCNT](https://github.com/scott89/FCNT)
 # Citing
 If you use our work for your research, please consider citing us:
 
-    @inproceedings{Springstuebe2018HIOB,
-        author         = {Springst{\"u}be, Peer and Heinrich, Stefan and Wermter, Stefan},
-        title          = {Continuous convolutional object tracking},
-        booktitle      = {Proc. 26th ESANN},
-        pages          = {73--78},
-        booktitle_hide = {Proceedings of the 26th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN)},
-        year           = {2018}
-}
+TODO: bibtex
 
 TODO: second paper, when we have a bibtex entry.
 
