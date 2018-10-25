@@ -282,7 +282,6 @@ class App:
                     #sample.unload()
                     if i == len(self.tracker.samples) - 1:
                         self.tracker.evaluate_tracker()
-                    print("with clause done")
         except AppTerminatedException:
             self.logger.info("App terminated, ending tracker thread early.")
             # tracking.execute_consolidator_training()
@@ -292,13 +291,10 @@ class App:
         self.logger.info("Leaving tracker thread")
 
     def run(self):
-        print("run")
         self.root.mainloop()
-        print("mainloop done")
         self.dead = True
         if self.tracker_thread:
             self.tracker_thread.join()
-        print("tracker_thread joined")
 
 
 if __name__ == '__main__':

@@ -28,6 +28,7 @@ class FakeLiveSample(Sample):
             curr_frame = self.current_frame_id + self.skip_frames
             #print("sample advanced by {} frames".format(self.skip_frames))
             self.current_frame_id = int(curr_frame)
+
         return [
             self.get_image(self.current_frame_id),
             self.get_ground_truth(self.current_frame_id)]
@@ -40,12 +41,15 @@ class FakeLiveSample(Sample):
             return super(FakeLiveSample, self).get_image(self.actual_frames - 1)
 
     def get_ground_truth(self, gt_id):
+
+        gt = None
         if len(self.ground_truth) > 0:
             if len(self.ground_truth) > gt_id:
-                return self.ground_truth[gt_id]
+                gt = self.ground_truth[gt_id]
             else:
-                return self.ground_truth[-1]
-        return None
+                gt = self.ground_truth[-1]
+
+        return gt
 
     def count_frames_processed(self):
         return self.frames_processed

@@ -137,7 +137,6 @@ class Sample(object):
         else:
             logger.info(msg)
 
-
     def load_tb100_image(self, img_path):
         data = self.zip_file.read(img_path)
         stream = io.BytesIO(data)
@@ -250,7 +249,7 @@ class Sample(object):
         return self.image_cache[img_id]
 
     def get_ground_truth(self, gt_id):
-        if len(self.ground_truth) > gt_id and len(self.ground_truth) > self.actual_frames:
+        if len(self.ground_truth) > gt_id and len(self.ground_truth) >= self.actual_frames:
             return self.ground_truth[gt_id]
         else:
             return None
