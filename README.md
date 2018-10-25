@@ -38,4 +38,10 @@ HIOB comes with a simple demo script, that downloads a tracking sequence (~4.3MB
 
     (hiob_env) $ ./run_demo.sh
     
-If all goes well, the sample will be downloaded to `HIOB/demo/data/tb100/Deer.zip` and a window will open that shows the tracking process. A log of the tracking process will be created inside `HIOB/demo/hiob_logs` containing log output and an analysis of the process.
+If all goes well, the sample will be downloaded to `HIOB/demo/data/tb100/Deer.zip` and a window will open that shows the tracking process. A yellow rectangle will show the position predicted by HIOB and a dark green frame will show the ground truth included in the sample sequence. A log of the tracking process will be created inside `HIOB/demo/hiob_logs` containing log output and an analysis of the process.
+
+
+# Getting more test samples
+The deer example used in the demo is taken from the tb100 online benchmark by *Yi Wu* and *Jongwoo Lim* and *Ming-Hsuan Yang*. The benchmark consists of 98 picture sequences with a total of 100 tracking sequences. It can be found under http://visual-tracking.net/ HIOB can read work directly on the zip files provided there. The benchmark has been released in a paper:  http://faculty.ucmerced.edu/mhyang/papers/cvpr13_benchmark.pdf
+
+Since the 98 sequences must be downloaded individually from a very slow server, the process is quite time consuming. HIOB comes with a script that can handle the download for you, it is located at `bin/hiob_downloader` within this repository. If you call it with argument `tb100` it will download the whole dataset from the server. This will most likely take several hours.
