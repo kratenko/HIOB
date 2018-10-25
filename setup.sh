@@ -4,15 +4,15 @@
     cd "$(dirname "$0")"
     echo $(pwd)
 
-    setup_hash="$(md5sum setup.bash)"
+    setup_hash="$(md5sum setup.sh)"
     echo "Updating sources..."
     git pull
-    setup_new_hash="$(md5sum setup.bash)"
+    setup_new_hash="$(md5sum setup.sh)"
 
     if [[ "$setup_hash" != "$setup_new_hash" ]]
     then
         echo "Setup has been updated, starting new version..."
-        ./setup.bash @arg
+        ./setup.sh @arg
         exit 0
     fi
 
