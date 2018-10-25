@@ -39,7 +39,7 @@ class Tracker:
         self.interrupt_received = True
         if self.current_sample is not None:
             self.current_sample.unload()
-        print("received abort signal! Exiting")
+        raise Exception("received abort signal! Exiting")
 
     def __init__(self, configuration):
 
@@ -203,7 +203,13 @@ class Tracker:
     def setup(self, sample):
         self.current_sample = sample
         self.current_sample.load(self.logging_context_manager)
+
         self.setup_session()
+
+        if not self.current_sample.loaded:
+            logger.warning("Loading sample '{}' failed! Skipping...".format(str(sample)))
+            self.context.abort = True
+            return self.context
 
         if self.is_setup and self.context is not None \
                 and (self.current_sample is None or sample.capture_size != self.current_sample.capture_size):
@@ -291,9 +297,9 @@ class Tracker:
     async def execute_tracking_on_sample(self, sample):
 
         with self.setup(sample):
+            if self.context.abort:
+                return
             #sample.load(self.logging_context_manager)
-            if not self.is_setup:
-                self.setup(sample)
             tracking = await self.start_tracking_sample(sample)
             await tracking.execute_everything()
             self.evaluate_tracking(tracking)
@@ -338,6 +344,7 @@ class ForceLoggingContext:
 class TrackerContext:
     def __init__(self, tracker):
         self.tracker = tracker
+        self.abort = False
 
     def __enter__(self):
         #self.tracker.current_sample.load()

@@ -273,6 +273,8 @@ class App:
             for i, sample in enumerate(self.tracker.samples):
                 #sample.load()
                 with self.tracker.setup(sample):
+                    if self.tracker.context.abort:
+                        continue
                     #if not tracker.is_setup:
                     #tracker.setup(sample)
                     tracking = loop.run_until_complete(self.tracker_one(self.tracker, sample))

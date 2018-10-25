@@ -1,6 +1,7 @@
 import io
 from PIL import Image
 import rospy
+import logging
 import threading
 import tempfile
 import os.path
@@ -8,6 +9,7 @@ import numpy as np
 from ..Rect import Rect
 import hiob_msgs.msg
 
+logger = logging.getLogger(__name__)
 
 class LiveSample:
 
@@ -21,6 +23,7 @@ class LiveSample:
         self.frames_skipped = 0
         self.subscriber = None
         self.loaded = False
+        self.dead = False
         self.full_name = 'ros/' + node_id
         self.ros_event = threading.Event()
         self.first_frame_event = threading.Event()
@@ -39,20 +42,20 @@ class LiveSample:
         self.subscriber = rospy.Subscriber(self.node_id, hiob_msgs.msg.FrameWithGroundTruth, self.receive_frame)
         self.images = []
 
-        while not self.loaded:
+        while not self.loaded and not self.dead:
             self.ros_event.wait(1)
             self.ros_event.clear()
 
     def unload(self):
-        if self.loaded:
-            self.ros_event.set()
-            if self.subscriber:
-                self.subscriber.unregister()
+        self.loaded = False
+        self.dead = True
+        self.ros_event.set()
+        if self.subscriber:
+            self.subscriber.unregister()
             #self.images = []
-            self.loaded = False
 
     def receive_frame(self, msg):
-        print("received frame!")
+        logger.info("received frame!")
         #cv_img = self._bridge.imgmsg_to_cv2(msg)
         #img = Image.open(io.BytesIO(bytearray(msg)))
         #img = Image.fromarray(cv_img)
@@ -85,8 +88,8 @@ class LiveSample:
             self.ros_event.wait(1)
             self.ros_event.clear()
         else:
-            #if not self.loaded:
-            #    raise BaseException("not loaded!")
+            if not self.loaded:
+                return None, None
             self.frames_skipped += len(self._buffer) - 1
             self.images.append(self._buffer[-1][0])
             self.ground_truth.append(self._buffer[-1][1])

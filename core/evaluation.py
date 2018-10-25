@@ -323,6 +323,9 @@ def do_tracker_evaluation(tracker):
     updates_confidence = 0
     updates_total = 0
     failures = 0
+    if len(tracker.tracking_evaluations) == 0:
+        logger.info("No evaluation data found.")
+        return {}
     with open(trackings_file, 'w') as f:
 
         line = "#n,set_name,sample_name,sample_frames,precision_rating,relative_precision_rating,success_rating,adjusted_success_rating,loaded,features_selected,consolidator_trained,tracking_completed,total_seconds,preparing_seconds,tracking_seconds,frame_rate,roi_calculation_sum,sroi_generation_sum,feature_extraction_frame_rate,feature_reduction_sum,feature_consolidation_sum,pursuing_frame_rate,lost1,lost2,lost3,updates_max_frames,updates_confidence,update_total\n"
