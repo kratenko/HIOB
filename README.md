@@ -42,6 +42,10 @@ If all goes well, the sample will be downloaded to `HIOB/demo/data/tb100/Deer.zi
 
 
 # Getting more test samples
+## The tb100 online tracking benchmark
 The deer example used in the demo is taken from the tb100 online benchmark by *Yi Wu* and *Jongwoo Lim* and *Ming-Hsuan Yang*. The benchmark consists of 98 picture sequences with a total of 100 tracking sequences. It can be found under http://visual-tracking.net/ HIOB can read work directly on the zip files provided there. The benchmark has been released in a paper:  http://faculty.ucmerced.edu/mhyang/papers/cvpr13_benchmark.pdf
 
 Since the 98 sequences must be downloaded individually from a very slow server, the process is quite time consuming. HIOB comes with a script that can handle the download for you, it is located at `bin/hiob_downloader` within this repository. If you call it with argument `tb100` it will download the whole dataset from the server. This will most likely take several hours.
+
+## The Princeton RGBD tracking benchmark
+HIOB also works with the [Princeton Tracking Benchmark](http://tracking.cs.princeton.edu) and is able to read the files provided there. That benchmark provides depth information along with the RGB information, but the depth is not used by HIOB. Be advised that of the 100 sequences provided only 95 contain a ground truth. The original implementation of HIOB has been evaluated by the benchmark on April 2017, the results can be seen on the [evaluation page](http://tracking.cs.princeton.edu/eval.php) named `hiob_lc2`.
