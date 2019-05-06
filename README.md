@@ -12,26 +12,26 @@ The algorithm in HIOB is inspired by the [FCNT](https://github.com/scott89/FCNT)
 # Citing
 If you use our work for your research, please consider citing us:
 
-@Article{HIOB2019,
-  author       = "Heinrich, Stefan and Springst{\"u}be, Peer and Kn{\"o}ppler, Tobias and Kerzel, Matthias and Wermter, Stefan",
-  title        = "Continuous convolutional object tracking in developmental robot scenarios",
-  journal      = "Neurocomputing",
-  volume       = "342",
-  pages        = "137-144",
-  month        = "Feb",
-  year         = "2019",
-  doi          = "10.1016/j.neucom.2018.10.086"
-}
+     @Article{HIOB2019,
+        author       = "Heinrich, Stefan and Springst{\"u}be, Peer and Kn{\"o}ppler, Tobias and Kerzel, Matthias and Wermter, Stefan",
+        title        = "Continuous convolutional object tracking in developmental robot scenarios",
+        journal      = "Neurocomputing",
+        volume       = "342",
+        pages        = "137-144",
+        month        = "Feb",
+        year         = "2019",
+        doi          = "10.1016/j.neucom.2018.10.086"
+    }
 
-@InProceedings{HIOB2018,
-  author       = "Springst{\"u}be, Peer and Heinrich, Stefan and Wermter, Stefan",
-  title        = "Continuous convolutional object tracking",
-  booktitle    = "Proceedings of the 26th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN)",
-  pages        = "73--78",
-  month        = "Apr",
-  year         = "2018",
-  address      = "Bruges, BE"
-}
+    @InProceedings{HIOB2018,
+        author       = "Springst{\"u}be, Peer and Heinrich, Stefan and Wermter, Stefan",
+        title        = "Continuous convolutional object tracking",
+        booktitle    = "Proceedings of the 26th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN)",
+        pages        = "73--78",
+        month        = "Apr",
+        year         = "2018",
+        address      = "Bruges, BE"
+    }
 
 # Installation
 
